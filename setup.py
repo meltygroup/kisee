@@ -28,12 +28,14 @@ def setup_package():
         ],
         package_dir={'': 'src'},
         install_requires=[
-            'aiohttp',
-            'pyyaml',
-            'bcrypt',
-            'pyjwt',
-            'cryptography',
-            'shortuuid',
+            'aiohttp>=3.2.1,<4',
+            'aiomysql>=0.0.15',
+            'bcrypt>=3.1.4,<4',
+            'coreapi>=2.3.3,<3',
+            'cryptography>=2.2.2,<3',
+            'pyjwt>=1.6.3,<2',
+            'pyyaml>=3.12,<4',
+            'shortuuid>=0.5.0',
         ],
         extras_require={
             'dev': [
