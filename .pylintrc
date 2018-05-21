@@ -272,6 +272,7 @@ allow-global-unused-variables=yes
 # name must start or end with one of those strings.
 callbacks=cb_,
           _cb,
+          on_,
           get_,
           post_
 

@@ -40,7 +40,8 @@ def setup_package():
         extras_require={
             'dev': [
                 'flake8',
-                'pylint',
+                'pylint==2.0.0.dev',  # Don't work on py37 without v2
+                'astroid==2.0.0.dev',  # Don't work on py37 without v2
                 'pytest',
                 'pytest-cov',
                 'detox',

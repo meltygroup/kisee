@@ -1,12 +1,19 @@
+"""Entry point for the identification provider.
+"""
+
 import os
-from aiohttp import web
+
 import yaml
-from . import views
+from aiohttp import web
 
 from idserver.utils.module_loading import import_string
 
+from . import views
+
 
 def load_conf():
+    """Search for a settings.yaml file and load it.
+    """
     candidate = os.path.join(os.getcwd(), 'settings.yaml')
     if os.path.exists(candidate):
         with open(candidate) as candidate_file:
@@ -15,6 +22,8 @@ def load_conf():
 
 
 def identification_app():
+    """Identification provider entry point: builds and run a webserver.
+    """
     app = web.Application()
     app.settings = load_conf()
     app.identity_backend = import_string(

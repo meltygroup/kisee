@@ -1,3 +1,7 @@
+"""Binding between the identification server and our database with our
+own specific model and PHP's blowfish.
+"""
+
 import hmac
 import aiomysql
 import bcrypt
@@ -8,37 +12,31 @@ def constant_time_compare(val1, val2):
     return hmac.compare_digest(val1, val2)
 
 
-class BlowfishPasswordHasher:
-    """Secure password hashing using the blowfish algorithm.
+def verify(password, encoded):
+    """Verity that the given encoded (hashed) password is matching the
+    expected password.
 
-    Needs the bcrypt library.  Please be warned that
-    this library depends on native C code and might cause portability
-    issues.
+    Needs the bcrypt library.  Please be warned that this library
+    depends on native C code and might cause portability issues.
 
     This is compatible with PHP's CRYPT_BLOWFISH (prefix is '$2y$').
-
     """
-    algorithm = 'bcrypt_php'
-    rounds = 10
-
-    def salt(self):
-        return b'$2y$' + bcrypt.gensalt(self.rounds)[4:]
-
-    def encode(self, password, salt):
-        return bcrypt.hashpw(password, salt)
-
-    def verify(self, password, encoded):
-        assert encoded.startswith(b'$2y$')
-        encoded_2 = self.encode(password, encoded)
-        return constant_time_compare(encoded, encoded_2)
+    assert encoded.startswith(b'$2y$')
+    encoded_2 = bcrypt.hashpw(password, encoded)
+    return constant_time_compare(encoded, encoded_2)
 
 
 class DataStore:
+    """Exposing shape internals as the requiered API for the
+    identification server.
+    """
     def __init__(self, options):
         self.options = options
-        self.jwt_by_jids = {}
+        self.pool = None
 
     async def on_startup(self, app):
+        """Called by aiohttp on startup.
+        """
         self.pool = await aiomysql.create_pool(
             host=self.options.get('host', '127.0.0.1'),
             port=self.options.get('port', 3306),
@@ -47,17 +45,20 @@ class DataStore:
             db=self.options.get('database', 'test'))
 
     async def on_cleanup(self, app):
+        """Called by aiohttp.
+        """
         self.pool.close()
         await self.pool.wait_closed()
 
     async def identify(self, login, password):
+        """Identifies the given login/password pair, returns a dict if found.
+        """
         async with self.pool.acquire() as conn:
             async with conn.cursor(aiomysql.DictCursor) as cur:
                 await cur.execute(
                     "SELECT * FROM system2_info where login = %s",
                     (login, ))
                 user = await cur.fetchone()
-        if BlowfishPasswordHasher().verify(password.encode('utf8'),
-                                           user['password'].encode('utf8')):
+        if verify(password.encode('utf8'), user['password'].encode('utf8')):
             return user
         return None

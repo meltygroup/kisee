@@ -1,10 +1,17 @@
-from datetime import datetime, timedelta
-import json
+"""Views for the IdP server, implementing:
 
-from aiohttp import web
+- GET /
+- GET /jwt/
+- POST /jwt/
+"""
+
+import json
+from datetime import datetime, timedelta
+
 import coreapi
 import jwt
 import shortuuid
+from aiohttp import web
 
 from .serializers import serialize
 
@@ -36,6 +43,8 @@ async def get_root(request):
 
 
 async def get_jwts(request):
+    """Handlers for GET /jwt/, just describes that a POST is possible.
+    """
     return serialize(request, coreapi.Document(
         url='/jwt/',
         title='JSON Web Tokens',
@@ -57,12 +66,9 @@ async def get_jwts(request):
 
 
 async def get_jwt(request):
-    user = await request.app.identity_backend.get(request.match_info['user_id'])
-    if user:
-        text = "Hello, " + user['prenom'] + ' ' + user['nom']
-    else:
-        text = 'User not found'
-    return web.json_response({'user': text})
+    """Handler for GET /jwt{/jid}.
+    """
+    raise NotImplementedError()
 
 
 async def post_jwt(request):
