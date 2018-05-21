@@ -105,3 +105,4 @@ The API exposes the following resources:
 - Token invalidation (`DELETE /jwt{/jti}`).
 - Self-service password reset.
 - Rate-limiting?
+- Better error messages (Maybe https://github.com/blongden/vnd.error?)
