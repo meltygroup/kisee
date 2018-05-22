@@ -8,8 +8,8 @@ from setuptools import setup, find_packages
 
 def setup_package():
     setup(
-        name='aiohttp-id',
-        version='0.0.1',
+        name='shapeidp',
+        version='0.0.2',
         description='HTTP server managing identities.',
         long_description='',
         author='Julien Palard',
