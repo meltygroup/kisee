@@ -11,21 +11,38 @@ from idserver.utils.module_loading import import_string
 from . import views
 
 
-def load_conf():
+def load_conf(settings_path):
     """Search for a settings.yaml file and load it.
     """
-    candidate = os.path.join(os.getcwd(), 'settings.yaml')
-    if os.path.exists(candidate):
-        with open(candidate) as candidate_file:
-            return yaml.load(candidate_file)
+    candidates = (settings_path,
+                  os.path.join(os.getcwd(), settings_path),
+                  os.path.join(os.getcwd(), 'settings.yaml'),
+                  os.path.expanduser("~/settings.yaml"),
+                  os.path.expanduser(os.path.join("~/", settings_path)),
+                  '/etc/settings.yaml',
+                  os.path.join("/etc/", settings_path))
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            with open(candidate) as candidate_file:
+                return yaml.load(candidate_file)
     return None
 
 
-def identification_app():
+def parse_args():
+    """Parses command line arguments.
+    """
+    import argparse
+    parser = argparse.ArgumentParser(
+        description="Shape Identity Provider")
+    parser.add_argument('--settings', default='settings.yaml')
+    return parser.parse_args()
+
+
+def identification_app(settings_path):
     """Identification provider entry point: builds and run a webserver.
     """
     app = web.Application()
-    app.settings = load_conf()
+    app.settings = load_conf(settings_path)
     app.identity_backend = import_string(
         app.settings['identity_backend']['class'])(
             app.settings['identity_backend']['options'])
@@ -41,4 +58,11 @@ def identification_app():
     web.run_app(app)
 
 
-identification_app()
+def main():
+    """Command line entry point.
+    """
+    args = parse_args()
+    identification_app(args.settings)
+
+
+main()
