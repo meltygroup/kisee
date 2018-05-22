@@ -55,7 +55,10 @@ def identification_app(settings_path):
          web.post('/jwt/', views.post_jwt),
          web.get('/jwt/{jid}', views.get_jwt)])
 
-    web.run_app(app)
+    web.run_app(
+        app,
+        host=app.settings.get('host', '0.0.0.0'),
+        port=int(app.settings.get('port', 8000)))
 
 
 def main():
