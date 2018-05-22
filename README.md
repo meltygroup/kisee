@@ -6,7 +6,7 @@ groups, impersonation, and so on, this is the role of another service,
 the IdM (identity managment).
 
 - Module identification is the shape binding (specific).
-- Module idserver is the core (unspecific).
+- Module shapeidp is the core (unspecific).
 
 The API between unspecific and specific code is a class, configured in
 `settings.yml`, implementing:
@@ -64,7 +64,7 @@ You'll need a `settings.yaml` file like:
 And start the server using:
 
 ```
-python3 -m idserver
+python3 -m shapeidp
 ```
 
 
@@ -79,7 +79,7 @@ python3 -m pip install -e .[dev]
 And run it using:
 
 ```
-python3 -m idserver
+python3 -m shapeidp
 ```
 
 

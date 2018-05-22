@@ -6,7 +6,7 @@ import os
 import yaml
 from aiohttp import web
 
-from idserver.utils.module_loading import import_string
+from shapeidp.utils.module_loading import import_string
 
 from . import views
 
