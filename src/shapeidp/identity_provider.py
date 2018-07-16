@@ -9,7 +9,7 @@ from typing import Union, Type
 from aiohttp import web
 
 
-class IdentityProvider(ABC):
+class IdentityProvider(ABC):  # pragma: no cover
     """Abtract class representing an identity provider
     """
 

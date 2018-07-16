@@ -98,7 +98,7 @@ async def post_jwt(request: web.Request) -> web.Response:
                             "exp": datetime.utcnow() + timedelta(hours=1),
                             "jti": jti,
                         },
-                        request.app.settings["private_key"],
+                        request.app.settings["jwt"]["private_key"],
                         algorithm="ES256",
                     ).decode("utf8")
                 ],

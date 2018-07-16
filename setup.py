@@ -51,7 +51,13 @@ def setup_package():
                 'aiohttp==3.3.2',
             ]
         },
-        packages=find_packages('src'))
+        packages=find_packages('src'),
+        entry_points={
+            'console_scripts': [
+                'kisee=shapeidp.kisee:main'
+            ]
+        }
+    )
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ anything and accepts ANY login/password pair.
 """
 
 
+from typing import Union
 from shapeidp.identity_provider import IdentityProvider
 
 
@@ -13,7 +14,7 @@ class DumbIdentityBackend(IdentityProvider):
     def __init__(self, options: dict) -> None:
         IdentityProvider.__init__(self, options)
 
-    async def identify(self, login: str, password: str) -> dict:
+    async def identify(self, login: str, password: str) -> Union[dict, None]:
         """Identifies the given login/password pair, returns a dict if found.
         """
         # pylint: disable=unused-argument

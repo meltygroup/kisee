@@ -29,7 +29,7 @@ def load_conf(settings_path: str) -> dict:
         if os.path.exists(candidate):
             with open(candidate) as candidate_file:
                 return toml.load(candidate_file)
-    print("Failed to locate the setting.toml file.", file=sys.stderr)
+    print("Failed to locate the settings.toml file.", file=sys.stderr)
     sys.exit(1)
 
 
@@ -43,11 +43,11 @@ def parse_args(program_args=None) -> argparse.Namespace:
     return parser.parse_args(program_args)
 
 
-def identification_app(settings_path: str) -> None:
+def identification_app(settings: dict) -> web.Application:
     """Identification provider entry point: builds and run a webserver.
     """
     app = web.Application()
-    app.settings = load_conf(settings_path)
+    app.settings = settings
     app.identity_backend = import_idp(app.settings["identity_backend"]["class"])(
         app.settings["identity_backend"]["options"]
     )
@@ -63,18 +63,15 @@ def identification_app(settings_path: str) -> None:
         ]
     )
 
-    web.run_app(
-        app,
-        host=app.settings["server"]["host"],
-        port=int(app.settings["server"]["port"]),
-    )
+    return app
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """Command line entry point.
     """
     args = parse_args()
-    identification_app(args.settings)
-
-
-main()
+    settings = load_conf(args.settings)
+    app = identification_app(settings)
+    web.run_app(
+        app, host=settings["server"]["host"], port=int(settings["server"]["port"])
+    )

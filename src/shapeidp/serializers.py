@@ -6,7 +6,7 @@ import coreapi
 from aiohttp import web
 
 
-class CoreJSONRenderer:
+class CoreJSONRenderer:  # pragma: no cover | unused
     """Serializer using the coreapi+json representations.
     """
 

@@ -14,12 +14,12 @@ from aiohttp import web
 from shapeidp.identity_provider import IdentityProvider
 
 
-def constant_time_compare(val1: str, val2: str) -> bool:
+def constant_time_compare(val1: bytes, val2: bytes) -> bool:
     """Return True if the two strings are equal, False otherwise."""
     return hmac.compare_digest(val1, val2)
 
 
-def verify(password: str, encoded: str) -> bool:
+def verify(password: bytes, encoded: bytes) -> bool:
     """Verity that the given encoded (hashed) password is matching the
     expected password.
 
@@ -28,7 +28,7 @@ def verify(password: str, encoded: str) -> bool:
 
     This is compatible with PHP's CRYPT_BLOWFISH (prefix is '$2y$').
     """
-    if not encoded.startswith("$2y$"):
+    if not encoded.startswith(b"$2y$"):
         raise RuntimeError(
             "The encoded string must be PHP's CRYPT_BLOWFISH compatible."
         )
@@ -36,7 +36,7 @@ def verify(password: str, encoded: str) -> bool:
     return constant_time_compare(encoded, encoded_2)
 
 
-class DataStore(IdentityProvider):
+class DataStore(IdentityProvider):  # pragma: no cover
     """Exposing shape internals as the requiered API for the
     identification server.
     """
