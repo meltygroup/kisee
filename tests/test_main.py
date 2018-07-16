@@ -5,7 +5,7 @@
 import sys
 import pytest
 from unittest.mock import patch
-import shapeidp.kisee as kisee
+import kisee
 
 
 def test_load_conf():

@@ -4,7 +4,7 @@ anything and accepts ANY login/password pair.
 
 
 from typing import Union
-from shapeidp.identity_provider import IdentityProvider
+from identity_provider import IdentityProvider
 
 
 class DumbIdentityBackend(IdentityProvider):

@@ -1,5 +1,5 @@
 import pytest
-import shapeidp.kisee as kisee
+import kisee
 
 
 @pytest.fixture

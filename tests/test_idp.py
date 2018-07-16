@@ -3,7 +3,7 @@
 
 
 import pytest
-import shapeidp.identity_provider as idp
+import identity_provider as idp
 
 
 def test_import_idp():
@@ -15,3 +15,5 @@ def test_import_idp():
         idp.import_idp("my.dummy.path")
     with pytest.raises(ImportError):
         idp.import_idp("shapeidp.kisee.UnknownClass")
+    with pytest.raises(ImportError):
+        idp.import_idp("providers.dumb.UnknownClass")

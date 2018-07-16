@@ -26,7 +26,6 @@ def setup_package():
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6'
         ],
-        package_dir={'': 'src'},
         install_requires=[
             'aiohttp>=3.2.1,<4',
             'aiomysql>=0.0.15',
@@ -51,7 +50,7 @@ def setup_package():
                 'aiohttp==3.3.2',
             ]
         },
-        packages=find_packages('src'),
+        packages=['kisee', 'shape'],
         entry_points={
             'console_scripts': [
                 'kisee=shapeidp.kisee:main'

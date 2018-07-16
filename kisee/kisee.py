@@ -8,9 +8,9 @@ import argparse
 import toml
 from aiohttp import web
 
-from shapeidp.identity_provider import import_idp
+from identity_provider import import_idp
 
-from . import views
+import views
 
 
 def load_conf(settings_path: str) -> dict:

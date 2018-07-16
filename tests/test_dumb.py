@@ -2,7 +2,7 @@
 """
 
 
-from dumbidbackend.dumb import DumbIdentityBackend
+from providers.dumb import DumbIdentityBackend
 
 
 async def test_dumb_idp():
