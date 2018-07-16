@@ -6,13 +6,15 @@ import hmac
 import aiomysql
 import bcrypt
 
+from aiohttp import web
 
-def constant_time_compare(val1, val2):
+
+def constant_time_compare(val1: str, val2: str) -> bool:
     """Return True if the two strings are equal, False otherwise."""
     return hmac.compare_digest(val1, val2)
 
 
-def verify(password, encoded):
+def verify(password: str, encoded: str) -> bool:
     """Verity that the given encoded (hashed) password is matching the
     expected password.
 
@@ -21,7 +23,10 @@ def verify(password, encoded):
 
     This is compatible with PHP's CRYPT_BLOWFISH (prefix is '$2y$').
     """
-    assert encoded.startswith(b'$2y$')
+    if not encoded.startswith(b"$2y$"):
+        raise RuntimeError(
+            "The encoded string must be PHP's CRYPT_BLOWFISH compatible."
+        )
     encoded_2 = bcrypt.hashpw(password, encoded)
     return constant_time_compare(encoded, encoded_2)
 
@@ -30,35 +35,41 @@ class DataStore:
     """Exposing shape internals as the requiered API for the
     identification server.
     """
-    def __init__(self, options):
+
+    def __init__(self, options: dict) -> None:
         self.options = options
         self.pool = None
 
-    async def on_startup(self, app):
+    async def on_startup(self, app: web.Application):
         """Called by aiohttp on startup.
         """
+        del app  # unused
         self.pool = await aiomysql.create_pool(
-            host=self.options.get('host', '127.0.0.1'),
-            port=self.options.get('port', 3306),
-            user=self.options.get('user', 'root'),
-            password=self.options.get('password', ''),
-            db=self.options.get('database', 'test'))
+            host=self.options["host"],
+            port=self.options["port"],
+            user=self.options["user"],
+            password=self.options["password"],
+            db=self.options["database"],
+        )
 
-    async def on_cleanup(self, app):
+    async def on_cleanup(self, app: web.Application):
         """Called by aiohttp.
         """
-        self.pool.close()
-        await self.pool.wait_closed()
+        del app  # unused
+        if self.pool is not None:
+            self.pool.close()
+            await self.pool.wait_closed()
 
-    async def identify(self, login, password):
+    async def identify(self, login: str, password: str) -> dict:
         """Identifies the given login/password pair, returns a dict if found.
         """
-        async with self.pool.acquire() as conn:
-            async with conn.cursor(aiomysql.DictCursor) as cur:
-                await cur.execute(
-                    "SELECT * FROM system2_info where login = %s",
-                    (login, ))
-                user = await cur.fetchone()
-        if verify(password.encode('utf8'), user['password'].encode('utf8')):
-            return user
+        if self.pool is not None:
+            async with self.pool.acquire() as conn:
+                async with conn.cursor(aiomysql.DictCursor) as cur:
+                    await cur.execute(
+                        "SELECT * FROM system2_info where login = %s", (login,)
+                    )
+                    user = await cur.fetchone()
+            if verify(password.encode("utf8"), user["password"].encode("utf8")):
+                return user
         return None
