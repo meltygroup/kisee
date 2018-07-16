@@ -3,25 +3,15 @@ anything and accepts ANY login/password pair.
 """
 
 
-from aiohttp import web
+from shapeidp.identity_provider import IdentityProvider
 
 
-class DumbIdentityBackend:
+class DumbIdentityBackend(IdentityProvider):
     """Dumb dumb identity backend replying yes everytime.
     """
 
     def __init__(self, options: dict) -> None:
-        self.options = options
-
-    async def on_startup(self, app: web.Application):
-        """Called by aiohttp on startup.
-        """
-        pass
-
-    async def on_cleanup(self, app: web.Application):
-        """Called by aiohttp.
-        """
-        pass
+        IdentityProvider.__init__(self, options)
 
     async def identify(self, login: str, password: str) -> dict:
         """Identifies the given login/password pair, returns a dict if found.

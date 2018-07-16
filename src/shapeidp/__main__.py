@@ -4,17 +4,16 @@
 import os
 import sys
 import argparse
-from typing import Union
 
 import toml
 from aiohttp import web
 
-from shapeidp.utils.module_loading import import_string
+from shapeidp.identity_provider import import_idp
 
 from . import views
 
 
-def load_conf(settings_path: str) -> Union[dict, None]:
+def load_conf(settings_path: str) -> dict:
     """Search for a settings.toml file and load it.
     """
     candidates = (
@@ -30,7 +29,8 @@ def load_conf(settings_path: str) -> Union[dict, None]:
         if os.path.exists(candidate):
             with open(candidate) as candidate_file:
                 return toml.load(candidate_file)
-    return None
+    print("Failed to locate the setting.toml file.", file=sys.stderr)
+    sys.exit(1)
 
 
 def parse_args(program_args=None) -> argparse.Namespace:
@@ -48,7 +48,7 @@ def identification_app(settings_path: str) -> None:
     """
     app = web.Application()
     app.settings = load_conf(settings_path)
-    app.identity_backend = import_string(app.settings["identity_backend"]["class"])(
+    app.identity_backend = import_idp(app.settings["identity_backend"]["class"])(
         app.settings["identity_backend"]["options"]
     )
 

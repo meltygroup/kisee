@@ -2,11 +2,16 @@
 own specific model and PHP's blowfish.
 """
 
+
+from typing import Union
+
 import hmac
 import aiomysql
 import bcrypt
 
 from aiohttp import web
+
+from shapeidp.identity_provider import IdentityProvider
 
 
 def constant_time_compare(val1: str, val2: str) -> bool:
@@ -23,7 +28,7 @@ def verify(password: str, encoded: str) -> bool:
 
     This is compatible with PHP's CRYPT_BLOWFISH (prefix is '$2y$').
     """
-    if not encoded.startswith(b"$2y$"):
+    if not encoded.startswith("$2y$"):
         raise RuntimeError(
             "The encoded string must be PHP's CRYPT_BLOWFISH compatible."
         )
@@ -31,13 +36,13 @@ def verify(password: str, encoded: str) -> bool:
     return constant_time_compare(encoded, encoded_2)
 
 
-class DataStore:
+class DataStore(IdentityProvider):
     """Exposing shape internals as the requiered API for the
     identification server.
     """
 
     def __init__(self, options: dict) -> None:
-        self.options = options
+        IdentityProvider.__init__(self, options)
         self.pool = None
 
     async def on_startup(self, app: web.Application):
@@ -60,7 +65,7 @@ class DataStore:
             self.pool.close()
             await self.pool.wait_closed()
 
-    async def identify(self, login: str, password: str) -> dict:
+    async def identify(self, login: str, password: str) -> Union[dict, None]:
         """Identifies the given login/password pair, returns a dict if found.
         """
         if self.pool is not None:
