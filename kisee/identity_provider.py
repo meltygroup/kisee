@@ -2,7 +2,7 @@
 """
 
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from importlib import import_module
 from typing import Union, Type
 
@@ -16,16 +16,19 @@ class IdentityProvider(ABC):  # pragma: no cover
     def __init__(self, options: dict) -> None:
         self.options = options
 
+    @abstractmethod
     async def on_startup(self, app: web.Application):
         """Called by aiohttp on startup.
         """
         pass
 
+    @abstractmethod
     async def on_cleanup(self, app: web.Application):
         """Called by aiohttp on cleanup.
         """
         pass
 
+    @abstractmethod
     async def identify(self, login: str, password: str) -> Union[dict, None]:
         """Identifies the given login/password pair, returns a dict if found.
         """
