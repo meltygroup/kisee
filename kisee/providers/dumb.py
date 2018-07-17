@@ -12,7 +12,7 @@ class DumbIdentityBackend(IdentityProvider):
     """
 
     def __init__(self, options: dict) -> None:
-        IdentityProvider.__init__(self, options)
+        super().__init__(options)
 
     async def identify(self, login: str, password: str) -> Union[dict, None]:
         """Identifies the given login/password pair, returns a dict if found.
