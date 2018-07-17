@@ -8,9 +8,8 @@ import argparse
 import toml
 from aiohttp import web
 
-from identity_provider import import_idp
-
-import views
+from kisee.identity_provider import import_idp
+import kisee.views as views
 
 
 def load_conf(settings_path: str) -> dict:

@@ -3,7 +3,7 @@
 
 
 import pytest
-import identity_provider as idp
+import kisee.identity_provider as idp
 
 
 def test_import_idp():
@@ -14,6 +14,6 @@ def test_import_idp():
     with pytest.raises(ImportError):
         idp.import_idp("my.dummy.path")
     with pytest.raises(ImportError):
-        idp.import_idp("shapeidp.kisee.UnknownClass")
+        idp.import_idp("kisee.shapeidp.kisee.UnknownClass")
     with pytest.raises(ImportError):
-        idp.import_idp("providers.dumb.UnknownClass")
+        idp.import_idp("kisee.providers.dumb.UnknownClass")

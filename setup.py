@@ -50,7 +50,7 @@ def setup_package():
                 'aiohttp==3.3.2',
             ]
         },
-        packages=['kisee', 'shape'],
+        packages=find_packages(exclude=["tests"]),
         entry_points={
             'console_scripts': [
                 'kisee=shapeidp.kisee:main'

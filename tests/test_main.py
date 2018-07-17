@@ -5,7 +5,7 @@
 import sys
 import pytest
 from unittest.mock import patch
-import kisee
+import kisee.kisee as kisee
 
 
 def test_load_conf():

@@ -4,18 +4,20 @@ anything and accepts ANY login/password pair.
 
 
 from typing import Union
-from identity_provider import IdentityProvider
+from aiohttp import web
+from kisee.identity_provider import IdentityProvider
 
 
 class DumbIdentityBackend(IdentityProvider):
     """Dumb dumb identity backend replying yes everytime.
     """
 
-    def __init__(self, options: dict) -> None:
-        super().__init__(options)
+    async def on_startup(self, app: web.Application):
+        pass
+
+    async def on_cleanup(self, app: web.Application):
+        pass
 
     async def identify(self, login: str, password: str) -> Union[dict, None]:
-        """Identifies the given login/password pair, returns a dict if found.
-        """
         # pylint: disable=unused-argument
         return {"login": login}

@@ -13,7 +13,7 @@ import jwt
 import shortuuid
 from aiohttp import web
 
-from serializers import serialize
+from kisee.serializers import serialize
 
 
 async def get_root(request: web.Request) -> web.Response:

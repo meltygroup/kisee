@@ -1,5 +1,5 @@
 import pytest
-import kisee
+import kisee.kisee as kisee
 
 
 @pytest.fixture

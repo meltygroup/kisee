@@ -2,7 +2,7 @@
 """
 
 
-from providers.dumb import DumbIdentityBackend
+from kisee.providers.dumb import DumbIdentityBackend
 
 
 async def test_dumb_idp():

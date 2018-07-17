@@ -3,7 +3,7 @@ host = "0.0.0.0"
 port = 8140
 
 [identity_backend]
-  class = "providers.dumb.DumbIdentityBackend"
+  class = "kisee.providers.dumb.DumbIdentityBackend"
   [identity_backend.options]
     no = "option required"
 
