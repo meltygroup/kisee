@@ -26,7 +26,6 @@ def setup_package():
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6'
         ],
-        package_dir={'': 'src'},
         install_requires=[
             'aiohttp>=3.2.1,<4',
             'aiomysql>=0.0.15',
@@ -34,21 +33,30 @@ def setup_package():
             'coreapi>=2.3.3,<3',
             'cryptography>=2.2.2,<3',
             'pyjwt>=1.6.3,<2',
-            'pyyaml>=3.12,<4',
             'shortuuid>=0.5.0',
+            'toml==0.9.4',
         ],
         extras_require={
-            'dev': [
-                'flake8',
-                'pylint==2.0.0.dev',  # Don't work on py37 without v2
-                'astroid==2.0.0.dev',  # Don't work on py37 without v2
-                'pytest',
-                'pytest-cov',
-                'detox',
-                'mypy',
+            'test': [
+                'pytest==3.6.3',
+                'pytest-cov==2.5.1',
+                'pytest-aiohttp==0.3.0',
+                'flake8==3.5.0',
+                'pylint==1.8.2',
+                'black==18.6b4',
+                'bandit==1.4.0',
+                'mypy==0.610',
+                'detox==0.12',
+                'aiohttp==3.3.2',
             ]
         },
-        packages=find_packages('src'))
+        packages=find_packages(exclude=["tests"]),
+        entry_points={
+            'console_scripts': [
+                'kisee=shapeidp.kisee:main'
+            ]
+        }
+    )
 
 
 if __name__ == "__main__":
