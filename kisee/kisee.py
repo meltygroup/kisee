@@ -51,8 +51,19 @@ def identification_app(settings: dict) -> web.Application:
         app.settings["identity_backend"]["options"]
     )
 
-    app.on_startup.append(app.identity_backend.on_startup)
-    app.on_cleanup.append(app.identity_backend.on_cleanup)
+    async def on_startup_wrapper(app):
+        """Wrapper to call __aenter__.
+        """
+        await app.identity_backend.__aenter__()
+
+    async def on_cleanup_wrapper(app):
+        """Wrapper to call __exit__.
+        """
+        await app.identity_backend.__aexit__(None, None, None)
+
+    app.on_startup.append(on_startup_wrapper)
+    app.on_cleanup.append(on_cleanup_wrapper)
+
     app.add_routes(
         [
             web.get("/", views.get_root),

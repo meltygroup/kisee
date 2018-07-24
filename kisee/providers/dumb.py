@@ -4,7 +4,6 @@ anything and accepts ANY login/password pair.
 
 
 from typing import Union
-from aiohttp import web
 from kisee.identity_provider import IdentityProvider
 
 
@@ -12,10 +11,10 @@ class DumbIdentityBackend(IdentityProvider):
     """Dumb dumb identity backend replying yes everytime.
     """
 
-    async def on_startup(self, app: web.Application):
+    async def __aenter__(self):
         pass
 
-    async def on_cleanup(self, app: web.Application):
+    async def __aexit__(self, exc_type, exc_value, traceback):
         pass
 
     async def identify(self, login: str, password: str) -> Union[dict, None]:

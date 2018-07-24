@@ -4,29 +4,15 @@
 
 from abc import ABC, abstractmethod
 from importlib import import_module
-from typing import Union, Type
-
-from aiohttp import web
+from typing import Union, Type, AsyncContextManager
 
 
-class IdentityProvider(ABC):  # pragma: no cover
+class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
     """Abtract class representing an identity provider
     """
 
     def __init__(self, options: dict) -> None:
         self.options = options
-
-    @abstractmethod
-    async def on_startup(self, app: web.Application):
-        """Called by aiohttp on startup.
-        """
-        pass
-
-    @abstractmethod
-    async def on_cleanup(self, app: web.Application):
-        """Called by aiohttp on cleanup.
-        """
-        pass
 
     @abstractmethod
     async def identify(self, login: str, password: str) -> Union[dict, None]:
