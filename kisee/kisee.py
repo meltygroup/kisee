@@ -1,15 +1,15 @@
 """Entry point for the identification provider.
 """
 
+import argparse
 import os
 import sys
-import argparse
 
 import toml
 from aiohttp import web
 
-from kisee.identity_provider import import_idp
 import kisee.views as views
+from kisee.identity_provider import import_idp
 
 
 def load_conf(settings_path: str) -> dict:

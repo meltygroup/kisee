@@ -4,7 +4,7 @@
 
 from abc import ABC, abstractmethod
 from importlib import import_module
-from typing import Union, Type, AsyncContextManager
+from typing import AsyncContextManager, Type, Union
 
 
 class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
@@ -13,6 +13,7 @@ class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
 
     def __init__(self, options: dict) -> None:
         self.options = options
+        super().__init__()
 
     @abstractmethod
     async def identify(self, login: str, password: str) -> Union[dict, None]:
