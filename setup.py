@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 def setup_package():
     setup(
-        name='shapeidp',
+        name='kisee',
         version='0.0.2',
         description='HTTP server managing identities.',
         long_description='',
@@ -53,7 +53,7 @@ def setup_package():
         packages=find_packages(exclude=["tests"]),
         entry_points={
             'console_scripts': [
-                'kisee=shapeidp.kisee:main'
+                'kisee=kisee.kisee:main'
             ]
         }
     )

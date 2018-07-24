@@ -14,6 +14,6 @@ def test_import_idp():
     with pytest.raises(ImportError):
         idp.import_idp("my.dummy.path")
     with pytest.raises(ImportError):
-        idp.import_idp("kisee.shapeidp.kisee.UnknownClass")
+        idp.import_idp("kisee.kisee.kisee.UnknownClass")
     with pytest.raises(ImportError):
         idp.import_idp("kisee.providers.dumb.UnknownClass")
