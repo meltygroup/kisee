@@ -16,14 +16,11 @@ async def test_identification_app(client):
 
 
 async def test_post_jwt(client):
-    response = await client.post("/jwt/", json={
-        "login": "test@localhost.com",
-        "password": "tamtam"
-    })
+    response = await client.post(
+        "/jwt/", json={"login": "test@localhost.com", "password": "tamtam"}
+    )
     assert response.status == 200
-    response = await client.post("/jwt/", json={
-        "login": "test@localhost.com"
-    })
+    response = await client.post("/jwt/", json={"login": "test@localhost.com"})
     assert response.status == 422
 
 
