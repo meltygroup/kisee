@@ -16,6 +16,9 @@ from aiohttp import web
 from kisee.serializers import serialize
 
 
+logger = logging.getLogger(__name__)
+
+
 async def get_root(request: web.Request) -> web.Response:
     """https://tools.ietf.org/html/draft-nottingham-json-home-06
     """
@@ -79,10 +82,16 @@ async def get_jwt(request: web.Request) -> web.Response:
 async def post_jwt(request: web.Request) -> web.Response:
     """A user is asking for a JWT.
     """
-    data = await request.json()
+    try:
+        data = await request.json()
+    except json.decoder.JSONDecodeError as err:
+        raise web.HTTPUnprocessableEntity(reason="Malformed JSON.")
     if "login" not in data or "password" not in data:
         raise web.HTTPUnprocessableEntity(reason="Missing login or password.")
+    logger.debug(f"Trying to identify user {data['login']}")
     user = await request.app.identity_backend.identify(data["login"], data["password"])
+    if user is None:
+        raise web.HTTPForbidden(reason="Failed identification.")
     jti = shortuuid.uuid()
     return serialize(
         request,
