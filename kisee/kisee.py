@@ -23,7 +23,7 @@ AIOHTTP_LOGGERS = (
 )
 
 
-def setup_logging(loglevel):
+def setup_logging(loglevel):  # pragma: no cover
     """Setup basic logging
     Args:
       loglevel (int): minimum loglevel for emitting messages

@@ -94,7 +94,7 @@ async def post_jwt(request: web.Request) -> web.Response:
                     jwt.encode(
                         {
                             "iss": request.app.settings["jwt"]["iss"],
-                            "sub": user["login"],
+                            "sub": user.login,
                             "exp": datetime.utcnow() + timedelta(hours=1),
                             "jti": jti,
                         },

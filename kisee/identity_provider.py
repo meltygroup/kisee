@@ -4,7 +4,16 @@
 
 from abc import ABC, abstractmethod
 from importlib import import_module
-from typing import AsyncContextManager, Type, Union
+from typing import AsyncContextManager, Type, Optional
+
+
+class User:
+    """Represents a logged-in, correctly identified, person.
+    """
+
+    def __init__(self, login: str, is_superuser: bool = False) -> None:
+        self.login = login
+        self.is_superuser = is_superuser
 
 
 class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
@@ -16,7 +25,7 @@ class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
         super().__init__()
 
     @abstractmethod
-    async def identify(self, login: str, password: str) -> Union[dict, None]:
+    async def identify(self, login: str, password: str) -> Optional[User]:
         """Identifies the given login/password pair, returns a dict if found.
         """
         pass

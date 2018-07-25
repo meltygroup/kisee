@@ -10,4 +10,4 @@ async def test_dumb_idp():
     """
     idp = DumbIdentityBackend({})
     identity = await idp.identify("dummy_login", "dummy_password")
-    assert identity["login"] == "dummy_login"
+    assert identity.login == "dummy_login"
