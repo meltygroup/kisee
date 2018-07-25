@@ -73,39 +73,50 @@ class Backend:
 
 ## Running
 
-You'll need a `settings.yaml` file like:
+You'll need a `settings.toml` file like:
 
 ```
----
+[server]
+host = "0.0.0.0"
+port = 8140
 
-identity_backend:
-  class: identification.backend.mysql.DataStore
-  options:
-    host: sql2.eeple.fr
-    user: melty
-    password: Ktt9ubHZv7NxfDpj
-    database: actuados
+[identity_backend]
+  class = "kisee.providers.dumb.DumbIdentityBackend"
+  [identity_backend.options]
+    no = "option required"
 
-jwt:
-  iss: idp.meltylab.fr
+# [identity_backend]
+#   class = "shape.mysql.DataStore"
+#   [identity_backend.options]
+#     host = "127.0.0.1"
+#     port = 3306
+#     user = "root"
+#     password = "my_secret_password"
+#     database = "my_database"
 
-# Generated using:
-#
-#    openssl ecparam -name secp256k1 -genkey -noout -out secp256k1.pem
-#
-# Yes we know P-256 is a bad one, but for compatibility with JS
-# clients for the moment we can't really do better.
-private_key: |
-    -----BEGIN EC PRIVATE KEY-----
-    ...
+[jwt]
+  iss = "example.com"
 
-# Generated using:
-# openssl ec -in secp256k1.pem -pubout > secp256k1.pub
-public_key: |
-  -----BEGIN PUBLIC KEY-----
-  MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEEVgsgM7Aliru0XU+OggGC5jxRoZUI4/C
-  fsNJ8ZUlTKxjn8VzO4Db2ITFvUdyRCQjGRuq5QRJt7a46ZyfrDb+6w==
-  -----END PUBLIC KEY-----
+  # Generated using:
+  #
+  #    openssl ecparam -name secp256k1 -genkey -noout -out secp256k1.pem
+  #
+  # Yes we know P-256 is a bad one, but for compatibility with JS
+  # clients for the moment we can't really do better.
+  private_key = '''
+-----BEGIN EC PRIVATE KEY-----
+MHQCAQEEIJJaLOWE+5qg6LNjYKOijMelSLYnexzLmTMvwG/Dy0r4oAcGBSuBBAAK
+oUQDQgAEE/WCqajmhfppNUB2uekSxX976fcWA3bbdew8NkUtCoBigl9lWkqfnkF1
+8H9fgG0gafPhGtub23+8Ldulvmf1lg==
+-----END EC PRIVATE KEY-----'''
+
+  # Generated using:
+  # openssl ec -in secp256k1.pem -pubout > secp256k1.pub
+  public_key = '''
+-----BEGIN PUBLIC KEY-----
+MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEE/WCqajmhfppNUB2uekSxX976fcWA3bb
+dew8NkUtCoBigl9lWkqfnkF18H9fgG0gafPhGtub23+8Ldulvmf1lg==
+-----END PUBLIC KEY-----'''
 ```
 
 
@@ -127,7 +138,7 @@ python3 -m pip install -e .[dev]
 And run it using:
 
 ```
-kisee --settings-file example-settings.yaml
+kisee --settings-file example-settings.toml
 ```
 
 

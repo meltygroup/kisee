@@ -3,10 +3,10 @@
 import sys
 
 import jwt
-import yaml
+import toml
 
 
-with open('settings.yaml') as settings_file:
-    settings = yaml.load(settings_file)
+with open("example-settings.toml") as settings_file:
+    settings = toml.load(settings_file)
 
-print(jwt.decode(sys.argv[1], settings['public_key'], algorithms=['ES256']))
+print(jwt.decode(sys.argv[1], settings["public_key"], algorithms=["ES256"]))
