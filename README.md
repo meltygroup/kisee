@@ -138,7 +138,7 @@ python3 -m pip install -e .[dev]
 And run it using:
 
 ```
-kisee --settings-file example-settings.toml
+kisee --settings example-settings.toml
 ```
 
 
