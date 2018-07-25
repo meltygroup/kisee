@@ -2,6 +2,7 @@
 """
 
 import argparse
+import logging
 import os
 import sys
 
@@ -10,6 +11,30 @@ from aiohttp import web
 
 import kisee.views as views
 from kisee.identity_provider import import_idp
+
+
+AIOHTTP_LOGGERS = (
+    "aiohttp.access",
+    "aiohttp.client",
+    "aiohttp.internal",
+    "aiohttp.server",
+    "aiohttp.web",
+    "aiohttp.websocket",
+)
+
+
+def setup_logging(loglevel):
+    """Setup basic logging
+    Args:
+      loglevel (int): minimum loglevel for emitting messages
+    """
+    logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
+    logging.basicConfig(
+        level=50 - (loglevel * 10),
+        stream=sys.stdout,
+        format=logformat,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
 
 def load_conf(settings_path: str) -> dict:
@@ -39,6 +64,14 @@ def parse_args(program_args=None) -> argparse.Namespace:
         program_args = sys.argv[1:]
     parser = argparse.ArgumentParser(description="Shape Identity Provider")
     parser.add_argument("--settings", default="settings.toml")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        dest="loglevel",
+        default=0,
+        help="Verbose mode (-vv for more, -vvv, …)",
+        action="count",
+    )
     return parser.parse_args(program_args)
 
 
@@ -80,6 +113,7 @@ def main() -> None:  # pragma: no cover
     """Command line entry point.
     """
     args = parse_args()
+    setup_logging(args.loglevel)
     settings = load_conf(args.settings)
     app = identification_app(settings)
     web.run_app(
