@@ -9,7 +9,7 @@ import sys
 import toml
 from aiohttp import web
 
-import kisee.views as views
+from kisee import views
 from kisee.identity_provider import import_idp
 
 
