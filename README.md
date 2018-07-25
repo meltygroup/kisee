@@ -112,7 +112,7 @@ public_key: |
 And start the server using:
 
 ```
-python3 -m kisee
+kisee
 ```
 
 
@@ -127,7 +127,7 @@ python3 -m pip install -e .[dev]
 And run it using:
 
 ```
-python3 -m kisee
+kisee --settings-file example-settings.yaml
 ```
 
 
