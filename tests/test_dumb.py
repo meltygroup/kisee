@@ -2,12 +2,14 @@
 """
 
 
-from kisee.providers.dumb import DumbIdentityBackend
+from kisee.providers.test import TestBackend
 
 
 async def test_dumb_idp():
     """Test instanciation and identification
     """
-    idp = DumbIdentityBackend({})
-    identity = await idp.identify("dummy_login", "dummy_password")
-    assert identity.login == "dummy_login"
+    async with TestBackend({}) as test_backend:
+        identity = await test_backend.identify("dummy_login", "")
+        assert identity is None
+        identity = await test_backend.identify("dummy_login", "dummy_password")
+        assert identity.login == "dummy_login"

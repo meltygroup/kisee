@@ -17,4 +17,4 @@ def test_import_idp():
     with pytest.raises(ImportError):
         idp.import_idp("kisee.kisee.kisee.UnknownClass")
     with pytest.raises(ImportError):
-        idp.import_idp("kisee.providers.dumb.UnknownClass")
+        idp.import_idp("kisee.providers.test.UnknownClass")

@@ -31,6 +31,15 @@ async def test_post_jwt_bad_json(client):
     assert response.status != 200
 
 
+async def test_post_jwt_bad_password(client):
+    """The test backend consider passwords of less than 4 chars to be wrong.
+    """
+    response = await client.post(
+        "/jwt/", json={"login": "test@localhost.com", "password": ""}
+    )
+    assert response.status != 200
+
+
 async def test_get_jwts(client):
     response = await client.get("/jwt/")
     assert response.status == 200
