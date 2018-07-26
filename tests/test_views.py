@@ -24,6 +24,13 @@ async def test_post_jwt(client):
     assert response.status == 422
 
 
+async def test_post_jwt_bad_json(client):
+    response = await client.post(
+        "/jwt/", data=b"{", headers={"Content-Type": "application/json"}
+    )
+    assert response.status != 200
+
+
 async def test_get_jwts(client):
     response = await client.get("/jwt/")
     assert response.status == 200
