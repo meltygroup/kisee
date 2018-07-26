@@ -8,6 +8,7 @@
 import json
 from datetime import datetime, timedelta
 
+import logging
 import coreapi
 import jwt
 import shortuuid
