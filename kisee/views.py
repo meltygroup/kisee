@@ -85,11 +85,11 @@ async def post_jwt(request: web.Request) -> web.Response:
     """
     try:
         data = await request.json()
-    except json.decoder.JSONDecodeError as err:
+    except json.decoder.JSONDecodeError:
         raise web.HTTPUnprocessableEntity(reason="Malformed JSON.")
     if "login" not in data or "password" not in data:
         raise web.HTTPUnprocessableEntity(reason="Missing login or password.")
-    logger.debug(f"Trying to identify user {data['login']}")
+    logger.debug("Trying to identify user %s", data["login"])
     user = await request.app.identity_backend.identify(data["login"], data["password"])
     if user is None:
         raise web.HTTPForbidden(reason="Failed identification.")
