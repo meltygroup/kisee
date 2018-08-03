@@ -172,5 +172,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+#Pycharm
+.idea
 
 # End of https://www.gitignore.io/api/python

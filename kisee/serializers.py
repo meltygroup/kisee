@@ -23,11 +23,15 @@ class CoreJSONRenderer:  # pragma: no cover | unused
         return codec.dump(data, indent=indent)
 
 
-def serialize(request: web.Request, document: dict, headers=None) -> web.Response:
+def serialize(
+    request: web.Request, document: dict, status=200, headers=None
+) -> web.Response:
     """Serialize the given document according to the Accept header of the
     given request.
     """
     accept = request.headers.get("Accept")
     codec = coreapi.utils.negotiate_encoder([coreapi.codecs.CoreJSONCodec()], accept)
     content = codec.dump(document)
-    return web.Response(body=content, content_type=codec.media_type, headers=headers)
+    return web.Response(
+        body=content, content_type=codec.media_type, headers=headers, status=status
+    )
