@@ -123,5 +123,6 @@ async def post_jwt(request: web.Request) -> web.Response:
                 ),
             },
         ),
+        status=201,
         headers={"Location": "/jwt/" + jti},
     )

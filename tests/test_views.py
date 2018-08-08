@@ -19,7 +19,7 @@ async def test_post_jwt(client):
     response = await client.post(
         "/jwt/", json={"login": "test@localhost.com", "password": "tamtam"}
     )
-    assert response.status == 200
+    assert response.status == 201
     response = await client.post("/jwt/", json={"login": "test@localhost.com"})
     assert response.status == 422
 
@@ -28,7 +28,7 @@ async def test_post_jwt_bad_json(client):
     response = await client.post(
         "/jwt/", data=b"{", headers={"Content-Type": "application/json"}
     )
-    assert response.status != 200
+    assert response.status == 422
 
 
 async def test_post_jwt_bad_password(client):
@@ -37,7 +37,7 @@ async def test_post_jwt_bad_password(client):
     response = await client.post(
         "/jwt/", json={"login": "test@localhost.com", "password": ""}
     )
-    assert response.status != 200
+    assert response.status == 403
 
 
 async def test_get_jwts(client):
