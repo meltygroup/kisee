@@ -48,3 +48,8 @@ async def test_get_jwts(client):
 async def test_get_jwt(client):
     response = await client.get("/jwt/xxx")
     assert response.status == 500
+
+
+async def test_health(client):
+    response = await client.get("/health/")
+    assert response.status == 200

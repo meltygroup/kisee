@@ -80,8 +80,8 @@ def identification_app(settings: dict) -> web.Application:
     """
     app = web.Application()
     app.settings = settings
-    app.identity_backend = import_idp(app.settings["identity_backend"]["class"])(
-        app.settings["identity_backend"]["options"]
+    app.identity_backend = import_idp(settings["identity_backend"]["class"])(
+        settings["identity_backend"]["options"]
     )
 
     async def on_startup_wrapper(app):
@@ -103,6 +103,7 @@ def identification_app(settings: dict) -> web.Application:
             web.get("/jwt/", views.get_jwts),
             web.post("/jwt/", views.post_jwt),
             web.get("/jwt/{jid}", views.get_jwt),
+            web.get("/health/", views.get_health),
         ]
     )
 

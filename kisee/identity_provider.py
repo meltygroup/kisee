@@ -30,6 +30,11 @@ class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
         """
         pass
 
+    @abstractmethod
+    async def is_connection_alive(self) -> bool:
+        """Verify that connection with identity provider datastore is alive
+        """
+
 
 def import_idp(dotted_path: str) -> Type[IdentityProvider]:
     """Import a dotted module path and return the attribute/class

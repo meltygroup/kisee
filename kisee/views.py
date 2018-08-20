@@ -13,6 +13,7 @@ import coreapi
 import jwt
 import shortuuid
 from aiohttp import web
+import psutil
 
 from kisee.serializers import serialize
 
@@ -125,4 +126,25 @@ async def post_jwt(request: web.Request) -> web.Response:
         ),
         status=201,
         headers={"Location": "/jwt/" + jti},
+    )
+
+
+async def get_health(request: web.Request) -> web.Response:
+    """Get service health metrics
+    """
+    is_database_ok = (
+        "OK" if await request.app.identity_backend.is_connection_alive() else "KO"
+    )
+    disk_usage = psutil.disk_usage("/")
+    disk_free_percentage = disk_usage.free / disk_usage.total * 100
+    return web.Response(
+        body=json.dumps(
+            {
+                "overall": "OK",
+                "load_average": open("/proc/loadavg").readline().split(" ")[0],
+                "database": is_database_ok,
+                "disk_free": f"{disk_free_percentage:.2f}%",
+            }
+        ),
+        content_type="application/json",
     )
