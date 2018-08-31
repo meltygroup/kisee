@@ -34,6 +34,7 @@ setuptools.setup(
         "pyjwt>=1.6.3,<2",
         "shortuuid>=0.5.0",
         "toml==0.9.4",
+        "psutil",
     ],
     extras_require={
         "test": [

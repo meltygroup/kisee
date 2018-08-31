@@ -31,3 +31,8 @@ class TestBackend(IdentityProvider):
         if len(password) < 4:
             return None
         return User(login=login, is_superuser=login == "root")
+
+    async def is_connection_alive(self) -> bool:
+        """Verify that connection is alive, always return True
+        """
+        return True
