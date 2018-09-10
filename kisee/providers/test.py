@@ -32,6 +32,9 @@ class TestBackend(IdentityProvider):
             return None
         return User(login=login, is_superuser=login == "root")
 
+    async def register_user(self, username: str, password: str):
+        pass
+
     async def is_connection_alive(self) -> bool:
         """Verify that connection is alive, always return True
         """

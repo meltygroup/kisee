@@ -100,6 +100,8 @@ def identification_app(settings: dict) -> web.Application:
     app.add_routes(
         [
             web.get("/", views.get_root),
+            web.get("/users/", views.get_users),
+            web.post("/users/", views.post_users),
             web.get("/jwt/", views.get_jwts),
             web.post("/jwt/", views.post_jwt),
             web.get("/jwt/{jid}", views.get_jwt),

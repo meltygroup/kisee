@@ -28,7 +28,11 @@ class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
     async def identify(self, login: str, password: str) -> Optional[User]:
         """Identifies the given login/password pair, returns a dict if found.
         """
-        pass
+
+    @abstractmethod
+    async def register_user(self, username: str, password: str):
+        """Create user with login/password pair
+        """
 
     @abstractmethod
     async def is_connection_alive(self) -> bool:

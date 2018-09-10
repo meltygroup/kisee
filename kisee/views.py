@@ -50,6 +50,52 @@ async def get_root(request: web.Request) -> web.Response:
     )
 
 
+async def get_users(request: web.Request) -> web.Response:
+    """View for GET /users/, just describes that a POST is possible.
+    """
+    return serialize(
+        request,
+        coreapi.Document(
+            url="/users/",
+            title="Users",
+            content={
+                "users": [],
+                "register_user": coreapi.Link(
+                    action="post",
+                    title="Register a new user",
+                    description="POSTing to this endpoint create a new user",
+                    fields=[
+                        coreapi.Field(name="username", required=True),
+                        coreapi.Field(name="password", required=True),
+                    ],
+                ),
+            },
+        ),
+    )
+
+
+async def post_users(request: web.Request) -> web.Response:
+    """A client is asking to create a new user
+    """
+    try:
+        data = await request.json()
+    except json.decoder.JSONDecodeError:
+        raise web.HTTPUnprocessableEntity(reason="Malformed JSON.")
+
+    if not all(key in data.keys() for key in ["username", "password"]):
+        raise web.HTTPBadRequest(reason="Missing required input fields")
+
+    logger.debug("Trying to create user %s", data["username"])
+
+    return serialize(
+        request,
+        coreapi.Document(
+        ),
+        status=201,
+        headers={"Location": "/users/" + data["username"]},
+    )
+
+
 async def get_jwts(request: web.Request) -> web.Response:
     """Handlers for GET /jwt/, just describes that a POST is possible.
     """

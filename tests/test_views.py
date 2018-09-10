@@ -50,6 +50,15 @@ async def test_get_jwt(client):
     assert response.status == 500
 
 
+async def test_get_users(client):
+    response = await client.get("/users/")
+    assert response.status == 200
+
+
+async def test_post_users(client):
+    response = await client.post("/users/", json={"username": "user", "password": "passwod"})
+    assert response.status == 201
+
 async def test_health(client):
     response = await client.get("/health/")
     assert response.status == 200
