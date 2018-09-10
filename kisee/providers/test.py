@@ -32,7 +32,9 @@ class TestBackend(IdentityProvider):
             return None
         return User(login=login, is_superuser=login == "root")
 
-    async def register_user(self, username: str, password: str):
+    async def register_user(
+        self, username: str, password: str, is_superuser: bool = False
+    ):
         pass
 
     async def is_connection_alive(self) -> bool:

@@ -30,7 +30,9 @@ class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
         """
 
     @abstractmethod
-    async def register_user(self, username: str, password: str):
+    async def register_user(
+        self, username: str, password: str, is_superuser: bool = False
+    ):
         """Create user with login/password pair
         """
 

@@ -84,10 +84,11 @@ async def post_users(request: web.Request) -> web.Response:
 
     logger.debug("Trying to create user %s", data["username"])
 
+    await request.app.identity_backend.register_user(data["username"], data["password"])
+
     return serialize(
         request,
-        coreapi.Document(
-        ),
+        coreapi.Document(),
         status=201,
         headers={"Location": "/users/" + data["username"]},
     )
