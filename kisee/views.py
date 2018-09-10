@@ -77,10 +77,7 @@ async def get_users(request: web.Request) -> web.Response:
 async def post_users(request: web.Request) -> web.Response:
     """A client is asking to create a new user
     """
-    try:
-        data = await request.json()
-    except json.decoder.JSONDecodeError:
-        raise web.HTTPUnprocessableEntity(reason="Malformed JSON.")
+    data = await request.json()
 
     if not all(key in data.keys() for key in ["username", "password"]):
         raise web.HTTPBadRequest(reason="Missing required input fields")
@@ -130,10 +127,7 @@ async def get_jwt(request: web.Request) -> web.Response:
 async def post_jwt(request: web.Request) -> web.Response:
     """A user is asking for a JWT.
     """
-    try:
-        data = await request.json()
-    except json.decoder.JSONDecodeError:
-        raise web.HTTPUnprocessableEntity(reason="Malformed JSON.")
+    data = await request.json()
     if "login" not in data or "password" not in data:
         raise web.HTTPUnprocessableEntity(reason="Missing login or password.")
     logger.debug("Trying to identify user %s", data["login"])

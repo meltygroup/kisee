@@ -28,7 +28,7 @@ async def test_post_jwt_bad_json(client):
     response = await client.post(
         "/jwt/", data=b"{", headers={"Content-Type": "application/json"}
     )
-    assert response.status == 422
+    assert response.status == 400
 
 
 async def test_post_jwt_bad_password(client):
