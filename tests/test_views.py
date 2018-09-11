@@ -63,6 +63,10 @@ async def test_post_users(client):
     assert response.status == 201
 
 
+async def test_post_users__conflict__user_already_exists(client):
+    pass
+
+
 async def test_post_users__bad_request__missing_required_fields(client):
     response = await client.post("/users/", json={"username": "only-username"})
     assert response.status == 400
@@ -78,3 +82,4 @@ async def test_post_users__bad_request__invalid_email(client):
 async def test_health(client):
     response = await client.get("/health/")
     assert response.status == 200
+

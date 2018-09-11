@@ -17,6 +17,7 @@ import psutil
 
 from kisee.serializers import serialize
 from kisee.utils import is_email
+from kisee.identity_provider import UserAlreadyExist
 
 
 logger = logging.getLogger(__name__)
@@ -108,16 +109,15 @@ async def post_users(request: web.Request) -> web.Response:
     if not is_email(data["email"]):
         raise web.HTTPBadRequest(reason="Email is not valid")
 
-    await request.app.identity_backend.register_user(
-        data["username"], data["email"], data["password"]
-    )
+    try:
+        await request.app.identity_backend.register_user(
+            data["username"], data["password"]
+        )
+    except UserAlreadyExist:
+        raise web.HTTPConflict(reason="User already exist")
 
-    return serialize(
-        request,
-        coreapi.Document(),
-        status=201,
-        headers={"Location": "/users/" + data["username"]},
-    )
+    location = f"/users/{data['username']}/"
+    return web.Response(status=201, headers={"Location": location})
 
 
 async def get_jwts(request: web.Request) -> web.Response:

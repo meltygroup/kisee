@@ -35,6 +35,7 @@ setuptools.setup(
         "shortuuid>=0.5.0",
         "toml==0.9.4",
         "psutil",
+        "asyncpg",
     ],
     extras_require={
         "test": [
