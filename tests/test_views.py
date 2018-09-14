@@ -101,6 +101,7 @@ async def test_post_users__bad_request__missing_required_fields(client):
     response = await client.post("/users/", json={"username": "only-username"})
     assert response.status == 400
 
+
 async def test_post_users__bad_request__invalid_email(client):
     response = await client.post(
         "/users/", json={"username": "user", "email": "lol", "password": "passwod"}
@@ -124,6 +125,31 @@ async def test_patch_users__bad_request__missing_field(client):
         "/users/test/",
         headers={"Authorization": "Basic dGVzdDp0ZXN0"},
         json={"some-useless-field": "foo"},
+    )
+    assert response.status == 400
+
+
+async def test_post_password__can_not_authentify(client):
+    response = await client.post(
+        "/password/?change",
+        json={"login": "foo", "password": "bar", "new-password": "new-password"},
+    )
+    assert response.status == 403
+
+
+async def test_post_password__bad_request(client):
+    """Missing required fields
+    """
+    response = await client.post("/password/?change", json={"login": "foo"})
+    assert response.status == 400
+
+
+async def test_post_password__missing_query_string(client):
+    """Missing required fields
+    """
+    response = await client.post(
+        "/password/",
+        json={"login": "foo", "password": "bar", "new-password": "new-password"}
     )
     assert response.status == 400
 
