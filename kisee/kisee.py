@@ -12,6 +12,7 @@ import toml
 from kisee import views
 from kisee.middlewares import verify_input_body_is_json
 from kisee.identity_provider import import_idp
+from kisee.middlewares import verify_input_body_is_json
 
 
 AIOHTTP_LOGGERS = (

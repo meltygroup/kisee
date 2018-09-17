@@ -149,7 +149,7 @@ async def test_post_password__missing_query_string(client):
     """
     response = await client.post(
         "/password/",
-        json={"login": "foo", "password": "bar", "new-password": "new-password"}
+        json={"login": "foo", "password": "bar", "new-password": "new-password"},
     )
     assert response.status == 400
 
