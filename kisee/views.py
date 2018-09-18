@@ -246,6 +246,7 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
         raise web.HTTPBadRequest(reason="Missing required fields")
 
     token = secrets.token_urlsafe(20)
+    formatted_email = forge_forgotten_email(username, email, token)
     return web.Response(status=201)
 
 

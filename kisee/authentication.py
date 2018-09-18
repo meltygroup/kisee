@@ -15,6 +15,13 @@ def basic_authentication(encoded: str, idp: IdentityProvider) -> User or None:
     return idp.identify(username, password)
 
 
+def reset_token_authentication(token: str, idp: IdentityProvider) -> User or None:
+    """
+    """
+    # test token
+    return None
+
+
 def authenticate_user(request: web.Request) -> User:
     """Multiple schemes authentication using request Authorization header
     """
@@ -23,4 +30,6 @@ def authenticate_user(request: web.Request) -> User:
     scheme, value = request.headers.get("Authorization").strip().split(" ")
     if scheme == "Basic":
         return basic_authentication(value, request.app.identity_backend)
+    elif scheme == "rst_token":
+        return reset_token_authentication(value, request.app.identity_backend)
     raise web.HTTPUnauthorized(reason="No authentication provided")
