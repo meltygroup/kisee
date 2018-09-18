@@ -55,6 +55,16 @@ class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
         """
 
     @abstractmethod
+    async def get_user_by_email(self, email) -> User:
+        """Get user with provided email address
+        """
+
+    @abstractmethod
+    async def get_user_by_username(self, username) -> User:
+        """Get user with provided username
+        """
+
+    @abstractmethod
     async def set_password_for_user(self, user: User, password: str):
         """Set password for user
         """
