@@ -82,4 +82,3 @@ async def test_post_users__bad_request__invalid_email(client):
 async def test_health(client):
     response = await client.get("/health/")
     assert response.status == 200
-

@@ -10,6 +10,7 @@ from typing import AsyncContextManager, Type, Optional
 class UserAlreadyExist(Exception):
     """Exception raised when user already exists
     """
+
     pass
 
 
