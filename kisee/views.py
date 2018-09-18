@@ -215,7 +215,7 @@ async def post_jwt(request: web.Request) -> web.Response:
 
 
 async def get_forgotten_passwords(request: web.Request) -> web.Response:
-    """Get password view, just describes that a POST is possible.
+    """Get forgotten password view, just describes that a POST is possible.
     """
     return serialize(
         request,
@@ -237,8 +237,9 @@ async def get_forgotten_passwords(request: web.Request) -> web.Response:
 
 
 async def post_forgotten_passwords(request: web.Request) -> web.Response:
-    """Create a new password
+    """Create process to register new password
     """
+    user = authenticate_user(request)
     data = await request.json()
     if "login" not in data and "email" not in data:
         raise web.HTTPBadRequest(reason="Missing required fields email or login")
