@@ -6,6 +6,7 @@
 """
 
 import json
+import secrets
 from datetime import datetime, timedelta
 
 import logging
@@ -92,6 +93,12 @@ async def get_users(request: web.Request) -> web.Response:
                         coreapi.Field(name="email", required=True),
                     ],
                 ),
+                "change_password": coreapi.Link(
+                    action="patch",
+                    title="Change password",
+                    description="Patchinging to this endpoint to change password",
+                    fields=[coreapi.Field(name="password", required=True)],
+                ),
             },
         ),
     )
@@ -119,6 +126,17 @@ async def post_users(request: web.Request) -> web.Response:
 
     location = f"/users/{data['username']}/"
     return web.Response(status=201, headers={"Location": location})
+
+
+async def patch_users(request: web.Request) -> web.Response:
+    """Patch user password
+    """
+    user = authenticate_user(request)
+    data = await request.json()
+    if "password" not in data:
+        raise web.HTTPBadRequest(reason="Missing fields to patch")
+    await request.app.identity_backend.set_password_for_user(user, data["password"])
+    return web.Response(status=204)
 
 
 async def get_jwts(request: web.Request) -> web.Response:
@@ -197,39 +215,6 @@ async def post_jwt(request: web.Request) -> web.Response:
     )
 
 
-async def get_users(request: web.Request) -> web.Response:
-    """Handlers for GET /users/
-    """
-    return serialize(
-        request,
-        coreapi.Document(
-            url="/users/",
-            title="Users",
-            content={
-                "change_password": coreapi.Link(
-                    action="patch",
-                    title="Change password",
-                    description="Patchinging to this endpoint to change password",
-                    fields=[
-                        coreapi.Field(name="password", required=True),
-                    ],
-                ),
-            },
-        ),
-    )
-
-
-async def patch_users(request: web.Request) -> web.Response:
-    """Patch user password
-    """
-    user = authenticate_user(request)
-    data = await request.json()
-    if "password" not in data:
-        raise web.HTTPBadRequest(reason="Missing fields to patch")
-    await request.app.identity_backend.set_password_for_user(user, data["password"])
-    return web.Response(status=204)
-
-
 async def get_forgotten_passwords(request: web.Request) -> web.Response:
     """Get password view, just describes that a POST is possible.
     """
@@ -242,9 +227,11 @@ async def get_forgotten_passwords(request: web.Request) -> web.Response:
                 "reset-password": coreapi.Link(
                     action="post",
                     title="",
-                    description="POSTing to this endpoint subscribe for a forgotten password",
+                    description="""
+                        POSTing to this endpoint subscribe for a forgotten password
+                    """,
                     fields=[coreapi.Field(name="login", required=True)],
-                ),
+                )
             },
         ),
     )
@@ -258,6 +245,7 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
     if "username" not in data or "email" not in data:
         raise web.HTTPBadRequest(reason="Missing required fields")
 
+    token = secrets.token_urlsafe(20)
     return web.Response(status=201)
 
 

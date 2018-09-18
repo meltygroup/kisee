@@ -39,6 +39,16 @@ class TestBackend(IdentityProvider):
     ):
         pass
 
+    async def get_user_by_email(self, email):
+        """Get user with provided email address
+        """
+        return User(login=email, email=email)
+
+    async def get_user_by_username(self, username):
+        """Get user with provided username
+        """
+        return User(login=username, email=f"{username}@gmail.com")
+
     async def set_password_for_user(self, user: User, password: str):
         pass
 
