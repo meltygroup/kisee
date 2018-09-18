@@ -101,7 +101,6 @@ async def test_post_users__bad_request__missing_required_fields(client):
     response = await client.post("/users/", json={"username": "only-username"})
     assert response.status == 400
 
-
 async def test_post_users__bad_request__invalid_email(client):
     response = await client.post(
         "/users/", json={"username": "user", "email": "lol", "password": "passwod"}
