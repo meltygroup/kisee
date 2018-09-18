@@ -46,4 +46,3 @@ async def authenticate_user(request: web.Request) -> User:
     if not user:
         raise web.HTTPUnauthorized(reason="No authentication provided")
     return user
-
