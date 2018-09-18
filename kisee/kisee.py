@@ -107,8 +107,10 @@ def identification_app(settings: dict) -> web.Application:
             web.get("/jwt/", views.get_jwts),
             web.post("/jwt/", views.post_jwt),
             web.get("/jwt/{jid}", views.get_jwt),
-            web.get("/password/", views.get_password),
-            web.post("/password/", views.post_password),
+            web.get("/users/", views.get_users),
+            web.patch("/users/", views.patch_users),
+            web.get("/forgotten_passwords/", views.get_forgotten_passwords),
+            web.post("/forgotten_passwords/", views.post_forgotten_passwords),
             web.get("/health/", views.get_health),
         ]
     )

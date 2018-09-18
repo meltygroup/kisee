@@ -18,6 +18,7 @@ import psutil
 from kisee.serializers import serialize
 from kisee.identity_provider import UserAlreadyExist
 from kisee.utils import is_email
+from kisee.authentication import authenticate_user
 
 
 logger = logging.getLogger(__name__)
@@ -196,29 +197,21 @@ async def post_jwt(request: web.Request) -> web.Response:
     )
 
 
-async def get_password(request: web.Request) -> web.Response:
-    """Get password view, just describes that a POST is possible.
+async def get_users(request: web.Request) -> web.Response:
+    """Handlers for GET /users/
     """
     return serialize(
         request,
         coreapi.Document(
-            url="/users/password/",
-            title="Users password management view",
+            url="/users/",
+            title="Users",
             content={
-                "reset-password": coreapi.Link(
-                    action="post",
-                    title="Create a new JWT",
-                    description="POSTing to this endpoint create JWT tokens.",
-                    fields=[coreapi.Field(name="login", required=True)],
-                ),
-                "change-password": coreapi.Link(
-                    action="post",
+                "change_password": coreapi.Link(
+                    action="patch",
                     title="Change password",
-                    description="POSTing to this endpoint to change password",
+                    description="Patchinging to this endpoint to change password",
                     fields=[
-                        coreapi.Field(name="login", required=True),
                         coreapi.Field(name="password", required=True),
-                        coreapi.Field(name="new-password", required=True),
                     ],
                 ),
             },
@@ -226,30 +219,46 @@ async def get_password(request: web.Request) -> web.Response:
     )
 
 
-async def post_password(request: web.Request) -> web.Response:
+async def patch_users(request: web.Request) -> web.Response:
+    """Patch user password
+    """
+    user = authenticate_user(request)
+    data = await request.json()
+    if "password" not in data:
+        raise web.HTTPBadRequest(reason="Missing fields to patch")
+    await request.app.identity_backend.set_password_for_user(user, data["password"])
+    return web.Response(status=204)
+
+
+async def get_forgotten_passwords(request: web.Request) -> web.Response:
+    """Get password view, just describes that a POST is possible.
+    """
+    return serialize(
+        request,
+        coreapi.Document(
+            url="/forgotten-passwords/",
+            title="Forgotten password management",
+            content={
+                "reset-password": coreapi.Link(
+                    action="post",
+                    title="",
+                    description="POSTing to this endpoint subscribe for a forgotten password",
+                    fields=[coreapi.Field(name="login", required=True)],
+                ),
+            },
+        ),
+    )
+
+
+async def post_forgotten_passwords(request: web.Request) -> web.Response:
     """Create a new password
     """
     data = await request.json()
 
-    if "change" in request.rel_url.query:
+    if "username" not in data or "email" not in data:
+        raise web.HTTPBadRequest(reason="Missing required fields")
 
-        if not all(key in data.keys() for key in {"login", "password", "new-password"}):
-            raise web.HTTPBadRequest(reason="Missing required fields")
-
-        user = await request.app.identity_backend.identify(
-            data["login"], data["password"]
-        )
-        if user is None:
-            raise web.HTTPForbidden(
-                reason="Can not authenticated with login/password provided"
-            )
-        await request.app.identity_backend.set_password_for_user(
-            user, data["new-password"]
-        )
-
-        return web.Response(status=201)
-
-    return web.HTTPBadRequest(reason="Missing query string")
+    return web.Response(status=201)
 
 
 async def get_health(request: web.Request) -> web.Response:
