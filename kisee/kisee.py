@@ -12,6 +12,7 @@ from aiohttp import web
 from kisee import views
 from kisee.middlewares import verify_input_body_is_json
 from kisee.identity_provider import import_idp
+from kisee.middlewares import verify_input_body_is_json
 
 
 AIOHTTP_LOGGERS = (
@@ -106,6 +107,8 @@ def identification_app(settings: dict) -> web.Application:
             web.get("/jwt/", views.get_jwts),
             web.post("/jwt/", views.post_jwt),
             web.get("/jwt/{jid}", views.get_jwt),
+            web.get("/password/", views.get_password),
+            web.post("/password/", views.post_password),
             web.get("/health/", views.get_health),
         ]
     )

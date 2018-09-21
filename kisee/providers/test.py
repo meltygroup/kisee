@@ -39,6 +39,9 @@ class TestBackend(IdentityProvider):
     ):
         pass
 
+    async def set_password_for_user(self, user: User, password: str):
+        pass
+
     async def is_connection_alive(self) -> bool:
         """Verify that connection is alive, always return True
         """

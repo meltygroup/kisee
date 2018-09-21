@@ -16,8 +16,8 @@ from aiohttp import web
 import psutil
 
 from kisee.serializers import serialize
-from kisee.utils import is_email
 from kisee.identity_provider import UserAlreadyExist
+from kisee.utils import is_email
 
 
 logger = logging.getLogger(__name__)
@@ -194,6 +194,62 @@ async def post_jwt(request: web.Request) -> web.Response:
         status=201,
         headers={"Location": "/jwt/" + jti},
     )
+
+
+async def get_password(request: web.Request) -> web.Response:
+    """Get password view, just describes that a POST is possible.
+    """
+    return serialize(
+        request,
+        coreapi.Document(
+            url="/users/password/",
+            title="Users password management view",
+            content={
+                "reset-password": coreapi.Link(
+                    action="post",
+                    title="Create a new JWT",
+                    description="POSTing to this endpoint create JWT tokens.",
+                    fields=[coreapi.Field(name="login", required=True)],
+                ),
+                "change-password": coreapi.Link(
+                    action="post",
+                    title="Change password",
+                    description="POSTing to this endpoint to change password",
+                    fields=[
+                        coreapi.Field(name="login", required=True),
+                        coreapi.Field(name="password", required=True),
+                        coreapi.Field(name="new-password", required=True),
+                    ],
+                ),
+            },
+        ),
+    )
+
+
+async def post_password(request: web.Request) -> web.Response:
+    """Create a new password
+    """
+    data = await request.json()
+
+    if "change" in request.rel_url.query:
+
+        if not all(key in data.keys() for key in {"login", "password", "new-password"}):
+            raise web.HTTPBadRequest(reason="Missing required fields")
+
+        user = await request.app.identity_backend.identify(
+            data["login"], data["password"]
+        )
+        if user is None:
+            raise web.HTTPForbidden(
+                reason="Can not authenticated with login/password provided"
+            )
+        await request.app.identity_backend.set_password_for_user(
+            user, data["new-password"]
+        )
+
+        return web.Response(status=201)
+
+    return web.HTTPBadRequest(reason="Missing query string")
 
 
 async def get_health(request: web.Request) -> web.Response:

@@ -45,6 +45,11 @@ class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
         """
 
     @abstractmethod
+    async def set_password_for_user(self, user: User, password: str):
+        """Set password for user
+        """
+
+    @abstractmethod
     async def is_connection_alive(self) -> bool:
         """Verify that connection with identity provider datastore is alive
         """
