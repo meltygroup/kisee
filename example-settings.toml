@@ -2,19 +2,19 @@
 host = "0.0.0.0"
 port = 8140
 
-#[identity_backend]
-#  class = "kisee.providers.test.TestBackend"
-#  [identity_backend.options]
-#    no = "option required"
-
 [identity_backend]
-    class = "postgres_backend.pgsql.DataStore"
-    [identity_backend.options]
-        user = "postgres"
-        password = "mysecretpassword"
-        database = "kisee"
-        host = "127.0.0.1"
-        port = 5433
+  class = "kisee.providers.test.TestBackend"
+  [identity_backend.options]
+    no = "option required"
+
+#[identity_backend]
+#    class = "postgres_backend.pgsql.DataStore"
+#    [identity_backend.options]
+#        user = "postgres"
+#        password = "mysecretpassword"
+#        database = "kisee"
+#        host = "127.0.0.1"
+#        port = 5433
 
 # [identity_backend]
 #   class = "shape.mysql.DataStore"

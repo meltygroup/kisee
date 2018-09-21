@@ -111,7 +111,7 @@ async def post_users(request: web.Request) -> web.Response:
 
     try:
         await request.app.identity_backend.register_user(
-            data["username"], data["password"]
+            data["username"], data["password"], data["email"]
         )
     except UserAlreadyExist:
         raise web.HTTPConflict(reason="User already exist")
