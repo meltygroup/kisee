@@ -17,12 +17,6 @@ port = 8140
 #        host = "127.0.0.1"
 #        port = 5433
 
-[email]
-    host = "localhost"
-    sender = "sender@example.com"
-    forgotten_password_tpl_txt = "forgotten_password_tpl.txt"
-    forgotten_password_tpl_html = "forgotten_password_tpl.html"
-
 # [identity_backend]
 #   class = "shape.mysql.DataStore"
 #   [identity_backend.options]
@@ -31,6 +25,12 @@ port = 8140
 #     user = "root"
 #     password = "my_secret_password"
 #     database = "my_database"
+
+[email]
+    host = "localhost"
+    sender = "sender@example.com"
+    forgotten_password_tpl_txt = "forgotten_password_tpl.txt"
+    forgotten_password_tpl_html = "forgotten_password_tpl.html"
 
 [jwt]
   iss = "example.com"
