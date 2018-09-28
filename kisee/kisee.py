@@ -108,11 +108,7 @@ def identification_app(settings: dict) -> web.Application:
             web.post("/jwt/", views.post_jwt),
             web.get("/jwt/{jid}", views.get_jwt),
             web.get("/users/", views.get_users),
-<<<<<<< HEAD
             web.patch("/users/{username}/", views.patch_users),
-=======
-            web.patch("/users/", views.patch_users),
->>>>>>> rework change password view
             web.get("/forgotten_passwords/", views.get_forgotten_passwords),
             web.post("/forgotten_passwords/", views.post_forgotten_passwords),
             web.get("/health/", views.get_health),
