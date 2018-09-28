@@ -18,8 +18,11 @@ import psutil
 
 from kisee.serializers import serialize
 from kisee.identity_provider import UserAlreadyExist
-from kisee.utils import is_email
 from kisee.authentication import authenticate_user
+from kisee.utils import get_user_with_email_or_username
+from kisee.emails import is_email
+from kisee.emails import forge_forgotten_email
+from kisee.emails import send_mail
 
 
 logger = logging.getLogger(__name__)
@@ -96,7 +99,7 @@ async def get_users(request: web.Request) -> web.Response:
                 "change_password": coreapi.Link(
                     action="patch",
                     title="Change password",
-                    description="Patchinging to this endpoint to change password",
+                    description="Patching to this endpoint to change password",
                     fields=[coreapi.Field(name="password", required=True)],
                 ),
             },
@@ -131,10 +134,13 @@ async def post_users(request: web.Request) -> web.Response:
 async def patch_users(request: web.Request) -> web.Response:
     """Patch user password
     """
-    user = authenticate_user(request)
+    user = await authenticate_user(request)
     data = await request.json()
     if "password" not in data:
         raise web.HTTPBadRequest(reason="Missing fields to patch")
+    username = request.match_info["username"]
+    if username != user.login:
+        raise web.HTTPBadRequest(reason="Token does not apply to user resource")
     await request.app.identity_backend.set_password_for_user(user, data["password"])
     return web.Response(status=204)
 
@@ -241,12 +247,15 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
     """Create a new password
     """
     data = await request.json()
-
-    if "username" not in data or "email" not in data:
+    if "username" not in data and "email" not in data:
         raise web.HTTPBadRequest(reason="Missing required fields")
-
     token = secrets.token_urlsafe(20)
-    formatted_email = forge_forgotten_email(username, email, token)
+    user = await get_user_with_email_or_username(data, request.app.identity_backend)
+    content_text, content_html = forge_forgotten_email(user.login, user.email, token)
+    subject = "Forgotten password"
+    send_mail(
+        subject, content_text, content_html, request.app.settings["email"], user.email
+    )
     return web.Response(status=201)
 
 

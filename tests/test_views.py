@@ -70,9 +70,31 @@ async def test_post_users__conflict__user_already_exists(client, monkeypatch):
     )
     response = await client.post(
         "/users/",
-        json={"username": "user", "password": "passwod", "email": "test@example.com"},
+        json={"username": "user", "password": "password", "email": "test@example.com"},
     )
     assert response.status == 409
+
+
+async def test_get_forgotten_password(client):
+    response = await client.get("/forgotten_passwords/")
+    assert response.status == 200
+
+
+async def test_post_forgotten_password(client, monkeypatch):
+    monkeypatch.setattr("kisee.views.send_mail", mocks.send_mail)
+    response = await client.post(
+        "/forgotten_passwords/", json={"email": "foo@example.com"}
+    )
+    assert response.status == 201
+
+
+async def post_forgotten_passwords__bad_request(client):
+    """Bad request because missing either 'email' or 'username' field
+    """
+    response = await client.post(
+        "/forgotten_passwords/", json={"some-useless-field": "foo"}
+    )
+    assert response.status == 400
 
 
 async def test_post_users__bad_request__missing_required_fields(client):
@@ -87,9 +109,22 @@ async def test_post_users__bad_request__invalid_email(client):
     assert response.status == 400
 
 
-async def test_post_users__bad_request__invalid_email(client):
-    response = await client.post(
-        "/users/", json={"username": "user", "email": "lol@", "password": "passwod"}
+async def test_patch_users(client):
+    response = await client.patch(
+        "/users/test/",
+        headers={"Authorization": "Basic dGVzdDp0ZXN0"},
+        json={"password": "passwod"},
+    )
+    assert response.status == 204
+
+
+async def test_patch_users__bad_request__missing_field(client):
+    """Missing 'password' field in json input
+    """
+    response = await client.patch(
+        "/users/test/",
+        headers={"Authorization": "Basic dGVzdDp0ZXN0"},
+        json={"some-useless-field": "foo"},
     )
     assert response.status == 400
 

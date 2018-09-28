@@ -1,24 +1,14 @@
-"""Utils for Kisee
+"""Some utils for kisee
 """
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+from kisee.identity_provider import IdentityProvider
+from kisee.identity_provider import User
 
 
-def is_email(email: str) -> bool:
-    """Assert that email has minimum requirements
+async def get_user_with_email_or_username(
+    user_input: dict, idp_backend: IdentityProvider
+) -> User:
+    """Retrieve user with either email or username
     """
-    return "@" in email
-
-
-def send_mail(subject, text, html, recipient):
-    """Basically send a multipart/alternative email with text and HTML to
-    recipient
-    """
-    pass
-
-
-def forge_forgotten_email(username: str, email: str, token: str) -> str:
-    return f"""
-        Sends emails to {username} via {email} with token {token}
-    """
+    if "email" in user_input:
+        return await idp_backend.get_user_by_email(user_input["email"])
+    return await idp_backend.get_user_by_username(user_input["username"])

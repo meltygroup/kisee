@@ -17,6 +17,10 @@ port = 8140
 #     password = "my_secret_password"
 #     database = "my_database"
 
+[email]
+    host = "localhost"
+    sender = "sender@example.com"
+
 [jwt]
   iss = "example.com"
 

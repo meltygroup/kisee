@@ -52,6 +52,12 @@ class TestBackend(IdentityProvider):
     async def set_password_for_user(self, user: User, password: str):
         pass
 
+    async def store_reset_password_token(self, user: User, token: str):
+        pass
+
+    async def retrieve_user_from_rst_token(self, token: str) -> User:
+        return User(login=token, email=f"{token}@gmail.com")
+
     async def is_connection_alive(self) -> bool:
         """Verify that connection is alive, always return True
         """
