@@ -132,4 +132,3 @@ async def test_patch_users__bad_request__missing_field(client):
 async def test_health(client):
     response = await client.get("/health/")
     assert response.status == 200
-

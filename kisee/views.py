@@ -132,7 +132,7 @@ async def patch_users(request: web.Request) -> web.Response:
     if "password" not in data:
         raise web.HTTPBadRequest(reason="Missing fields to patch")
     username = request.match_info["username"]
-    if username != user.login:
+    if username != user.username:
         raise web.HTTPBadRequest(reason="Token does not apply to user resource")
     await request.app.identity_backend.set_password_for_user(user, data["password"])
     return web.Response(status=204)
@@ -190,7 +190,7 @@ async def post_jwt(request: web.Request) -> web.Response:
                     jwt.encode(
                         {
                             "iss": request.app.settings["jwt"]["iss"],
-                            "sub": user.login,
+                            "sub": user.username,
                             "exp": datetime.utcnow() + timedelta(hours=1),
                             "jti": jti,
                         },
@@ -239,7 +239,6 @@ async def get_forgotten_passwords(request: web.Request) -> web.Response:
 async def post_forgotten_passwords(request: web.Request) -> web.Response:
     """Create process to register new password
     """
-    user = authenticate_user(request)
     data = await request.json()
     if "login" not in data and "email" not in data:
         raise web.HTTPBadRequest(reason="Missing required fields email or login")
@@ -248,7 +247,7 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
     jwt_token = jwt.encode(
         {
             "iss": request.app.settings["jwt"]["iss"],
-            "sub": user.login,
+            "sub": user.username,
             "exp": datetime.utcnow() + timedelta(hours=12),
             "jti": shortuuid.uuid(),
             "forgotten_password": True,
@@ -257,7 +256,7 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
         algorithm="ES256",
     ).decode("utf-8")
     content_text, content_html = forge_forgotten_email(
-        user.login, user.email, jwt_token
+        user.username, user.email, jwt_token
     )
     subject = "Forgotten password"
     send_mail(

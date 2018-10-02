@@ -1,7 +1,7 @@
 """Postgresql backend for Kisee
 """
 
-
+from datetime import datetime
 from typing import Optional
 
 import hmac
@@ -72,24 +72,62 @@ class DataStore(IdentityProvider):
         return None
 
     async def register_user(
-        self, username: str, password: str, is_superuser: bool = False
+        self, username: str, password: str, email: str, is_superuser: bool = False
     ):
+        password_hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
         async with self.pool.acquire() as connection:
             try:
                 await connection.execute(
                     """
                     INSERT INTO users(
-                        username, password, is_superuser
+                        username, password, email, is_superuser
                     ) VALUES (
-                        $1, $2, $3
+                        $1, $2, $3, $4
                     )
                 """,
                     username,
-                    password,
+                    password_hashed.decode("utf-8"),
+                    email,
                     is_superuser,
                 )
             except asyncpg.exceptions.UniqueViolationError:
-                raise UserAlreadyExist
+                    raise UserAlreadyExist
+
+    async def get_user_by_email(self, email):
+        """Get user with provided email address
+        """
+        async with self.pool.acquire() as connection:
+            result = await connection.fetchrow(
+                """SELECT * FROM users WHERE email = $1""",
+                email
+            )
+        user_data = dict(result)
+        del user_data["password"]
+        return User(**user_data)
+
+    async def get_user_by_username(self, username):
+        """Get user with provided username
+        """
+        async with self.pool.acquire() as connection:
+            result = await connection.fetchrow(
+                """"SELECT * FROM users WHERE username = $1""",
+                username
+            )
+        user_data = dict(result)
+        del user_data["password"]
+        return User(**user_data)
+
+    async def set_password_for_user(self, user: User, password: str):
+        async with self.pool.acquire() as connection:
+            await connection.execute(
+                """
+                    UPDATE users
+                    SET password = $1
+                    WHERE username = $2
+                """,
+                password,
+                user.username
+            )
 
     async def is_connection_alive(self) -> bool:
         """Verify that connection is alive, always return True

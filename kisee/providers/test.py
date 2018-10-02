@@ -1,8 +1,6 @@
 """This is a really dumb identification backend: it does not store
 anything and accepts almost any login/password pair.
 """
-
-
 from typing import Optional
 
 from kisee.identity_provider import IdentityProvider, User
@@ -31,7 +29,7 @@ class TestBackend(IdentityProvider):
         if len(password) < 4:
             return None
         return User(
-            login=login, email=f"{login}@example.com", is_superuser=login == "root"
+            username=login, email=f"{login}@example.com", is_superuser=login == "root"
         )
 
     async def register_user(
@@ -42,17 +40,14 @@ class TestBackend(IdentityProvider):
     async def get_user_by_email(self, email):
         """Get user with provided email address
         """
-        return User(login=email, email=email)
+        return User(username=email, email=email)
 
     async def get_user_by_username(self, username):
         """Get user with provided username
         """
-        return User(login=username, email=f"{username}@gmail.com")
+        return User(username=username, email=f"{username}@gmail.com")
 
     async def set_password_for_user(self, user: User, password: str):
-        pass
-
-    async def store_reset_password_token(self, user: User, token: str):
         pass
 
     async def is_connection_alive(self) -> bool:

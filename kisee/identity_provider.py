@@ -1,7 +1,5 @@
 """Abstract class representing an identity provider
 """
-
-
 from abc import ABC, abstractmethod
 from importlib import import_module
 from typing import AsyncContextManager, Type, Optional
@@ -18,8 +16,8 @@ class User:
     """Represents a logged-in, correctly identified, person.
     """
 
-    def __init__(self, login: str, email: str, is_superuser: bool = False) -> None:
-        self.login = login
+    def __init__(self, username: str, email: str, is_superuser: bool = False) -> None:
+        self.username = username
         self.email = email
         self.is_superuser = is_superuser
 
@@ -55,23 +53,8 @@ class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
         """
 
     @abstractmethod
-    async def get_user_by_email(self, email) -> User:
-        """Get user with provided email address
-        """
-
-    @abstractmethod
-    async def get_user_by_username(self, username) -> User:
-        """Get user with provided username
-        """
-
-    @abstractmethod
     async def set_password_for_user(self, user: User, password: str):
         """Set password for user
-        """
-
-    @abstractmethod
-    async def store_reset_password_token(self, user: User, token: str):
-        """Store reset password
         """
 
     @abstractmethod
