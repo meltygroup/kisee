@@ -1,6 +1,7 @@
 import pytest
 
 import kisee.kisee as kisee
+import mocks
 
 
 @pytest.fixture
@@ -61,6 +62,17 @@ async def test_post_users(client):
         json={"username": "user", "email": "lol@lol.com", "password": "passwod"},
     )
     assert response.status == 201
+
+
+async def test_post_users__conflict__user_already_exists(client, monkeypatch):
+    monkeypatch.setattr(
+        "kisee.providers.test.TestBackend.register_user", mocks.register_user
+    )
+    response = await client.post(
+        "/users/",
+        json={"username": "user", "password": "passwod", "email": "test@example.com"},
+    )
+    assert response.status == 409
 
 
 async def test_post_users__bad_request__missing_required_fields(client):

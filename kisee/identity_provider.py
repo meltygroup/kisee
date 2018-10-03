@@ -7,6 +7,13 @@ from importlib import import_module
 from typing import AsyncContextManager, Type, Optional
 
 
+class UserAlreadyExist(Exception):
+    """Exception raised when user already exists
+    """
+
+    pass
+
+
 class User:
     """Represents a logged-in, correctly identified, person.
     """
