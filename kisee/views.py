@@ -45,6 +45,25 @@ async def get_root(request: web.Request) -> web.Response:
                         },
                     }
                 },
+                "actions": {
+                    "register-user": {
+                        "href": "/users/",
+                        "method": "POST",
+                        "fields": [
+                            {"name": "username", "required": True},
+                            {"name": "password", "required": True},
+                            {"name": "email", "required": True},
+                        ],
+                    },
+                    "create-token": {
+                        "href": "/jwt/",
+                        "method": "POST",
+                        "fields": [
+                            {"name": "login", "required": True},
+                            {"name": "password", "required": True},
+                        ],
+                    },
+                },
             }
         ),
         content_type="application/json-home",
