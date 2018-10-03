@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 async def get_root(request: web.Request) -> web.Response:
     """https://tools.ietf.org/html/draft-nottingham-json-home-06
     """
-    del request  # unused
+    hostname = request.app.settings["server"]["hostname"]
     return web.Response(
         body=json.dumps(
             {
@@ -48,7 +48,7 @@ async def get_root(request: web.Request) -> web.Response:
                 },
                 "actions": {
                     "register-user": {
-                        "href": "/users/",
+                        "href": f"{hostname}/users/",
                         "method": "POST",
                         "fields": [
                             {"name": "username", "required": True},
@@ -57,7 +57,7 @@ async def get_root(request: web.Request) -> web.Response:
                         ],
                     },
                     "create-token": {
-                        "href": "/jwt/",
+                        "href": f"{hostname}/jwt/",
                         "method": "POST",
                         "fields": [
                             {"name": "login", "required": True},
