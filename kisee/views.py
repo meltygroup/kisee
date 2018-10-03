@@ -16,6 +16,7 @@ from aiohttp import web
 import psutil
 
 from kisee.serializers import serialize
+from kisee.utils import is_email
 
 
 logger = logging.getLogger(__name__)
@@ -47,6 +48,56 @@ async def get_root(request: web.Request) -> web.Response:
             }
         ),
         content_type="application/json-home",
+    )
+
+
+async def get_users(request: web.Request) -> web.Response:
+    """View for GET /users/, just describes that a POST is possible.
+    """
+    return serialize(
+        request,
+        coreapi.Document(
+            url="/users/",
+            title="Users",
+            content={
+                "users": [],
+                "register_user": coreapi.Link(
+                    action="post",
+                    title="Register a new user",
+                    description="POSTing to this endpoint creates a new user",
+                    fields=[
+                        coreapi.Field(name="username", required=True),
+                        coreapi.Field(name="password", required=True),
+                        coreapi.Field(name="email", required=True),
+                    ],
+                ),
+            },
+        ),
+    )
+
+
+async def post_users(request: web.Request) -> web.Response:
+    """A client is asking to create a new user
+    """
+    data = await request.json()
+
+    if not all(key in data.keys() for key in {"username", "email", "password"}):
+        raise web.HTTPBadRequest(reason="Missing required input fields")
+
+    logger.debug("Trying to create user %s", data["username"])
+
+    if not is_email(data["email"]):
+        raise web.HTTPBadRequest(reason="Email is not valid")
+
+    await request.app.identity_backend.register_user(
+        data["username"], data["email"], data["password"]
+    )
+
+    return serialize(
+        request,
+        coreapi.Document(),
+        status=201,
+        headers={"Location": "/users/" + data["username"]},
     )
 
 
@@ -84,10 +135,7 @@ async def get_jwt(request: web.Request) -> web.Response:
 async def post_jwt(request: web.Request) -> web.Response:
     """A user is asking for a JWT.
     """
-    try:
-        data = await request.json()
-    except json.decoder.JSONDecodeError:
-        raise web.HTTPUnprocessableEntity(reason="Malformed JSON.")
+    data = await request.json()
     if "login" not in data or "password" not in data:
         raise web.HTTPUnprocessableEntity(reason="Missing login or password.")
     logger.debug("Trying to identify user %s", data["login"])

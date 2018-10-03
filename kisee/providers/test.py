@@ -30,7 +30,14 @@ class TestBackend(IdentityProvider):
         # pylint: disable=unused-argument
         if len(password) < 4:
             return None
-        return User(login=login, is_superuser=login == "root")
+        return User(
+            login=login, email=f"{login}@example.com", is_superuser=login == "root"
+        )
+
+    async def register_user(
+        self, username: str, password: str, email: str, is_superuser: bool = False
+    ):
+        pass
 
     async def is_connection_alive(self) -> bool:
         """Verify that connection is alive, always return True

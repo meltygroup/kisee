@@ -11,8 +11,9 @@ class User:
     """Represents a logged-in, correctly identified, person.
     """
 
-    def __init__(self, login: str, is_superuser: bool = False) -> None:
+    def __init__(self, login: str, email: str, is_superuser: bool = False) -> None:
         self.login = login
+        self.email = email
         self.is_superuser = is_superuser
 
 
@@ -28,7 +29,13 @@ class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
     async def identify(self, login: str, password: str) -> Optional[User]:
         """Identifies the given login/password pair, returns a dict if found.
         """
-        pass
+
+    @abstractmethod
+    async def register_user(
+        self, username: str, password: str, email: str, is_superuser: bool = False
+    ):
+        """Create user with login, password and email
+        """
 
     @abstractmethod
     async def is_connection_alive(self) -> bool:
