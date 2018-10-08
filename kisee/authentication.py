@@ -3,6 +3,7 @@
 import base64
 from typing import Optional
 
+import jwt
 from aiohttp import web
 
 from kisee.identity_provider import IdentityProvider, User
@@ -16,12 +17,15 @@ async def basic_authentication(encoded: bytes, idp: IdentityProvider) -> Optiona
     return await idp.identify(username, password)
 
 
-async def reset_token_authentication(
-    token: str, idp: IdentityProvider
+async def jwt_authentication(
+    token: str, idp: IdentityProvider, public_key: str
 ) -> Optional[User]:
     """Verify that token belongs to a user
     """
-    return await idp.retrieve_user_from_rst_token(token)
+    claims = jwt.decode(token, public_key, algorithms="ES256")
+    if claims.get("forgotten_password"):
+        return await idp.get_user_by_username(claims["sub"])
+    return None
 
 
 async def authenticate_user(request: web.Request) -> User:
@@ -33,8 +37,12 @@ async def authenticate_user(request: web.Request) -> User:
     user = None
     if scheme == "Basic":
         user = await basic_authentication(value, request.app.identity_backend)
-    elif scheme == "rst_token":
-        user = await reset_token_authentication(value, request.app.identity_backend)
+    elif scheme == "Bearer":
+        user = await jwt_authentication(
+            value,
+            request.app.identity_backend,
+            request.app.settings["jwt"]["public_key"],
+        )
     if not user:
         raise web.HTTPUnauthorized(reason="No authentication provided")
     return user

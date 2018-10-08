@@ -65,11 +65,6 @@ class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
         """
 
     @abstractmethod
-    async def retrieve_user_from_rst_token(self, token: str) -> User:
-        """Retrieve user from refresh token
-        """
-
-    @abstractmethod
     async def is_connection_alive(self) -> bool:
         """Verify that connection with identity provider datastore is alive
         """

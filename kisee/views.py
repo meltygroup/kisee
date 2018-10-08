@@ -6,7 +6,6 @@
 """
 
 import json
-import secrets
 from datetime import datetime, timedelta
 
 import logging
@@ -95,12 +94,6 @@ async def get_users(request: web.Request) -> web.Response:
                         coreapi.Field(name="password", required=True),
                         coreapi.Field(name="email", required=True),
                     ],
-                ),
-                "change_password": coreapi.Link(
-                    action="patch",
-                    title="Change password",
-                    description="Patching to this endpoint to change password",
-                    fields=[coreapi.Field(name="password", required=True)],
                 ),
             },
         ),
@@ -236,7 +229,7 @@ async def get_forgotten_passwords(request: web.Request) -> web.Response:
                     description="""
                         POSTing to this endpoint subscribe for a forgotten password
                     """,
-                    fields=[coreapi.Field(name="login", required=True)],
+                    fields=[coreapi.Field(name="login"), coreapi.Field(name="email")],
                 )
             },
         ),
@@ -247,11 +240,23 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
     """Create a new password
     """
     data = await request.json()
-    if "username" not in data and "email" not in data:
-        raise web.HTTPBadRequest(reason="Missing required fields")
-    token = secrets.token_urlsafe(20)
+    if "login" not in data and "email" not in data:
+        raise web.HTTPBadRequest(reason="Missing required fields email or login")
     user = await get_user_with_email_or_username(data, request.app.identity_backend)
-    content_text, content_html = forge_forgotten_email(user.login, user.email, token)
+    jwt_token = jwt.encode(
+        {
+            "iss": request.app.settings["jwt"]["iss"],
+            "sub": user.login,
+            "exp": datetime.utcnow() + timedelta(hours=12),
+            "jti": shortuuid.uuid(),
+            "forgotten_password": True,
+        },
+        request.app.settings["jwt"]["private_key"],
+        algorithm="ES256",
+    ).decode("utf-8")
+    content_text, content_html = forge_forgotten_email(
+        user.login, user.email, jwt_token
+    )
     subject = "Forgotten password"
     send_mail(
         subject, content_text, content_html, request.app.settings["email"], user.email
