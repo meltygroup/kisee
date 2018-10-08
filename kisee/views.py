@@ -242,6 +242,7 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
     data = await request.json()
     if "login" not in data and "email" not in data:
         raise web.HTTPBadRequest(reason="Missing required fields email or login")
+
     user = await get_user_with_email_or_username(data, request.app.identity_backend)
     jwt_token = jwt.encode(
         {
