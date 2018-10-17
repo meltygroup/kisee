@@ -160,7 +160,7 @@ async def post_jwt(request: web.Request) -> web.Response:
     logger.debug("Trying to identify user %s", data["login"])
     user = await request.app.identity_backend.identify(data["login"], data["password"])
     if user is None:
-        raise web.HTTPForbidden(reason="Failed identification.")
+        raise web.HTTPForbidden(reason="Failed identification for kisee.")
     jti = shortuuid.uuid()
     return serialize(
         request,
