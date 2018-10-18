@@ -24,15 +24,15 @@ class TestBackend(IdentityProvider):
     async def __aexit__(self, exc_type, exc_value, traceback):
         pass
 
-    async def identify(
-        self, login: Optional[str], email: Optional[str], password: str
-    ) -> Optional[User]:
+    async def identify(self, login: str, password: str) -> Optional[User]:
         """Identifies the given login/password pair, returns a dict if found.
         """
         # pylint: disable=unused-argument
         if len(password) < 4:
             return None
-        return User(login=str(login), email=str(email), is_superuser=login == "root")
+        return User(
+            login=login, email=f"{login}@example.com", is_superuser=login == "root"
+        )
 
     async def register_user(
         self, username: str, password: str, email: str, is_superuser: bool = False

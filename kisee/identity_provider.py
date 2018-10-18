@@ -33,10 +33,8 @@ class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
         super().__init__()
 
     @abstractmethod
-    async def identify(
-        self, login: Optional[str], email: Optional[str], password: str
-    ) -> Optional[User]:
-        """Identifies the given (login or email)/password pair, returns a dict if found.
+    async def identify(self, login: str, password: str) -> Optional[User]:
+        """Identifies the given login/password pair, returns a dict if found.
         """
 
     @abstractmethod
