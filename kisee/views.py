@@ -155,10 +155,12 @@ async def post_jwt(request: web.Request) -> web.Response:
     """A user is asking for a JWT.
     """
     data = await request.json()
-    if "login" not in data or "password" not in data:
-        raise web.HTTPUnprocessableEntity(reason="Missing login or password.")
-    logger.debug("Trying to identify user %s", data["login"])
-    user = await request.app.identity_backend.identify(data["login"], data["password"])
+    if "password" not in data or ("email" not in data and "login" not in data):
+        raise web.HTTPUnprocessableEntity(reason="Missing required fields.")
+    logger.debug("Trying to identify user %s", data.get("login") or data.get("email"))
+    user = await request.app.identity_backend.identify(
+        data.get("login"), data.get("email"), data["password"]
+    )
     if user is None:
         raise web.HTTPForbidden(reason="Failed identification for kisee.")
     jti = shortuuid.uuid()
