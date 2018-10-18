@@ -65,7 +65,7 @@ class DataStore(IdentityProvider):
         """
         async with self.pool.acquire() as connection:
             result = await connection.fetchrow(
-                "SELECT * FROM users WHERE username = $1", login
+                "SELECT * FROM users WHERE (username = $1 OR email = $1) ", login
             )
             if verify(password.encode("utf-8"), result["password"].encode("utf-8")):
                 return User(result["username"], result["is_superuser"])
