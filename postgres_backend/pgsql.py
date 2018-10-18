@@ -60,13 +60,18 @@ class DataStore(IdentityProvider):
         except AttributeError:
             pass
 
-    async def identify(self, login: str, password: str) -> Optional[User]:
+    async def identify(self, login: Optional[str], email: Optional[str], password: str) -> Optional[User]:
         """Identifies the given login/password pair, returns a dict if found.
         """
         async with self.pool.acquire() as connection:
-            result = await connection.fetchrow(
-                "SELECT * FROM users WHERE username = $1", login
-            )
+            if login:
+                result = await connection.fetchrow(
+                    "SELECT * FROM users WHERE username = $1", login
+                )
+            else:
+                result = await connection.fetchrow(
+                    "SELECT * FROM users WHERE email = $1", email
+                )
             if verify(password.encode("utf-8"), result["password"].encode("utf-8")):
                 return User(result["username"], result["is_superuser"])
         return None
