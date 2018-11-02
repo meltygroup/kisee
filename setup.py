@@ -45,7 +45,7 @@ setuptools.setup(
             "flake8==3.5.0",
             "pylint==2.0.1",
             "black==18.6b4",
-            "bandit==1.4.0",
+            "bandit",
             "mypy==0.610",
             "detox==0.12",
             "aiohttp==3.3.2",

@@ -1,5 +1,6 @@
 [server]
 host = "0.0.0.0"
+hostname = "https://fakekiseehostname.melty.com"
 port = 8140
 
 [identity_backend]
