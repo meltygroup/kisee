@@ -81,7 +81,7 @@ host = "0.0.0.0"
 port = 8140
 
 [identity_backend]
-  class = "kisee.providers.test.TestBackend"
+  class = "kisee.providers.demo.DemoBackend"
   [identity_backend.options]
     no = "option required"
 

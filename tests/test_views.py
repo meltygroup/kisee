@@ -66,7 +66,7 @@ async def test_post_users(client):
 
 async def test_post_users__conflict__user_already_exists(client, monkeypatch):
     monkeypatch.setattr(
-        "kisee.providers.test.TestBackend.register_user", mocks.register_user
+        "kisee.providers.demo.DemoBackend.register_user", mocks.register_user
     )
     response = await client.post(
         "/users/",

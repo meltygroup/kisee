@@ -4,7 +4,7 @@ hostname = "https://fakekiseehostname.melty.com"
 port = 8140
 
 [identity_backend]
-  class = "kisee.providers.test.TestBackend"
+  class = "kisee.providers.demo.DemoBackend"
   [identity_backend.options]
     no = "option required"
 

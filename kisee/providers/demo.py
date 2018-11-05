@@ -6,14 +6,14 @@ from typing import Optional
 from kisee.identity_provider import IdentityProvider, User
 
 
-class TestBackend(IdentityProvider):
-    """Dumb identity backend, for test purposes.
+class DemoBackend(IdentityProvider):
+    """Dumb identity backend, for demo purposes.
     This backend follow the following rules:
      - Any user exist and have virtually all passwords.
      - Any password less or equal than 4 characters will fail.
      - root is a superuser.
     Yes, this mean than anybody logging as root with any password of
-    more than 4 chars will be superuser. This is for test purposes only.
+    more than 4 chars will be superuser. This is for demo purposes only.
     """
 
     async def __aenter__(self):
