@@ -1,13 +1,15 @@
 from kisee import kisee
+import base64
 from datetime import datetime, timedelta
 import pytest
 import asyncio
+import aiohttp
 import jwt
 from kisee.providers.demo import DemoBackend
 from hypothesis import given
-from hypothesis.strategies import text
+from hypothesis.strategies import text, binary
 
-from kisee.authentication import jwt_authentication
+from kisee.authentication import _jwt_authentication, _basic_authentication
 
 
 @pytest.fixture
@@ -37,15 +39,34 @@ def run(coro):
 def test_jwt_authentication_fails(settings, s):
     """Assert that a random string is never a valid token.
     """
-    assert run(jwt_authentication(s, None, settings["jwt"]["public_key"])) is None
+    with pytest.raises(aiohttp.web_exceptions.HTTPUnauthorized):
+        run(_jwt_authentication(s, None, settings["jwt"]["public_key"]))
 
 
 def test_jwt_authentication_succeed(settings, valid_token):
-    assert (
-        run(
-            jwt_authentication(
-                valid_token, DemoBackend(), settings["jwt"]["public_key"]
-            )
-        ).username
-        == "toto"
+    user, claims = run(
+        _jwt_authentication(valid_token, DemoBackend(), settings["jwt"]["public_key"])
     )
+    assert user.username == "toto"
+
+
+@given(binary())
+def test_basic_authentication_fails(s: bytes):
+    """Assert that a random string is never a valid basic auth.
+    """
+    with pytest.raises(aiohttp.web_exceptions.HTTPUnauthorized):
+        run(_basic_authentication(s, None))
+
+
+def test_basic_authentication_succeed():
+    user, claims = run(
+        _basic_authentication(base64.b64encode(b"toto:toto"), DemoBackend())
+    )
+    assert user.username == "toto"
+
+
+def test_basic_authentication_bad_password():
+    with pytest.raises(aiohttp.web_exceptions.HTTPUnauthorized):
+        user, claims = run(
+            _basic_authentication(base64.b64encode(b"toto:t"), DemoBackend())
+        )

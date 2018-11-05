@@ -127,7 +127,9 @@ async def post_users(request: web.Request) -> web.Response:
 async def patch_user(request: web.Request) -> web.Response:
     """Patch user password
     """
-    user = await authenticate_user(request)
+    user, claims = await authenticate_user(request)
+    if not claims.get("can_change_pwd"):
+        raise web.HTTPForbidden(reason="Password change forbidden")
     data = await request.json()
     if "password" not in data:
         raise web.HTTPBadRequest(reason="Missing fields to patch")
@@ -250,7 +252,7 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
             "sub": user.username,
             "exp": datetime.utcnow() + timedelta(hours=12),
             "jti": shortuuid.uuid(),
-            "forgotten_password": True,
+            "can_change_pwd": True,
         },
         request.app.settings["jwt"]["private_key"],
         algorithm="ES256",

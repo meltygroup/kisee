@@ -25,6 +25,21 @@ def valid_jwt(settings):
 
 
 @pytest.fixture
+def valid_jwt_to_change_pwd(settings):
+    return jwt.encode(
+        {
+            "iss": "Pouete",
+            "can_change_pwd": True,
+            "sub": "toto",
+            "exp": datetime.utcnow() + timedelta(hours=1),
+            "jti": "42",
+        },
+        settings["jwt"]["private_key"],
+        algorithm="ES256",
+    ).decode("utf8")
+
+
+@pytest.fixture
 def client(loop, aiohttp_client):
     settings = kisee.load_conf("tests/test_settings.toml")
     app = kisee.identification_app(settings)
@@ -150,18 +165,25 @@ async def test_patch_users(client):
 
 
 async def test_patch_users_with_jwt(client, valid_jwt):
+    """A normal JWT is not enough to change a password: it does not proove
+    the user knows its password.
+
+    To change a password, one must either have:
+    - A JWT with a can_change_pwd claim (from "I forgot my password").
+    - Auth using basic auth to proove it knows its password.
+    """
     response = await client.patch(
         "/users/toto/",
         headers={"Authorization": "Bearer " + valid_jwt},
         json={"password": "passwod"},
     )
-    assert response.status == 204
+    assert response.status == 403
 
 
-async def test_patch_wrong_user_with_jwt(client, valid_jwt):
+async def test_patch_wrong_user_with_jwt(client, valid_jwt_to_change_pwd):
     response = await client.patch(
         "/users/admin/",
-        headers={"Authorization": "Bearer " + valid_jwt},
+        headers={"Authorization": "Bearer " + valid_jwt_to_change_pwd},
         json={"password": "passwod"},
     )
     assert response.status == 403

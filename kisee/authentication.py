@@ -1,49 +1,62 @@
 """Authentication handler
 """
-import base64
-from typing import Optional
+import base64, binascii
+from typing import Mapping, Tuple, Union
 
 import jwt
 from aiohttp import web
 
 from kisee.identity_provider import IdentityProvider, User
 
+Claims = Mapping[str, Union[str, bool, int]]
 
-async def basic_authentication(encoded: bytes, idp: IdentityProvider) -> Optional[User]:
-    """Authentication using Basic scheme
+
+async def _basic_authentication(
+    encoded: bytes, idp: IdentityProvider
+) -> Tuple[User, Claims]:
+    """Authentication using Basic scheme.
     """
-    decoded = base64.b64decode(encoded)
-    username, password = decoded.decode("utf-8").split(":", 1)
-    return await idp.identify(username, password)
+    try:
+        decoded = base64.b64decode(encoded)
+    except binascii.Error:
+        raise web.HTTPUnauthorized(reason="Bad authorization")
+    try:
+        username, password = decoded.decode("utf-8").split(":", 1)
+    except ValueError:
+        raise web.HTTPUnauthorized(reason="Bad authorization")
+    user = await idp.identify(username, password)
+    if user is None:
+        raise web.HTTPUnauthorized(reason="Bad authorization")
+    # Using basic auth means user knows its password so he's authorized to change it.
+    return user, {"can_change_pwd": True}
 
 
-async def jwt_authentication(
+async def _jwt_authentication(
     token: str, idp: IdentityProvider, public_key: str
-) -> Optional[User]:
-    """Verify that token belongs to a user
+) -> Tuple[User, Claims]:
+    """Authentication using JWT.
     """
     try:
         claims = jwt.decode(token, public_key, algorithms="ES256")
-    except jwt.DecodeError:
-        return None
-    return await idp.get_user_by_username(claims["sub"])
+    except jwt.DecodeError as err:
+        raise web.HTTPUnauthorized(reason="Bad authorization") from err
+    else:
+        return await idp.get_user_by_username(claims["sub"]), claims
 
 
-async def authenticate_user(request: web.Request) -> User:
-    """Multiple schemes authentication using request Authorization header
+async def authenticate_user(request: web.Request) -> Tuple[User, Claims]:
+    """Multiple schemes authentication using request Authorization header.
+    Raises HTTPUnauthorized on failure.
     """
     if not request.headers.get("Authorization"):
         raise web.HTTPUnauthorized(reason="Missing authorization header")
     scheme, value = request.headers.get("Authorization").strip().split(" ", 1)
-    user = None
     if scheme == "Basic":
-        user = await basic_authentication(value, request.app.identity_backend)
-    elif scheme == "Bearer":
-        user = await jwt_authentication(
+        return await _basic_authentication(value, request.app.identity_backend)
+    if scheme == "Bearer":
+        return await _jwt_authentication(
             value,
             request.app.identity_backend,
             request.app.settings["jwt"]["public_key"],
         )
-    if not user:
-        raise web.HTTPUnauthorized(reason="No authentication provided")
-    return user
+    raise web.HTTPUnauthorized(reason="Bad authorization")
