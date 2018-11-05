@@ -132,7 +132,7 @@ kisee
 To setup a dev environment, create a venv and run:
 
 ```
-python3 -m pip install -e .[dev]
+python3 -m pip install -e .[test]
 ```
 
 And run it using:
