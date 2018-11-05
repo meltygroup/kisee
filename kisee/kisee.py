@@ -5,6 +5,7 @@ import argparse
 import logging
 import os
 import sys
+from typing import Mapping, Any
 
 import toml
 from aiohttp import web
@@ -12,6 +13,8 @@ from aiohttp import web
 from kisee import views
 from kisee.identity_provider import import_idp
 from kisee.middlewares import verify_input_body_is_json
+
+Settings = Mapping[str, Any]
 
 AIOHTTP_LOGGERS = (
     "aiohttp.access",
@@ -37,7 +40,7 @@ def setup_logging(loglevel):  # pragma: no cover
     )
 
 
-def load_conf(settings_path: str) -> dict:
+def load_conf(settings_path: str) -> Settings:
     """Search for a settings.toml file and load it.
     """
     candidates = (
@@ -75,7 +78,7 @@ def parse_args(program_args=None) -> argparse.Namespace:
     return parser.parse_args(program_args)
 
 
-def identification_app(settings: dict) -> web.Application:
+def identification_app(settings: Settings) -> web.Application:
     """Identification provider entry point: builds and run a webserver.
     """
     app = web.Application(middlewares=[verify_input_body_is_json])

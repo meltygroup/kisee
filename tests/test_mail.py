@@ -1,9 +1,11 @@
 import smtplib
+from typing import List, Tuple, Dict
+
 from kisee.emails import send_mail
 
 
 class MockSMTP:
-    sent_emails = []
+    sent_emails: List[Tuple[List, Dict]] = []
 
     def __init__(self, *args, **kwargs):
         super().__init__()

@@ -40,7 +40,7 @@ def test_jwt_authentication_fails(settings, s):
     """Assert that a random string is never a valid token.
     """
     with pytest.raises(aiohttp.web_exceptions.HTTPUnauthorized):
-        run(_jwt_authentication(s, None, settings["jwt"]["public_key"]))
+        run(_jwt_authentication(s, DemoBackend(), settings["jwt"]["public_key"]))
 
 
 def test_jwt_authentication_succeed(settings, valid_token):
@@ -55,7 +55,7 @@ def test_basic_authentication_fails(s: bytes):
     """Assert that a random string is never a valid basic auth.
     """
     with pytest.raises(aiohttp.web_exceptions.HTTPUnauthorized):
-        run(_basic_authentication(s, None))
+        run(_basic_authentication(s, DemoBackend()))
 
 
 def test_basic_authentication_succeed():
