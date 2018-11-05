@@ -22,7 +22,10 @@ class User:
         self.is_superuser = is_superuser
 
 
-class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
+class IdentityProvider(
+    AsyncContextManager, ABC
+):  # pragma: no cover, pylint: disable=inherit-non-class
+    # See: https://github.com/PyCQA/pylint/issues/2472
     """Abtract class representing an identity provider
     """
 
