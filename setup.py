@@ -39,6 +39,7 @@ setuptools.setup(
     ],
     extras_require={
         "test": [
+            "hypothesis==3.82.1",
             "pytest==3.6.3",
             "pytest-cov==2.5.1",
             "pytest-aiohttp==0.3.0",

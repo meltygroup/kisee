@@ -22,7 +22,10 @@ async def jwt_authentication(
 ) -> Optional[User]:
     """Verify that token belongs to a user
     """
-    claims = jwt.decode(token, public_key, algorithms="ES256")
+    try:
+        claims = jwt.decode(token, public_key, algorithms="ES256")
+    except jwt.DecodeError:
+        return None
     if claims.get("forgotten_password"):
         return await idp.get_user_by_username(claims["sub"])
     return None
