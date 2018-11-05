@@ -26,9 +26,7 @@ async def jwt_authentication(
         claims = jwt.decode(token, public_key, algorithms="ES256")
     except jwt.DecodeError:
         return None
-    if claims.get("forgotten_password"):
-        return await idp.get_user_by_username(claims["sub"])
-    return None
+    return await idp.get_user_by_username(claims["sub"])
 
 
 async def authenticate_user(request: web.Request) -> User:
@@ -36,7 +34,7 @@ async def authenticate_user(request: web.Request) -> User:
     """
     if not request.headers.get("Authorization"):
         raise web.HTTPUnauthorized(reason="Missing authorization header")
-    scheme, value = request.headers.get("Authorization").strip().split(" ")
+    scheme, value = request.headers.get("Authorization").strip().split(" ", 1)
     user = None
     if scheme == "Basic":
         user = await basic_authentication(value, request.app.identity_backend)

@@ -1,7 +1,27 @@
 import pytest
-
+import jwt
 import kisee.kisee as kisee
+from datetime import datetime, timedelta
 import mocks
+
+
+@pytest.fixture
+def settings():
+    return kisee.load_conf("tests/test_settings.toml")
+
+
+@pytest.fixture
+def valid_jwt(settings):
+    return jwt.encode(
+        {
+            "iss": "Pouete",
+            "sub": "toto",
+            "exp": datetime.utcnow() + timedelta(hours=1),
+            "jti": "42",
+        },
+        settings["jwt"]["private_key"],
+        algorithm="ES256",
+    ).decode("utf8")
 
 
 @pytest.fixture
@@ -88,6 +108,17 @@ async def test_post_forgotten_password(client, monkeypatch):
     assert response.status == 201
 
 
+async def test_post_forgotten_password_empty(client, monkeypatch):
+    response = await client.post("/forgotten_passwords/", json={})
+    assert response.status == 400
+
+
+async def test_post_forgotten_password_by_username(client, monkeypatch):
+    monkeypatch.setattr("kisee.views.send_mail", mocks.send_mail)
+    response = await client.post("/forgotten_passwords/", json={"login": "foo"})
+    assert response.status == 201
+
+
 async def post_forgotten_passwords__bad_request(client):
     """Bad request because missing either 'email' or 'username' field
     """
@@ -116,6 +147,38 @@ async def test_patch_users(client):
         json={"password": "passwod"},
     )
     assert response.status == 204
+
+
+async def test_patch_users_with_jwt(client, valid_jwt):
+    response = await client.patch(
+        "/users/toto/",
+        headers={"Authorization": "Bearer " + valid_jwt},
+        json={"password": "passwod"},
+    )
+    assert response.status == 204
+
+
+async def test_patch_wrong_user_with_jwt(client, valid_jwt):
+    response = await client.patch(
+        "/users/admin/",
+        headers={"Authorization": "Bearer " + valid_jwt},
+        json={"password": "passwod"},
+    )
+    assert response.status == 403
+
+
+async def test_patch_users_missing_auth(client):
+    response = await client.patch("/users/test/", json={"password": "passwod"})
+    assert response.status == 401
+
+
+async def test_patch_users_bad_auth(client):
+    response = await client.patch(
+        "/users/test/",
+        headers={"Authorization": "I AM ROOT TAHHTS IT"},
+        json={"password": "passwod"},
+    )
+    assert response.status == 401
 
 
 async def test_patch_users__bad_request__missing_field(client):

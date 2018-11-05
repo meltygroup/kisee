@@ -124,7 +124,7 @@ async def post_users(request: web.Request) -> web.Response:
     return web.Response(status=201, headers={"Location": location})
 
 
-async def patch_users(request: web.Request) -> web.Response:
+async def patch_user(request: web.Request) -> web.Response:
     """Patch user password
     """
     user = await authenticate_user(request)
@@ -133,7 +133,7 @@ async def patch_users(request: web.Request) -> web.Response:
         raise web.HTTPBadRequest(reason="Missing fields to patch")
     username = request.match_info["username"]
     if username != user.username:
-        raise web.HTTPBadRequest(reason="Token does not apply to user resource")
+        raise web.HTTPForbidden(reason="Token does not apply to user resource")
     await request.app.identity_backend.set_password_for_user(user, data["password"])
     return web.Response(status=204)
 
