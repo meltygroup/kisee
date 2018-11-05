@@ -13,3 +13,4 @@ async def test_dumb_idp():
         assert identity is None
         identity = await test_backend.identify("dummy_login", "dummy_password")
         assert identity.username == "dummy_login"
+        assert (await test_backend.get_user_by_username("toto")).username == "toto"
