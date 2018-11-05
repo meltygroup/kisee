@@ -23,7 +23,7 @@ def send_mail(subject: str, text: str, html: str, email_settings: dict, recipien
     msg["To"] = recipient
     msg.attach(MIMEText(text, "plain"))
     msg.attach(MIMEText(html, "html"))
-    with smtplib.SMTP(email_settings["host"]) as smtp_server:
+    with smtplib.SMTP(email_settings.get("host", "localhost")) as smtp_server:
         smtp_server.sendmail(email_settings["sender"], recipient, msg.as_string())
 
 
