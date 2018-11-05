@@ -1,6 +1,7 @@
 """Authentication handler
 """
-import base64, binascii
+import base64
+import binascii
 from typing import Mapping, Tuple, Union
 
 import jwt

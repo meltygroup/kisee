@@ -6,13 +6,12 @@ import logging
 import os
 import sys
 
-from aiohttp import web
 import toml
+from aiohttp import web
 
 from kisee import views
 from kisee.identity_provider import import_idp
 from kisee.middlewares import verify_input_body_is_json
-
 
 AIOHTTP_LOGGERS = (
     "aiohttp.access",

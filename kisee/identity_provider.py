@@ -2,7 +2,7 @@
 """
 from abc import ABC, abstractmethod
 from importlib import import_module
-from typing import AsyncContextManager, Type, Optional
+from typing import AsyncContextManager, Optional, Type
 
 
 class UserAlreadyExist(Exception):

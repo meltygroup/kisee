@@ -6,23 +6,20 @@
 """
 
 import json
+import logging
 from datetime import datetime, timedelta
 
-import logging
 import coreapi
 import jwt
+import psutil
 import shortuuid
 from aiohttp import web
-import psutil
 
-from kisee.serializers import serialize
-from kisee.identity_provider import UserAlreadyExist
 from kisee.authentication import authenticate_user
+from kisee.emails import forge_forgotten_email, is_email, send_mail
+from kisee.identity_provider import UserAlreadyExist
+from kisee.serializers import serialize
 from kisee.utils import get_user_with_email_or_username
-from kisee.emails import is_email
-from kisee.emails import forge_forgotten_email
-from kisee.emails import send_mail
-
 
 logger = logging.getLogger(__name__)
 
