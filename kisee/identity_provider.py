@@ -26,7 +26,7 @@ class IdentityProvider(ABC, AsyncContextManager):  # pragma: no cover
     """Abtract class representing an identity provider
     """
 
-    def __init__(self, options: dict) -> None:
+    def __init__(self, options: dict = None) -> None:
         self.options = options
         super().__init__()
 
