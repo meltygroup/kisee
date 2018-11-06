@@ -81,7 +81,9 @@ def parse_args(program_args=None) -> argparse.Namespace:
 def identification_app(settings: Settings) -> web.Application:
     """Identification provider entry point: builds and run a webserver.
     """
-    app = web.Application(middlewares=[verify_input_body_is_json])
+    app = web.Application(
+        middlewares=[verify_input_body_is_json], debug=settings.get("debug", False)
+    )
     app.settings = settings
     app.identity_backend = import_idp(settings["identity_backend"]["class"])(
         settings["identity_backend"]["options"]
