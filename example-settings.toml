@@ -2,6 +2,7 @@
 host = "0.0.0.0"
 hostname = "http://localhost:8140"
 port = 8140
+debug = true
 
 [identity_backend]
   class = "kisee.providers.demo.DemoBackend"
