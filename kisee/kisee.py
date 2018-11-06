@@ -12,7 +12,7 @@ from aiohttp import web
 
 from kisee import views
 from kisee.identity_provider import import_idp
-from kisee.middlewares import verify_input_body_is_json
+from kisee.middlewares import verify_input_body_is_json, coreapi_error_middleware
 
 Settings = Mapping[str, Any]
 
@@ -82,7 +82,7 @@ def identification_app(settings: Settings) -> web.Application:
     """Identification provider entry point: builds and run a webserver.
     """
     app = web.Application(
-        middlewares=[verify_input_body_is_json],
+        middlewares=[verify_input_body_is_json, coreapi_error_middleware],
         debug=settings["server"].get("debug", False),
     )
     app.settings = settings
