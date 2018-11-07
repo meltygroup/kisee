@@ -6,23 +6,6 @@ import coreapi
 from aiohttp import web
 
 
-class CoreJSONRenderer:  # pragma: no cover | unused
-    """Serializer using the coreapi+json representations.
-    """
-
-    # pylint: disable=too-few-public-methods
-    media_type = "application/coreapi+json"
-    format = "corejson"
-
-    def render(self, data: dict, media_type=None, renderer_context=None):
-        # pylint: disable=unused-argument, no-self-use
-        """Render the given data as application/coreapi+json.
-        """
-        indent = bool(renderer_context.get("indent", 0))
-        codec = coreapi.codecs.CoreJSONCodec()
-        return codec.dump(data, indent=indent)
-
-
 def serialize(
     request: web.Request, document: dict, status=200, headers=None
 ) -> web.Response:
@@ -31,7 +14,7 @@ def serialize(
     """
     accept = request.headers.get("Accept")
     codec = coreapi.utils.negotiate_encoder([coreapi.codecs.CoreJSONCodec()], accept)
-    content = codec.dump(document)
+    content = codec.dump(document, indent=True)
     return web.Response(
         body=content, content_type=codec.media_type, headers=headers, status=status
     )
