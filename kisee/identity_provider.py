@@ -16,7 +16,10 @@ class User:
     """Represents a logged-in, correctly identified, person.
     """
 
-    def __init__(self, username: str, email: str, is_superuser: bool = False) -> None:
+    def __init__(
+        self, user_id: str, username: str, email: str, is_superuser: bool = False
+    ) -> None:
+        self.user_id = user_id
         self.username = username
         self.email = email
         self.is_superuser = is_superuser
