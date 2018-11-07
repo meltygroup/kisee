@@ -28,47 +28,45 @@ async def get_root(request: web.Request) -> web.Response:
     """https://tools.ietf.org/html/draft-nottingham-json-home-06
     """
     hostname = request.app.settings["server"]["hostname"]
-    return web.Response(
-        body=json.dumps(
-            {
-                "api": {
-                    "title": "Identification Provider",
-                    "links": {
-                        "author": "mailto:julien@palard.fr",
-                        "describedBy": "https://doc.meltylab.fr",
-                    },
-                },
-                "resources": {
-                    "jwt": {
-                        "href": "/jwt/",
-                        "hints": {
-                            "allow": ["GET", "POST"],
-                            "formats": {"application/coreapi+json": {}},
-                        },
-                    }
-                },
-                "actions": {
-                    "register-user": {
-                        "href": f"{hostname}/users/",
-                        "method": "POST",
-                        "fields": [
-                            {"name": "username", "required": True},
-                            {"name": "password", "required": True},
-                            {"name": "email", "required": True},
-                        ],
-                    },
-                    "create-token": {
-                        "href": f"{hostname}/jwt/",
-                        "method": "POST",
-                        "fields": [
-                            {"name": "login", "required": True},
-                            {"name": "password", "required": True},
-                        ],
-                    },
+    home = {
+        "api": {
+            "title": "Identification Provider",
+            "links": {
+                "author": "mailto:julien@palard.fr",
+                "describedBy": "https://doc.meltylab.fr",
+            },
+        },
+        "resources": {
+            "jwt": {
+                "href": "/jwt/",
+                "hints": {
+                    "allow": ["GET", "POST"],
+                    "formats": {"application/coreapi+json": {}},
                 },
             }
-        ),
-        content_type="application/json-home",
+        },
+        "actions": {
+            "register-user": {
+                "href": f"{hostname}/users/",
+                "method": "POST",
+                "fields": [
+                    {"name": "username", "required": True},
+                    {"name": "password", "required": True},
+                    {"name": "email", "required": True},
+                ],
+            },
+            "create-token": {
+                "href": f"{hostname}/jwt/",
+                "method": "POST",
+                "fields": [
+                    {"name": "login", "required": True},
+                    {"name": "password", "required": True},
+                ],
+            },
+        },
+    }
+    return web.Response(
+        body=json.dumps(home, indent=4), content_type="application/json-home"
     )
 
 
