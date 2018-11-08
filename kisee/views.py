@@ -49,8 +49,15 @@ async def get_root(request: web.Request) -> web.Response:
                 "hints": {
                     "allow": ["GET", "POST", "PATCH"],
                     "formats": {"application/coreapi+json": {}},
-                }
-            }
+                },
+            },
+            "forgotten-passwords": {
+                "href": f"{hostname}/forgotten-passwords/",
+                "hints": {
+                    "allow": ["GET", "POST"],
+                    "formats": {"application/coreapi+json": {}},
+                },
+            },
         },
         "actions": {
             "register-user": {
@@ -223,10 +230,11 @@ async def post_jwt(request: web.Request) -> web.Response:
 async def get_forgotten_passwords(request: web.Request) -> web.Response:
     """Get forgotten password view, just describes that a POST is possible.
     """
+    hostname = request.app.settings["server"]["hostname"]
     return serialize(
         request,
         coreapi.Document(
-            url="/forgotten-passwords/",
+            url=f"{hostname}/forgotten-passwords/",
             title="Forgotten password management",
             content={
                 "reset-password": coreapi.Link(
