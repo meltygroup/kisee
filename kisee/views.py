@@ -38,12 +38,26 @@ async def get_root(request: web.Request) -> web.Response:
         },
         "resources": {
             "jwt": {
-                "href": "/jwt/",
+                "href": f"{hostname}/jwt/",
                 "hints": {
                     "allow": ["GET", "POST"],
                     "formats": {"application/coreapi+json": {}},
                 },
-            }
+            },
+            "users": {
+                "href": f"{hostname}/users/",
+                "hints": {
+                    "allow": ["GET", "POST", "PATCH"],
+                    "formats": {"application/coreapi+json": {}},
+                },
+            },
+            "forgotten-passwords": {
+                "href": f"{hostname}/forgotten-passwords/",
+                "hints": {
+                    "allow": ["GET", "POST"],
+                    "formats": {"application/coreapi+json": {}},
+                },
+            },
         },
         "actions": {
             "register-user": {
@@ -73,10 +87,11 @@ async def get_root(request: web.Request) -> web.Response:
 async def get_users(request: web.Request) -> web.Response:
     """View for GET /users/, just describes that a POST is possible.
     """
+    hostname = request.app.settings["server"]["hostname"]
     return serialize(
         request,
         coreapi.Document(
-            url="/users/",
+            url=f"{hostname}/users/",
             title="Users",
             content={
                 "users": [],
@@ -138,10 +153,11 @@ async def patch_user(request: web.Request) -> web.Response:
 async def get_jwts(request: web.Request) -> web.Response:
     """Handlers for GET /jwt/, just describes that a POST is possible.
     """
+    hostname = request.app.settings["server"]["hostname"]
     return serialize(
         request,
         coreapi.Document(
-            url="/jwt/",
+            url=f"{hostname}/jwt/",
             title="JSON Web Tokens",
             content={
                 "tokens": [],
@@ -214,10 +230,11 @@ async def post_jwt(request: web.Request) -> web.Response:
 async def get_forgotten_passwords(request: web.Request) -> web.Response:
     """Get forgotten password view, just describes that a POST is possible.
     """
+    hostname = request.app.settings["server"]["hostname"]
     return serialize(
         request,
         coreapi.Document(
-            url="/forgotten-passwords/",
+            url=f"{hostname}/forgotten-passwords/",
             title="Forgotten password management",
             content={
                 "reset-password": coreapi.Link(
