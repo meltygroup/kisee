@@ -38,11 +38,18 @@ async def get_root(request: web.Request) -> web.Response:
         },
         "resources": {
             "jwt": {
-                "href": "/jwt/",
+                "href": f"{hostname}/jwt/",
                 "hints": {
                     "allow": ["GET", "POST"],
                     "formats": {"application/coreapi+json": {}},
                 },
+            },
+            "users": {
+                "href": f"{hostname}/users/",
+                "hints": {
+                    "allow": ["GET", "POST", "PATCH"],
+                    "formats": {"application/coreapi+json": {}},
+                }
             }
         },
         "actions": {
