@@ -73,10 +73,11 @@ async def get_root(request: web.Request) -> web.Response:
 async def get_users(request: web.Request) -> web.Response:
     """View for GET /users/, just describes that a POST is possible.
     """
+    hostname = request.app.settings["server"]["hostname"]
     return serialize(
         request,
         coreapi.Document(
-            url="/users/",
+            url=f"{hostname}/users/",
             title="Users",
             content={
                 "users": [],
@@ -138,10 +139,11 @@ async def patch_user(request: web.Request) -> web.Response:
 async def get_jwts(request: web.Request) -> web.Response:
     """Handlers for GET /jwt/, just describes that a POST is possible.
     """
+    hostname = request.app.settings["server"]["hostname"]
     return serialize(
         request,
         coreapi.Document(
-            url="/jwt/",
+            url=f"{hostname}/jwt/",
             title="JSON Web Tokens",
             content={
                 "tokens": [],
