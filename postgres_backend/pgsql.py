@@ -1,7 +1,6 @@
 """Postgresql backend for Kisee
 """
-
-from datetime import datetime
+import uuid
 from typing import Optional
 
 import hmac
@@ -68,23 +67,25 @@ class DataStore(IdentityProvider):
                 "SELECT * FROM users WHERE (username = $1 OR email = $1) ", login
             )
             if verify(password.encode("utf-8"), result["password"].encode("utf-8")):
-                return User(result["username"], result["is_superuser"])
+                return User(result["user_id"], result["username"], result["is_superuser"])
         return None
 
     async def register_user(
         self, username: str, password: str, email: str, is_superuser: bool = False
     ):
         password_hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+        user_id = str(uuid.uuid4())
         async with self.pool.acquire() as connection:
             try:
                 await connection.execute(
                     """
                     INSERT INTO users(
-                        username, password, email, is_superuser
+                        user_id, username, password, email, is_superuser
                     ) VALUES (
-                        $1, $2, $3, $4
+                        $1, $2, $3, $4, $5
                     )
                 """,
+                    user_id,
                     username,
                     password_hashed.decode("utf-8"),
                     email,

@@ -29,7 +29,10 @@ class DemoBackend(IdentityProvider):
         if len(password) < 4:
             return None
         return User(
-            username=login, email=f"{login}@example.com", is_superuser=login == "root"
+            user_id=login,
+            username=login,
+            email=f"{login}@example.com",
+            is_superuser=login == "root",
         )
 
     async def register_user(
@@ -40,12 +43,12 @@ class DemoBackend(IdentityProvider):
     async def get_user_by_email(self, email):
         """Get user with provided email address
         """
-        return User(username=email, email=email)
+        return User(user_id=email, username=email, email=email)
 
     async def get_user_by_username(self, username):
         """Get user with provided username
         """
-        return User(username=username, email=f"{username}@gmail.com")
+        return User(user_id=username, username=username, email=f"{username}@gmail.com")
 
     async def set_password_for_user(self, user: User, password: str):
         pass
