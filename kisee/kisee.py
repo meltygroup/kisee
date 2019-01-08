@@ -10,6 +10,10 @@ from typing import Mapping, Any
 import toml
 from aiohttp import web
 
+import sentry_sdk
+
+sentry_sdk.init()
+
 from kisee import views
 from kisee.identity_provider import import_idp
 from kisee.middlewares import verify_input_body_is_json, coreapi_error_middleware

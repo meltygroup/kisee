@@ -77,6 +77,12 @@ The API exposes the following resources:
 - JSON web tokens on `/jwt/` (GET, POST).
 
 
+## Sentry
+
+For sentry to work you'll need the `SENTRY_DSN` environment variable,
+see https://docs.sentry.io/error-reporting/quickstart/?platform=python.
+
+
 # TODO
 
 - Admin interface

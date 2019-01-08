@@ -36,6 +36,7 @@ setuptools.setup(
         "toml==0.9.4",
         "psutil",
         "asyncpg",
+        "sentry-sdk==0.6.6",
     ],
     extras_require={
         "dev": [
