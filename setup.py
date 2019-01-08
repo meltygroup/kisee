@@ -38,7 +38,7 @@ setuptools.setup(
         "asyncpg",
     ],
     extras_require={
-        "test": [
+        "dev": [
             "hypothesis==3.82.1",
             "pytest==3.6.3",
             "pytest-cov==2.5.1",
