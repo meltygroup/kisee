@@ -8,18 +8,56 @@ spoken as the french phrase "Qui c'est ?", `[kis‿ɛ]`.
 
 ## Overview
 
-This service deliver proof of identities in the form of asymetrically
-signed JSON web tokens. It does not (and will not) handle groups,
-impersonation, and so on, which is the role of another service, an IdM
-(identity managment).
+Kisee is an API giving JWTs in exchange for valid usernames/password
+pairs. That's it.
+
+Kisee is better used as a backend of the
+[Pasee](https://github.com/meltygroup/pasee/) identity manager: Pasee
+handle groups and can handle multiple identity backends (one or many
+Kisee instances, twitter, facebook, ...).
+
+Kisee can use your existing database (or use a dedicated one) to query
+the username and passwrds if you're willing to implement a simple
+Python class to query it, so Kisee can query anything: LDAP, a flat
+file, a PostgreSQL database with a strange schema, whatever.
 
 
-An exception to the rule, Kisee handles a single bit attached to a
-user: `superuser`. A `superuser` is an administrative account allowed
-to connect to the admin interface, mainly for debugging purposes.
+## FAQ
 
-The `superuser` flag is *not* exposed as a claim in the JWTs, it's a
-internal flag.
+### Can I use Kisee to query an OAuth2 service like?
+
+Kisee is an identity provider, like twitter, so they're side by side,
+one one on top of the other, they play the same role. You can however use
+Pasee to query both a Kisee and Twitter.
+
+
+### Does Kisee implement groups?
+
+No, Kisee doesn't care about groups like Twitter don't care about
+groups, they're both just here to say "yes, it's this user" or "no, it
+is not". Use Pasee for this.
+
+From the Pasee point of view you'll be able to tell:
+
+ - User foo from Kisee is in group staff
+ - User bar from Twitter is in group staff too
+
+
+### Does Kisee implement impersonation?
+
+No, if we do implement this we'll do in Pasee, so a staff user
+identified via Kisee can impersonate a user identified via Twitter and
+vice-versa.
+
+
+### Does Kisee expose self-service registration?
+
+Optionally, only if you implement it or use a backend class implementing it.
+
+
+### Does Kisee expose a password reset feature?
+
+Yes, by sending an email that you can template in the settings.
 
 
 ## Internals
@@ -69,8 +107,10 @@ kisee --settings example-settings.toml
 
 The API exposes the following resources:
 
-- A home on `/` (GET).
-- JSON web tokens on `/jwt/` (GET, POST).
+- A json-home on `/`
+- `/jwt/` to manage tokens (mainly create a new one by POSTing)
+- `/forgotten-passwords/` to initiate a password lost procedure and manage it.
+- `POST /users/` for self-service registration.
 
 
 ## Sentry
