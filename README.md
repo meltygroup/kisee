@@ -25,7 +25,7 @@ internal flag.
 ## Internals
 
 The `Kisee` daemon does not store `(login, password)` tuples, but uses
-a Python class, a `backend` you can configure in `settings.yml` to
+a Python class, a `backend` you can configure in `settings.toml` to
 handle this.
 
 `Kisee` provides some `demo backends` and `test backends` so you can
@@ -35,13 +35,14 @@ database, your LDAP server, or another IdP as needed.
 
 ## The backend interface
 
-The backend class used by Kisee must implement the `kisee.identity_provider.IdentityProvider` ABC.
+The backend class used by Kisee must implement the
+`kisee.identity_provider.IdentityProvider` ABC.
 
 
 ## Running
 
 You'll need a `settings.toml` file like the provided
-`example-settings.yoml`, instart kisee (`python3 -m pip install -e
+`example-settings.yoml`, install kisee (`python3 -m pip install -e
 .`), then start the server using:
 
 ```
@@ -54,7 +55,7 @@ kisee
 To setup a dev environment, create a venv and run:
 
 ```
-python3 -m pip install -e .[test]
+python3 -m pip install -e .[dev]
 ```
 
 And run it using:
@@ -65,11 +66,6 @@ kisee --settings example-settings.toml
 
 
 ## API
-
-The admin should be mounted on `/admin/`, and although this service
-does *not* handle the notion of roles and permissions, it has the
-notion of "root vs non-root" user, so only root users can access the
-admin (in which they see everything and can modify everything).
 
 The API exposes the following resources:
 
@@ -87,8 +83,6 @@ see https://docs.sentry.io/error-reporting/quickstart/?platform=python.
 
 - Admin interface
 - Status page
-- Self-service registration.
 - Token invalidation (`DELETE /jwt{/jti}`).
-- Self-service password reset.
-- Rate-limiting?
+- Rate-limiting
 - Better error messages (Maybe https://github.com/blongden/vnd.error?)
