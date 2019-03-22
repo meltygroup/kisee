@@ -24,15 +24,6 @@ debug = true
     forgotten_password_tpl_txt = "forgotten_password_tpl.txt"
     forgotten_password_tpl_html = "forgotten_password_tpl.html"
 
-# [identity_backend]
-#   class = "shape.mysql.DataStore"
-#   [identity_backend.options]
-#     host = "127.0.0.1"
-#     port = 3306
-#     user = "root"
-#     password = "my_secret_password"
-#     database = "my_database"
-
 [jwt]
   iss = "example.com"
 
