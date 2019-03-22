@@ -22,6 +22,59 @@ Python class to query it, so Kisee can query anything: LDAP, a flat
 file, a PostgreSQL database with a strange schema, whatever.
 
 
+## Quick start
+
+Once you've cloned the repo and created a venv, install kisee in it:
+
+```
+$ python3 -m pip install -e .[dev]
+```
+
+Start kisee:
+
+```
+$ kisee --settings example-settings.toml
+```
+
+This starts Kisee with a very dumb backend, just so you can play.
+
+The dumb backend works like this:
+ - Any user exists.
+ - Any password less or equal than 4 characters will be considered wrong.
+ - Any other password will pass.
+
+So now we can query it:
+
+```
+$ curl http://0.0.0.0:8140/jwt/ -XPOST -d '{"login": "John", "password": "secure"}'
+{
+    "_type": "document",
+    "_meta": {
+        "url": "/jwt/",
+        "title": "JSON Web Tokens"
+    },
+    "tokens": [
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJleGFtcGxlLmNvbSIsInN1YiI6IkpvaG4iLCJleHAiOjE1NTMyNzQyNjEsImp0aSI6IjlXb0piV1g2OGpmQVo5N1dNRWRjNDQifQ.iYAgA-018VHQo9tWLfk7XIxtrDKYk_CTWhHXo7bMBGDz9HGKRIwV_mh0Wla6tf6z-_JH5KRTQRnQl5DLLlIelg"
+    ],
+    "add_token": {
+        "_type": "link",
+        "action": "post",
+        "title": "Create a new JWT",
+        "description": "POSTing to this endpoint create JWT tokens.",
+        "fields": [
+            {
+                "name": "login",
+                "required": true
+            },
+            {
+                "name": "password",
+                "required": true
+            }
+        ]
+    }
+}
+```
+
 ## FAQ
 
 ### Can I use Kisee to query an OAuth2 service like?
@@ -75,32 +128,6 @@ database, your LDAP server, or another IdP as needed.
 
 The backend class used by Kisee must implement the
 `kisee.identity_provider.IdentityProvider` ABC.
-
-
-## Running
-
-You'll need a `settings.toml` file like the provided
-`example-settings.yoml`, install kisee (`python3 -m pip install -e
-.`), then start the server using:
-
-```
-kisee
-```
-
-
-## Contributing
-
-To setup a dev environment, create a venv and run:
-
-```
-python3 -m pip install -e .[dev]
-```
-
-And run it using:
-
-```
-kisee --settings example-settings.toml
-```
 
 
 ## API
