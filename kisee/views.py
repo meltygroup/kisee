@@ -33,7 +33,7 @@ async def get_root(request: web.Request) -> web.Response:
             "title": "Identification Provider",
             "links": {
                 "author": "mailto:julien@palard.fr",
-                "describedBy": "https://doc.meltylab.fr",
+                "describedBy": "https://github.com/meltygroup/kisee/",
             },
         },
         "resources": {
