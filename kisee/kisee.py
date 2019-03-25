@@ -88,19 +88,19 @@ def identification_app(settings: Settings) -> web.Application:
         debug=settings["server"].get("debug", False),
     )
     app.settings = settings
-    app.identity_backend = import_idp(settings["identity_backend"]["class"])(
+    app["identity_backend"] = import_idp(settings["identity_backend"]["class"])(
         settings["identity_backend"]["options"]
     )
 
     async def on_startup_wrapper(app):
         """Wrapper to call __aenter__.
         """
-        await app.identity_backend.__aenter__()
+        await app["identity_backend"].__aenter__()
 
     async def on_cleanup_wrapper(app):
         """Wrapper to call __exit__.
         """
-        await app.identity_backend.__aexit__(None, None, None)
+        await app["identity_backend"].__aexit__(None, None, None)
 
     app.on_startup.append(on_startup_wrapper)
     app.on_cleanup.append(on_cleanup_wrapper)

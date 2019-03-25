@@ -53,11 +53,11 @@ async def authenticate_user(request: web.Request) -> Tuple[User, Claims]:
         raise web.HTTPUnauthorized(reason="Missing authorization header")
     scheme, value = request.headers.get("Authorization").strip().split(" ", 1)
     if scheme == "Basic":
-        return await _basic_authentication(value, request.app.identity_backend)
+        return await _basic_authentication(value, request.app["identity_backend"])
     if scheme == "Bearer":
         return await _jwt_authentication(
             value,
-            request.app.identity_backend,
+            request.app["identity_backend"],
             request.app.settings["jwt"]["public_key"],
         )
     raise web.HTTPUnauthorized(reason="Bad authorization")

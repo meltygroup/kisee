@@ -124,7 +124,7 @@ async def post_users(request: web.Request) -> web.Response:
         raise web.HTTPBadRequest(reason="Email is not valid")
 
     try:
-        await request.app.identity_backend.register_user(
+        await request.app["identity_backend"].register_user(
             data["username"], data["password"], data["email"]
         )
     except UserAlreadyExist:
@@ -146,7 +146,7 @@ async def patch_user(request: web.Request) -> web.Response:
     username = request.match_info["username"]
     if username != user.username:
         raise web.HTTPForbidden(reason="Token does not apply to user resource")
-    await request.app.identity_backend.set_password_for_user(user, data["password"])
+    await request.app["identity_backend"].set_password_for_user(user, data["password"])
     return web.Response(status=204)
 
 
@@ -189,7 +189,9 @@ async def post_jwt(request: web.Request) -> web.Response:
     if "login" not in data or "password" not in data:
         raise web.HTTPUnprocessableEntity(reason="Missing login or password.")
     logger.debug("Trying to identify user %s", data["login"])
-    user = await request.app.identity_backend.identify(data["login"], data["password"])
+    user = await request.app["identity_backend"].identify(
+        data["login"], data["password"]
+    )
     if user is None:
         raise web.HTTPForbidden(reason="Failed identification for kisee.")
     jti = shortuuid.uuid()
@@ -257,7 +259,7 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
     if "login" not in data and "email" not in data:
         raise web.HTTPBadRequest(reason="Missing required fields email or login")
 
-    user = await get_user_with_email_or_username(data, request.app.identity_backend)
+    user = await get_user_with_email_or_username(data, request.app["identity_backend"])
     jwt_token = jwt.encode(
         {
             "iss": request.app.settings["jwt"]["iss"],
@@ -283,7 +285,7 @@ async def get_health(request: web.Request) -> web.Response:
     """Get service health metrics
     """
     is_database_ok = (
-        "OK" if await request.app.identity_backend.is_connection_alive() else "KO"
+        "OK" if await request.app["identity_backend"].is_connection_alive() else "KO"
     )
     disk_usage = psutil.disk_usage("/")
     disk_free_percentage = disk_usage.free / disk_usage.total * 100
