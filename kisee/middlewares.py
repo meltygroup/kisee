@@ -2,17 +2,20 @@
 """
 
 import json
-from typing import Callable
+from typing import Callable, Awaitable
 
 from aiohttp import web
 
 from kisee.serializers import serialize
 
 
+Handler = Callable[[web.Request], Awaitable[web.StreamResponse]]
+
+
 @web.middleware
 async def verify_input_body_is_json(
-    request: web.Request, handler: Callable
-) -> Callable:
+    request: web.Request, handler: Handler
+) -> web.StreamResponse:
     """
     Middleware to verify that input body is of json format
     """
@@ -25,7 +28,9 @@ async def verify_input_body_is_json(
 
 
 @web.middleware
-async def coreapi_error_middleware(request, handler):
+async def coreapi_error_middleware(
+    request: web.Request, handler: Handler
+) -> web.StreamResponse:
     """Implementation of:
     http://www.coreapi.org/specification/transport/#coercing-4xx-and-5xx-responses-to-errors
     """
