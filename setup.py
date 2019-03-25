@@ -44,7 +44,7 @@ setuptools.setup(
             "pytest-cov==2.5.1",
             "pytest-aiohttp==0.3.0",
             "flake8==3.5.0",
-            "pylint==2.0.1",
+            "pylint==2.3.1",
             "black==18.6b4",
             "bandit==1.4.0",
             "mypy==0.641",
