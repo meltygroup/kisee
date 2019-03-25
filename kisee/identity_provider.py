@@ -9,8 +9,6 @@ class UserAlreadyExist(Exception):
     """Exception raised when user already exists
     """
 
-    pass
-
 
 class User:
     """Represents a logged-in, correctly identified, person.
