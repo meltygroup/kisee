@@ -12,8 +12,6 @@ from aiohttp import web
 
 import sentry_sdk
 
-sentry_sdk.init()
-
 from kisee import views
 from kisee.identity_provider import import_idp
 from kisee.middlewares import verify_input_body_is_json, coreapi_error_middleware
@@ -129,6 +127,7 @@ def identification_app(settings: Settings) -> web.Application:
 def main() -> None:  # pragma: no cover
     """Command line entry point.
     """
+    sentry_sdk.init()
     args = parse_args()
     setup_logging(args.loglevel)
     settings = load_conf(args.settings)
