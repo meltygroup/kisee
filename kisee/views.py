@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 async def get_root(request: web.Request) -> web.Response:
     """https://tools.ietf.org/html/draft-nottingham-json-home-06
     """
-    hostname = request.app.settings["server"]["hostname"]
+    hostname = request.app["settings"]["server"]["hostname"]
     home = {
         "api": {
             "title": "Identification Provider",
@@ -87,7 +87,7 @@ async def get_root(request: web.Request) -> web.Response:
 async def get_users(request: web.Request) -> web.Response:
     """View for GET /users/, just describes that a POST is possible.
     """
-    hostname = request.app.settings["server"]["hostname"]
+    hostname = request.app["settings"]["server"]["hostname"]
     return serialize(
         request,
         coreapi.Document(
@@ -153,7 +153,7 @@ async def patch_user(request: web.Request) -> web.Response:
 async def get_jwts(request: web.Request) -> web.Response:
     """Handlers for GET /jwt/, just describes that a POST is possible.
     """
-    hostname = request.app.settings["server"]["hostname"]
+    hostname = request.app["settings"]["server"]["hostname"]
     return serialize(
         request,
         coreapi.Document(
@@ -204,12 +204,12 @@ async def post_jwt(request: web.Request) -> web.Response:
                 "tokens": [
                     jwt.encode(
                         {
-                            "iss": request.app.settings["jwt"]["iss"],
+                            "iss": request.app["settings"]["jwt"]["iss"],
                             "sub": user.user_id,
                             "exp": datetime.utcnow() + timedelta(hours=1),
                             "jti": jti,
                         },
-                        request.app.settings["jwt"]["private_key"],
+                        request.app["settings"]["jwt"]["private_key"],
                         algorithm="ES256",
                     ).decode("utf8")
                 ],
@@ -232,7 +232,7 @@ async def post_jwt(request: web.Request) -> web.Response:
 async def get_forgotten_passwords(request: web.Request) -> web.Response:
     """Get forgotten password view, just describes that a POST is possible.
     """
-    hostname = request.app.settings["server"]["hostname"]
+    hostname = request.app["settings"]["server"]["hostname"]
     return serialize(
         request,
         coreapi.Document(
@@ -262,13 +262,13 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
     user = await get_user_with_email_or_username(data, request.app["identity_backend"])
     jwt_token = jwt.encode(
         {
-            "iss": request.app.settings["jwt"]["iss"],
+            "iss": request.app["settings"]["jwt"]["iss"],
             "sub": user.username,
             "exp": datetime.utcnow() + timedelta(hours=12),
             "jti": shortuuid.uuid(),
             "can_change_pwd": True,
         },
-        request.app.settings["jwt"]["private_key"],
+        request.app["settings"]["jwt"]["private_key"],
         algorithm="ES256",
     ).decode("utf-8")
     content_text, content_html = forge_forgotten_email(
@@ -276,7 +276,11 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
     )
     subject = "Forgotten password"
     send_mail(
-        subject, content_text, content_html, request.app.settings["email"], user.email
+        subject,
+        content_text,
+        content_html,
+        request.app["settings"]["email"],
+        user.email,
     )
     return web.Response(status=201)
 

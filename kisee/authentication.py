@@ -58,6 +58,6 @@ async def authenticate_user(request: web.Request) -> Tuple[User, Claims]:
         return await _jwt_authentication(
             value,
             request.app["identity_backend"],
-            request.app.settings["jwt"]["public_key"],
+            request.app["settings"]["jwt"]["public_key"],
         )
     raise web.HTTPUnauthorized(reason="Bad authorization")

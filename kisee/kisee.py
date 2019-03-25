@@ -87,7 +87,7 @@ def identification_app(settings: Settings) -> web.Application:
         middlewares=[verify_input_body_is_json, coreapi_error_middleware],
         debug=settings["server"].get("debug", False),
     )
-    app.settings = settings
+    app["settings"] = settings
     app["identity_backend"] = import_idp(settings["identity_backend"]["class"])(
         settings["identity_backend"]["options"]
     )
