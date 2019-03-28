@@ -137,13 +137,15 @@ async def post_users(request: web.Request) -> web.Response:
 async def patch_user(request: web.Request) -> web.Response:
     """Patch user password
     """
+    username = request.match_info["username"]
+
     user, claims = await authenticate_user(request)
-    if not claims.get("can_change_pwd"):
+
+    if not claims.get("can_change_pwd") and not user.user_id == username:
         raise web.HTTPForbidden(reason="Password change forbidden")
     data = await request.json()
     if "password" not in data:
         raise web.HTTPBadRequest(reason="Missing fields to patch")
-    username = request.match_info["username"]
     if username != user.username:
         raise web.HTTPForbidden(reason="Token does not apply to user resource")
     await request.app["identity_backend"].set_password_for_user(user, data["password"])
