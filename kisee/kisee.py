@@ -73,7 +73,7 @@ def parse_args(program_args=None) -> argparse.Namespace:
         "-v",
         "--verbose",
         dest="loglevel",
-        default=0,
+        default=1,
         help="Verbose mode (-vv for more, -vvv, …)",
         action="count",
     )
