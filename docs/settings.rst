@@ -1,6 +1,6 @@
 .. highlight:: toml
 
-               Configuration File
+Configuration File
 ==================
 
 A typical ``settings.toml`` file looks like this::

@@ -10,8 +10,11 @@ Welcome to kisee's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   contributing
    features
+   settings
+   api
+   contributing
+   faq
 
 
 Indices and tables
