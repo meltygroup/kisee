@@ -1,0 +1,10 @@
+-r requirements.txt
+hypothesis
+pytest
+pytest-cov
+pytest-aiohttp
+flake8
+pylint
+black
+bandit
+mypy
