@@ -77,41 +77,6 @@ $ curl http://0.0.0.0:8140/jwt/ -XPOST -d '{"login": "John", "password": "secure
 
 ## FAQ
 
-### Can I use Kisee to query an OAuth2 service like?
-
-Kisee is an identity provider, like twitter, so they're side by side,
-one one on top of the other, they play the same role. You can however use
-Pasee to query both a Kisee and Twitter.
-
-
-### Does Kisee implement groups?
-
-No, Kisee doesn't care about groups like Twitter don't care about
-groups, they're both just here to say "yes, it's this user" or "no, it
-is not". Use Pasee for this.
-
-From the Pasee point of view you'll be able to tell:
-
- - User foo from Kisee is in group staff
- - User bar from Twitter is in group staff too
-
-
-### Does Kisee implement impersonation?
-
-No, if we do implement this we'll do in Pasee, so a staff user
-identified via Kisee can impersonate a user identified via Twitter and
-vice-versa.
-
-
-### Does Kisee expose self-service registration?
-
-Optionally, only if you implement it or use a backend class implementing it.
-
-
-### Does Kisee expose a password reset feature?
-
-Yes, by sending an email that you can template in the settings.
-
 
 ## Internals
 
@@ -122,28 +87,6 @@ handle this.
 `Kisee` provides some `demo backends` and `test backends` so you can
 play with it. You can provide your own backend to hit your own
 database, your LDAP server, or another IdP as needed.
-
-
-## The backend interface
-
-The backend class used by Kisee must implement the
-`kisee.identity_provider.IdentityProvider` ABC.
-
-
-## API
-
-The API exposes the following resources:
-
-- A json-home on `/`
-- `/jwt/` to manage tokens (mainly create a new one by POSTing)
-- `/forgotten-passwords/` to initiate a password lost procedure and manage it.
-- `POST /users/` for self-service registration.
-
-
-## Sentry
-
-For sentry to work you'll need the `SENTRY_DSN` environment variable,
-see https://docs.sentry.io/error-reporting/quickstart/?platform=python.
 
 
 # TODO
