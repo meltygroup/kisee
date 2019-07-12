@@ -1,0 +1,46 @@
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[tool.flit.metadata]
+module = "kisee"
+author = "Julien Palard"
+author-email = "julien@python.org"
+home-page = "https://github.com/meltygroup/kisee"
+requires = [
+    "aiohttp",
+    "aiomysql",
+    "asyncpg",
+    "bcrypt",
+    "coreapi",
+    "cryptography",
+    "psutil",
+    "pyjwt",
+    "sentry-sdk",
+    "shortuuid",
+    "toml",
+]
+description-file = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3.6",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+]
+requires-python = ">=3.6"
+
+[tool.flit.scripts]
+kisee = "kisee.kisee:main"
+
+[tool.flit.metadata.requires-extra]
+dev = [
+    "hypothesis",
+    "pycalver",
+    "pytest",
+    "pytest-cov",
+    "pytest-aiohttp",
+    "flake8",
+    "pylint",
+    "black",
+    "bandit",
+    "mypy",
+]

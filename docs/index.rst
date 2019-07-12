@@ -10,6 +10,7 @@ Welcome to kisee's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   installing
    features
    settings
    api
