@@ -3,6 +3,9 @@
 Configuration File
 ==================
 
+Example
+-------
+
 A typical ``settings.toml`` file looks like this::
 
     [server]

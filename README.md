@@ -1,5 +1,8 @@
 # Kisee — Identity Provider Server
 
+[![Documentation Status](https://readthedocs.org/projects/kisee/badge/?version=latest)](https://kisee.readthedocs.io/en/latest/?badge=latest)
+
+
 ## Name
 
 The name "Kisee", inspired from "KISS" ("Keep it simple, stupid.") is

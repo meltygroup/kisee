@@ -1,4 +1,4 @@
-Kasee API
+Kisee API
 =========
 
 The Kisee API exposes the following resources:
