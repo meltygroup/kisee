@@ -1,6 +1,7 @@
 # Kisee — Identity Provider Server
 
 [![Documentation Status](https://readthedocs.org/projects/kisee/badge/?version=latest)](https://kisee.readthedocs.io/en/latest/?badge=latest)
+[![Package on PyPI](https://img.shields.io/pypi/v/kisee.svg)](https://pypi.org/project/kisee/)
 
 
 ## Name
@@ -27,15 +28,8 @@ file, a PostgreSQL database with a strange schema, whatever.
 
 ## Quick start
 
-Once you've cloned the repo and created a venv, install kisee in it:
-
 ```
-$ python3 -m pip install -e .[dev]
-```
-
-Start kisee:
-
-```
+$ pip install kisee
 $ kisee --settings example-settings.toml
 ```
 
@@ -78,24 +72,4 @@ $ curl http://0.0.0.0:8140/jwt/ -XPOST -d '{"login": "John", "password": "secure
 }
 ```
 
-## FAQ
-
-
-## Internals
-
-The `Kisee` daemon does not store `(login, password)` tuples, but uses
-a Python class, a `backend` you can configure in `settings.toml` to
-handle this.
-
-`Kisee` provides some `demo backends` and `test backends` so you can
-play with it. You can provide your own backend to hit your own
-database, your LDAP server, or another IdP as needed.
-
-
-# TODO
-
-- Admin interface
-- Status page
-- Token invalidation (`DELETE /jwt{/jti}`).
-- Rate-limiting
-- Better error messages (Maybe https://github.com/blongden/vnd.error?)
+Read the docs: https://kisee.readthedocs.io
