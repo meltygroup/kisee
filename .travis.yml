@@ -1,0 +1,14 @@
+language: python
+python:
+  - "3.6"
+env:
+  - TOX_ENV=py36
+  - TOX_ENV=black
+  - TOX_ENV=flake8
+  - TOX_ENV=pylint
+  - TOX_ENV=bandit
+  - TOX_ENV=mypy
+  - TOX_ENV=docs
+install:
+  - pip install tox
+script: tox -e $TOX_ENV
