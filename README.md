@@ -2,6 +2,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/kisee/badge/?version=latest)](https://kisee.readthedocs.io/en/latest/?badge=latest)
 [![Package on PyPI](https://img.shields.io/pypi/v/kisee.svg)](https://pypi.org/project/kisee/)
+[![Build status](https://travis-ci.org/meltygroup/kisee.svg?branch=master)](https://travis-ci.org/meltygroup/kisee)
 
 
 ## Name
