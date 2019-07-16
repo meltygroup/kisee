@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
-import kisee.kisee as kisee
+from kisee import kisee, __main__  # noqa
 
 
 def test_load_conf():
