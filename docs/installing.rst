@@ -17,13 +17,9 @@ To install ``kisee``, run::
 
   pip install kisee
 
-Copy example settings::
+Quickstart a settings file::
 
-  cp example-settings.toml settings.toml
-
-Edit it, to at least generate a new private/public key pair)::
-
-  editor settings.toml
+  kisee-quickstart
 
 Run it once manually to test it::
 

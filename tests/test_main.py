@@ -3,6 +3,7 @@
 
 
 import sys
+from test.support import temp_cwd
 from unittest.mock import patch
 
 import pytest
@@ -13,8 +14,9 @@ from kisee import kisee, __main__  # noqa
 def test_load_conf():
     """Test the configuration loading
     """
-    with pytest.raises(SystemExit):
-        kisee.load_conf("settings.toml")
+    with temp_cwd():
+        with pytest.raises(SystemExit):
+            kisee.load_conf("settings.toml")
     config = kisee.load_conf("tests/test_settings.toml")
     assert config["server"]["host"] == "0.0.0.0"
 
