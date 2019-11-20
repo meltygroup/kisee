@@ -111,9 +111,12 @@ async def get_users(request: web.Request) -> web.Response:
 
 
 async def post_users(request: web.Request) -> web.Response:
-    """A client is asking to create a new user
+    """A client is asking to create a new user.
     """
-    data = await request.json()
+    try:
+        data = await request.json()
+    except json.JSONDecodeError:
+        raise web.HTTPBadRequest(reason="Invalid JSON.")
 
     if not all(key in data.keys() for key in {"username", "email", "password"}):
         raise web.HTTPBadRequest(reason="Missing required input fields")
