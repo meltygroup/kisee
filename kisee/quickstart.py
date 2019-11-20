@@ -71,11 +71,13 @@ def add_ec_keys(config: Config) -> None:
     """
     private_key_process = run(
         ["openssl", "ecparam", "-name", "secp256k1", "-genkey", "-noout", "-out", "-"],
+        check=True,
         stdout=PIPE,
     )
     private_key = private_key_process.stdout.decode("ASCII")
     public_key_process = run(
         ["openssl", "ec", "-in", "-", "-pubout"],
+        check=True,
         input=private_key_process.stdout,
         stdout=PIPE,
     )
