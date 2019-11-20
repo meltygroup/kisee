@@ -99,6 +99,15 @@ async def test_post_users(client):
     assert response.status == 201
 
 
+async def test_post_bad_json_to_users(client):
+    response = await client.post(
+        "/users/", headers={"Content-Type": "application/json"}, data=b"",
+    )
+
+    assert response.status == 400
+    assert response.reason == "Malformed JSON."
+
+
 async def test_post_users__conflict__user_already_exists(client, monkeypatch):
     monkeypatch.setattr(
         "kisee.providers.demo.DemoBackend.register_user", mocks.register_user

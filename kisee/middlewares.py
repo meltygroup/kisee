@@ -17,14 +17,12 @@ async def verify_input_body_is_json(
     request: web.Request, handler: Handler
 ) -> web.StreamResponse:
     """
-    Middleware to verify that input body is of json format
+    Middleware to convert JSONDecodeError to HTTPBadRequest.
     """
-    if request.can_read_body:
-        try:
-            await request.json()
-        except json.decoder.JSONDecodeError:
-            raise web.HTTPBadRequest(reason="Malformed JSON.")
-    return await handler(request)
+    try:
+        return await handler(request)
+    except json.decoder.JSONDecodeError as err:
+        raise web.HTTPBadRequest(reason="Malformed JSON.") from err
 
 
 @web.middleware
