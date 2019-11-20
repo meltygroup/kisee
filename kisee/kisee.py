@@ -127,10 +127,10 @@ def identification_app(settings: Settings) -> web.Application:
 def main() -> None:  # pragma: no cover
     """Command line entry point.
     """
-    sentry_sdk.init()
     args = parse_args()
     setup_logging(args.loglevel)
     settings = load_conf(args.settings)
+    sentry_sdk.init(settings.get("SENTRY_DSN"))
     app = identification_app(settings)
     web.run_app(
         app, host=settings["server"]["host"], port=int(settings["server"]["port"])
