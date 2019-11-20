@@ -1,3 +1,5 @@
 """HTTP server managing identities."""
 
-__version__ = "19.7.0"
+# Version format is: YY.MM.patch
+
+__version__ = "19.11.0"
