@@ -2,4 +2,4 @@
 
 # Version format is: YY.MM.patch
 
-__version__ = "19.11.0"
+__version__ = "19.11.1"
