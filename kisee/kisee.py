@@ -11,6 +11,7 @@ import toml
 from aiohttp import web
 
 import sentry_sdk
+from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
 from kisee import views
 from kisee.identity_provider import import_idp
@@ -130,7 +131,7 @@ def main() -> None:  # pragma: no cover
     args = parse_args()
     setup_logging(args.loglevel)
     settings = load_conf(args.settings)
-    sentry_sdk.init(settings.get("SENTRY_DSN"))
+    sentry_sdk.init(settings.get("SENTRY_DSN"), integrations=[AioHttpIntegration()])
     app = identification_app(settings)
     web.run_app(
         app, host=settings["server"]["host"], port=int(settings["server"]["port"])

@@ -16,7 +16,8 @@ requires = [
     "cryptography",
     "psutil",
     "pyjwt",
-    "sentry-sdk",
+    "sentry-sdk>=0.13.2",
+    "aiocontextvars",
     "shortuuid",
     "toml",
 ]
