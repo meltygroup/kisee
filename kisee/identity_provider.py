@@ -5,8 +5,14 @@ from importlib import import_module
 from typing import AsyncContextManager, Optional, Type
 
 
-class UserAlreadyExist(Exception):
-    """Exception raised when user already exists
+class ProviderError(Exception):
+    """Any error raised by an IdentityProvider, like:
+    "Login too short", "Password too weak", ...
+    """
+
+
+class UserAlreadyExist(ProviderError):
+    """Exception raised by register_user on username/email conflict.
     """
 
 
@@ -43,7 +49,8 @@ class IdentityProvider(
     async def register_user(
         self, username: str, password: str, email: str, is_superuser: bool = False
     ):
-        """Create user with login, password and email
+        """Create user with login, password and email.
+        Can raise UserAlreadyExist
         """
 
     @abstractmethod
