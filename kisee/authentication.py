@@ -42,7 +42,10 @@ async def _jwt_authentication(
     except jwt.DecodeError as err:
         raise web.HTTPUnauthorized(reason="Bad authorization") from err
     else:
-        return await idp.get_user_by_username(claims["sub"]), claims
+        user = await idp.get_user_by_username(claims["sub"])
+        if not user:
+            raise web.HTTPUnauthorized(reason="No such user")
+        return user, claims
 
 
 async def authenticate_user(request: web.Request) -> Tuple[User, Claims]:

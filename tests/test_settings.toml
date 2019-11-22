@@ -5,17 +5,6 @@ port = 8140
 
 [identity_backend]
   class = "kisee.providers.demo.DemoBackend"
-  [identity_backend.options]
-    no = "option required"
-
-# [identity_backend]
-#   class = "shape.mysql.DataStore"
-#   [identity_backend.options]
-#     host = "127.0.0.1"
-#     port = 3306
-#     user = "root"
-#     password = "my_secret_password"
-#     database = "my_database"
 
 [email]
     host = "localhost"
