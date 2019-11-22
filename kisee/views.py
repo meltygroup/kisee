@@ -95,7 +95,7 @@ async def get_users(request: web.Request) -> web.Response:
             title="Users",
             content={
                 "users": [],
-                "register_user": coreapi.Link(
+                "register-user": coreapi.Link(
                     action="post",
                     title="Register a new user",
                     description="POSTing to this endpoint creates a new user",
