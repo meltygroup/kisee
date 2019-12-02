@@ -13,5 +13,7 @@ matrix:
     - python: "3.6"
       env: TOX_ENV=py36
 install:
-  - pip install tox
-script: tox -e $TOX_ENV
+  - pip install tox pip-tools
+script:
+  - pip-sync requirements-dev.txt
+  - tox -e $TOX_ENV

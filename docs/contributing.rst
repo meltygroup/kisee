@@ -6,7 +6,7 @@ Quickstart
 
 To install dev dependencies, create a venv and run::
 
-  pip install flit
+  pip install -r requirements-dev.txt
   flit install --symlink
 
 And run kisee using::

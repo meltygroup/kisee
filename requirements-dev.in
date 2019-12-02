@@ -1,0 +1,10 @@
+hypothesis
+pycalver
+pytest
+pytest-cov
+pytest-aiohttp
+flake8
+pylint
+black
+bandit
+mypy

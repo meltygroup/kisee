@@ -32,17 +32,3 @@ requires-python = ">=3.6"
 [tool.flit.scripts]
 kisee = "kisee.kisee:main"
 kisee-quickstart = "kisee.quickstart:main"
-
-[tool.flit.metadata.requires-extra]
-dev = [
-    "hypothesis",
-    "pycalver",
-    "pytest",
-    "pytest-cov",
-    "pytest-aiohttp",
-    "flake8",
-    "pylint",
-    "black",
-    "bandit",
-    "mypy",
-]
