@@ -12,7 +12,6 @@ requires = [
     "aiomysql",
     "asyncpg",
     "bcrypt",
-    "coreapi",
     "cryptography",
     "psutil",
     "pyjwt",

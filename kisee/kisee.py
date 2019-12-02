@@ -15,7 +15,7 @@ from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
 from kisee import views
 from kisee.identity_provider import import_idp
-from kisee.middlewares import verify_input_body_is_json, coreapi_error_middleware
+from kisee.middlewares import enforce_json
 
 Settings = Mapping[str, Any]
 
@@ -85,8 +85,7 @@ def identification_app(settings: Settings) -> web.Application:
     """Identification provider entry point: builds and run a webserver.
     """
     app = web.Application(
-        middlewares=[verify_input_body_is_json, coreapi_error_middleware],
-        debug=settings["server"].get("debug", False),
+        middlewares=[enforce_json], debug=settings["server"].get("debug", False),
     )
     app["settings"] = settings
     app["identity_backend"] = import_idp(settings["identity_backend"]["class"])(

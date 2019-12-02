@@ -9,7 +9,6 @@ import json
 import logging
 from datetime import datetime, timedelta
 
-import coreapi
 import jwt
 import psutil
 import shortuuid
@@ -19,12 +18,15 @@ from kisee.authentication import authenticate_user
 from kisee.emails import forge_forgotten_email, is_email, send_mail
 from kisee.identity_provider import UserAlreadyExist
 from kisee.serializers import serialize
+from kisee import serializers
 from kisee.utils import get_user_with_email_or_username
 
 logger = logging.getLogger(__name__)
 
 
-async def get_root(request: web.Request) -> web.Response:
+async def get_root(
+    request: web.Request,  # pylint: disable=unused-argument
+) -> web.Response:
     """https://tools.ietf.org/html/draft-nottingham-json-home-06
     """
     hostname = request.app["settings"]["server"]["hostname"]
@@ -87,22 +89,38 @@ async def get_root(request: web.Request) -> web.Response:
 async def get_users(request: web.Request) -> web.Response:
     """View for GET /users/, just describes that a POST is possible.
     """
-    hostname = request.app["settings"]["server"]["hostname"]
     return serialize(
         request,
-        coreapi.Document(
-            url=f"{hostname}/users/",
+        serializers.Document(
+            url="/users/",
             title="Users",
             content={
                 "users": [],
-                "register-user": coreapi.Link(
+                "register-user": serializers.Link(
+                    url="/users/",
                     action="post",
                     title="Register a new user",
                     description="POSTing to this endpoint creates a new user",
                     fields=[
-                        coreapi.Field(name="username", required=True),
-                        coreapi.Field(name="password", required=True),
-                        coreapi.Field(name="email", required=True),
+                        serializers.Field(
+                            name="username",
+                            required=True,
+                            schema={"type": "string", "minLength": 3},
+                        ),
+                        serializers.Field(
+                            name="password",
+                            required=True,
+                            schema={
+                                "type": "string",
+                                "minLength": 5,
+                                "format": "password",
+                            },
+                        ),
+                        serializers.Field(
+                            name="email",
+                            required=True,
+                            schema={"type": "string", "format": "email"},
+                        ),
                     ],
                 ),
             },
@@ -153,21 +171,27 @@ async def patch_user(request: web.Request) -> web.Response:
 async def get_jwts(request: web.Request) -> web.Response:
     """Handlers for GET /jwt/, just describes that a POST is possible.
     """
-    hostname = request.app["settings"]["server"]["hostname"]
     return serialize(
         request,
-        coreapi.Document(
-            url=f"{hostname}/jwt/",
+        serializers.Document(
+            url=f"/jwt/",
             title="JSON Web Tokens",
             content={
                 "tokens": [],
-                "add_token": coreapi.Link(
+                "add_token": serializers.Link(
+                    url="/jwt/",
                     action="post",
                     title="Create a new JWT",
                     description="POSTing to this endpoint create JWT tokens.",
                     fields=[
-                        coreapi.Field(name="login", required=True),
-                        coreapi.Field(name="password", required=True),
+                        serializers.Field(
+                            name="login", required=True, schema={"type": "string"}
+                        ),
+                        serializers.Field(
+                            name="password",
+                            required=True,
+                            schema={"type": "string", "format": "password"},
+                        ),
                     ],
                 ),
             },
@@ -197,7 +221,7 @@ async def post_jwt(request: web.Request) -> web.Response:
     jti = shortuuid.uuid()
     return serialize(
         request,
-        coreapi.Document(
+        serializers.Document(
             url="/jwt/",
             title="JSON Web Tokens",
             content={
@@ -213,13 +237,20 @@ async def post_jwt(request: web.Request) -> web.Response:
                         algorithm="ES256",
                     ).decode("utf8")
                 ],
-                "add_token": coreapi.Link(
+                "add_token": serializers.Link(
+                    url="/jwt/",
                     action="post",
                     title="Create a new JWT",
                     description="POSTing to this endpoint create JWT tokens.",
                     fields=[
-                        coreapi.Field(name="login", required=True),
-                        coreapi.Field(name="password", required=True),
+                        serializers.Field(
+                            name="login", required=True, schema={"type": "string"}
+                        ),
+                        serializers.Field(
+                            name="password",
+                            required=True,
+                            schema={"type": "string", "format": "password"},
+                        ),
                     ],
                 ),
             },
@@ -232,20 +263,25 @@ async def post_jwt(request: web.Request) -> web.Response:
 async def get_forgotten_passwords(request: web.Request) -> web.Response:
     """Get forgotten password view, just describes that a POST is possible.
     """
-    hostname = request.app["settings"]["server"]["hostname"]
     return serialize(
         request,
-        coreapi.Document(
-            url=f"{hostname}/forgotten-passwords/",
+        serializers.Document(
+            url=f"/forgotten-passwords/",
             title="Forgotten password management",
             content={
-                "reset-password": coreapi.Link(
+                "reset-password": serializers.Link(
+                    url="/forgotten-password/",
                     action="post",
                     title="",
                     description="""
                         POSTing to this endpoint subscribe for a forgotten password
                     """,
-                    fields=[coreapi.Field(name="login"), coreapi.Field(name="email")],
+                    fields=[
+                        serializers.Field(name="login", schema={"type": "string"}),
+                        serializers.Field(
+                            name="email", schema={"type": "string", "format": "email"}
+                        ),
+                    ],
                 )
             },
         ),

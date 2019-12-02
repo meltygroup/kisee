@@ -6,35 +6,34 @@ from typing import Callable, Awaitable
 
 from aiohttp import web
 
-from kisee.serializers import serialize
-
 
 Handler = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
 
 @web.middleware
-async def verify_input_body_is_json(
-    request: web.Request, handler: Handler
-) -> web.StreamResponse:
-    """
-    Middleware to convert JSONDecodeError to HTTPBadRequest.
+async def enforce_json(request: web.Request, handler: Handler) -> web.Response:
+    """Middleware enforcing a JSON response.
     """
     try:
         return await handler(request)
-    except json.decoder.JSONDecodeError as err:
-        raise web.HTTPBadRequest(reason="Malformed JSON.") from err
-
-
-@web.middleware
-async def coreapi_error_middleware(
-    request: web.Request, handler: Handler
-) -> web.StreamResponse:
-    """Implementation of:
-    http://www.coreapi.org/specification/transport/#coercing-4xx-and-5xx-responses-to-errors
-    """
-    try:
-        return await handler(request)
-    except web.HTTPException as ex:
-        return serialize(
-            request, {"_type": "error", "_meta": {"title": ex.reason}}, ex.status
-        )
+    except json.JSONDecodeError as err:
+        document = {
+            "_type": "error",
+            "_meta": {"title": "Malformed JSON"},
+            "title": "Malformed JSON",
+            "detail": str(err),
+            "status": 400,
+        }
+    except web.HTTPException as err:
+        document = {
+            "_type": "error",
+            "_meta": {"title": err.reason},
+            "title": err.reason,
+            "status": err.status,
+        }
+    return web.Response(
+        text=json.dumps(document, indent=4),
+        status=document["status"],  # type: ignore
+        reason=document["title"],  # type: ignore
+        content_type="application/problem+json",
+    )
