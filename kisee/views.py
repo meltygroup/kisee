@@ -53,7 +53,7 @@ async def get_root(
                     "formats": {"application/coreapi+json": {}},
                 },
             },
-            "forgotten-passwords": {
+            "forgotten_passwords": {
                 "href": f"{hostname}/forgotten-passwords/",
                 "hints": {
                     "allow": ["GET", "POST"],
@@ -62,7 +62,7 @@ async def get_root(
             },
         },
         "actions": {
-            "register-user": {
+            "register_user": {
                 "href": f"{hostname}/users/",
                 "method": "POST",
                 "fields": [
@@ -71,7 +71,7 @@ async def get_root(
                     {"name": "email", "required": True},
                 ],
             },
-            "create-token": {
+            "create_token": {
                 "href": f"{hostname}/jwt/",
                 "method": "POST",
                 "fields": [
@@ -96,7 +96,7 @@ async def get_users(request: web.Request) -> web.Response:
             title="Users",
             content={
                 "users": [],
-                "register-user": serializers.Link(
+                "register_user": serializers.Link(
                     url="/users/",
                     action="post",
                     title="Register a new user",
@@ -269,7 +269,7 @@ async def get_forgotten_passwords(request: web.Request) -> web.Response:
             url=f"/forgotten-passwords/",
             title="Forgotten password management",
             content={
-                "reset-password": serializers.Link(
+                "reset_password": serializers.Link(
                     url="/forgotten-password/",
                     action="post",
                     title="",
