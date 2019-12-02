@@ -9,6 +9,7 @@ from typing import Mapping, Any
 
 import toml
 from aiohttp import web
+import aiohttp_cors
 
 import sentry_sdk
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
@@ -120,6 +121,21 @@ def identification_app(settings: Settings) -> web.Application:
             web.get("/health/", views.get_health),
         ]
     )
+
+    cors = aiohttp_cors.setup(
+        app,
+        defaults={
+            "*": aiohttp_cors.ResourceOptions(
+                allow_credentials=True,
+                expose_headers="*",
+                allow_headers="*",
+                allow_methods=["GET", "OPTIONS", "PUT", "POST", "DELETE", "PATCH"],
+            )
+        },
+    )
+
+    for route in list(app.router.routes()):
+        cors.add(route)
 
     return app
 

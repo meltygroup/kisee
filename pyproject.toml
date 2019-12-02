@@ -9,6 +9,7 @@ author-email = "julien@python.org"
 home-page = "https://github.com/meltygroup/kisee"
 requires = [
     "aiohttp",
+    "aiohttp-cors",
     "aiomysql",
     "asyncpg",
     "bcrypt",
