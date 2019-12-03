@@ -54,17 +54,17 @@ class IdentityProvider(
         """
 
     @abstractmethod
-    async def get_user_by_email(self, email) -> User:
+    async def get_user_by_email(self, email) -> Optional[User]:
         """Get user with provided email address
         """
 
     @abstractmethod
-    async def get_user_by_username(self, username) -> User:
+    async def get_user_by_username(self, username) -> Optional[User]:
         """Get user with provided username
         """
 
     @abstractmethod
-    async def set_password_for_user(self, user: User, password: str):
+    async def set_password_for_user(self, user: User, password: str) -> None:
         """Set password for user
         """
 

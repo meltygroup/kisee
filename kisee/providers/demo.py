@@ -12,6 +12,10 @@ from kisee.identity_provider import (
 
 
 class DummyUser(User):
+    """The demo has no storage, so we'll just store the password in the
+    user objects in memory.
+    """
+
     def __init__(self, password, **kwargs):
         super().__init__(**kwargs)
         self.password = password
