@@ -5,10 +5,54 @@ various representations of our resources like mason, json-ld, hal, ...
 
 from collections import OrderedDict
 import json
-from typing import Optional, Union, List, Dict, Any
+from typing import Optional, Union, List, Dict, Any, Mapping, Set
 from urllib.parse import urljoin
 
 from aiohttp import web
+
+
+class NoCodecAvailable(Exception):
+    ...
+
+
+class Serializers(dict):
+    """This class only holds available serializers as an easy to use dict.
+    """
+
+    def __init__(self, **kwargs):
+        self.default = None
+        super().__init__(**kwargs)
+
+    def __call__(self, media_types: Set[str], default: bool):
+        def _(serializer):
+            self[frozenset(media_types)] = serializer
+            if default:
+                self.default = serializer
+            return serializer
+
+        return _
+
+    def __getitem__(self, accept: str):
+        if not accept:
+            return self.default
+        acceptable = set(
+            [item.split(";")[0].strip().lower() for item in accept.split(",")]
+        )
+
+        for media_types, serializer in self.items():
+            for media_type in media_types:
+                if media_type in acceptable:
+                    return serializer
+
+        for media_types, serializer in self.items():
+            for media_type in media_types:
+                if codec.media_type.split("/")[0] + "/*" in acceptable:
+                    return codec
+
+        if "*/*" in acceptable:
+            return self.default
+
+        raise NoCodecAvailable(f"Unsupported media in Accept header {accept!r}")
 
 
 class Document:
@@ -92,6 +136,10 @@ def as_absolute(base, url):
     return url
 
 
+serializers = Serializers()
+
+
+@serializers(media_types={"application/coreapi+json"}, default=True)
 def coreapi_serializer(node, base_url=None):
     """Take a Core API document and return Python primitives
     ready to be rendered into the JSON style encoding.
@@ -142,6 +190,29 @@ def coreapi_serializer(node, base_url=None):
     return node
 
 
+@serializers(media_types={"application/json"}, default=True)
+def json_serializer(node, base_url=None):
+    """Serialize a response to basic json to Python primitives ready to be
+    rendered into the JSON style encoding.
+    """
+    if isinstance(node, Document):
+        return {
+            key: json_serializer(value, base_url=base_url)
+            for key, value in node.data.items()
+        }
+
+    if isinstance(node, Link):
+        return as_absolute(base_url, node.url)
+
+    if isinstance(node, Field):
+        return node.name
+
+    if isinstance(node, list):
+        return [json_serializer(value, base_url=base_url) for value in node]
+
+    return node
+
+
 def serialize(
     request: web.Request, document: Document, status=200, headers=None
 ) -> web.Response:
@@ -149,9 +220,12 @@ def serialize(
     given request.
     """
     content = json.dumps(
-        coreapi_serializer(document, request.app["settings"]["server"]["hostname"]),
+        serializers[request.headers.get("Accept")](
+            document, request.app["settings"]["server"]["hostname"]
+        ),
         indent=4,
     ).encode("UTF-8")
+    request.headers.get("Accept")
     return web.Response(
         body=content, content_type="application/json", headers=headers, status=status,
     )
