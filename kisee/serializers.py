@@ -5,7 +5,7 @@ various representations of our resources like mason, json-ld, hal, ...
 
 from collections import OrderedDict
 import json
-from typing import Optional, Union, List, Dict, Any, Mapping, Set
+from typing import Optional, Union, List, Dict, Any, Set
 from urllib.parse import urljoin
 
 from aiohttp import web
@@ -46,8 +46,8 @@ class Serializers(dict):
 
         for media_types, serializer in self.items():
             for media_type in media_types:
-                if codec.media_type.split("/")[0] + "/*" in acceptable:
-                    return codec
+                if media_type.split("/")[0] + "/*" in acceptable:
+                    return serializer
 
         if "*/*" in acceptable:
             return self.default
@@ -139,6 +139,38 @@ def as_absolute(base, url):
 serializers = Serializers()
 
 
+class MediaType:
+    """Parses "media-range [ accept-params ]" from RFC 2616:
+
+       Accept           = "Accept" ":"
+                          #( media-range [ accept-params ] )
+       media-range      = ( "*/*"
+                          | ( type "/" "*" )
+                          | ( type "/" subtype )
+                          ) *( ";" parameter )
+       accept-params    = ";" "q" "=" qvalue *( accept-extension )
+       accept-extension = ";" token [ "=" ( token | quoted-string ) ]
+       type             = token
+       subtype          = token
+       parameter        = attribute "=" value
+       attribute        = token
+       value            = token | quoted-string
+       token            = 1*<any CHAR except CTLs or separators>
+
+    """
+
+    def __init__(self, accept: str):
+        self.parse(accept)
+
+    def parse(self, accept):
+        self.type, _, accept = accept.partition("/")
+        self.subtype, _, accept = accept.partition(";")
+        parameters = []
+        while accept:
+            parameter, _, accept = accept.partition(";")
+            parameters.append(parameter)
+
+
 @serializers(media_types={"application/coreapi+json"}, default=True)
 def coreapi_serializer(node, base_url=None):
     """Take a Core API document and return Python primitives
@@ -190,7 +222,7 @@ def coreapi_serializer(node, base_url=None):
     return node
 
 
-@serializers(media_types={"application/json"}, default=True)
+@serializers(media_types={"application/json"}, default=False)
 def json_serializer(node, base_url=None):
     """Serialize a response to basic json to Python primitives ready to be
     rendered into the JSON style encoding.
