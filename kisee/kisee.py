@@ -5,7 +5,7 @@ import argparse
 import logging
 import os
 import sys
-from typing import Mapping, Any
+from typing import Mapping, Any, Optional
 
 import toml
 from aiohttp import web
@@ -44,7 +44,7 @@ def setup_logging(loglevel):  # pragma: no cover
     )
 
 
-def load_conf(settings_path: str) -> Settings:
+def load_conf(settings_path: str = "settings.toml") -> Settings:
     """Search for a settings.toml file and load it.
     """
     candidates = (
@@ -82,9 +82,10 @@ def parse_args(program_args=None) -> argparse.Namespace:
     return parser.parse_args(program_args)
 
 
-def identification_app(settings: Settings) -> web.Application:
+def create_app(settings: Optional[Settings] = None) -> web.Application:
     """Identification provider entry point: builds and run a webserver.
     """
+    settings = load_conf()
     app = web.Application(
         middlewares=[enforce_json], debug=settings["server"].get("debug", False),
     )
@@ -147,7 +148,7 @@ def main() -> None:  # pragma: no cover
     setup_logging(args.loglevel)
     settings = load_conf(args.settings)
     sentry_sdk.init(settings.get("SENTRY_DSN"), integrations=[AioHttpIntegration()])
-    app = identification_app(settings)
+    app = create_app(settings)
     web.run_app(
         app, host=settings["server"]["host"], port=int(settings["server"]["port"])
     )
