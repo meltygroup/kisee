@@ -8,10 +8,11 @@ To install dev dependencies, create a venv and run::
 
   pip install -r requirements-dev.txt
   flit install --symlink
+  cp example-settings.toml settings.toml
 
-And run kisee using::
+And run kisee in development mode using::
 
-  kisee  # or python -m kisee
+  adev runserver kisee/kisee.py
 
 
 Internals
