@@ -19,6 +19,7 @@ requires = [
     "sentry-sdk>=0.13.2",
     "aiocontextvars",
     "shortuuid",
+    "werkzeug",
     "toml",
 ]
 description-file = "README.md"

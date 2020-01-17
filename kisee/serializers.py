@@ -9,10 +9,7 @@ from typing import Optional, Union, List, Dict, Any, Set
 from urllib.parse import urljoin
 
 from aiohttp import web
-
-
-class NoCodecAvailable(Exception):
-    ...
+from werkzeug.http import parse_accept_header
 
 
 class Serializers(dict):
@@ -24,8 +21,12 @@ class Serializers(dict):
         super().__init__(**kwargs)
 
     def __call__(self, media_types: Set[str], default: bool):
+        """Register a new serializer with a set of accepted media types.
+        """
+
         def _(serializer):
-            self[frozenset(media_types)] = serializer
+            for media_type in media_types:
+                self[media_type] = serializer
             if default:
                 self.default = serializer
             return serializer
@@ -33,26 +34,14 @@ class Serializers(dict):
         return _
 
     def __getitem__(self, accept: str):
+        """Find the best serializer for the given Accept header.
+        """
         if not accept:
             return self.default
-        acceptable = set(
-            [item.split(";")[0].strip().lower() for item in accept.split(",")]
-        )
-
-        for media_types, serializer in self.items():
-            for media_type in media_types:
-                if media_type in acceptable:
-                    return serializer
-
-        for media_types, serializer in self.items():
-            for media_type in media_types:
-                if media_type.split("/")[0] + "/*" in acceptable:
-                    return serializer
-
-        if "*/*" in acceptable:
+        media_type = parse_accept_header(accept).best_match(self.keys())
+        if not media_type:
             return self.default
-
-        raise NoCodecAvailable(f"Unsupported media in Accept header {accept!r}")
+        return super().__getitem__(media_type)
 
 
 class Document:
@@ -136,39 +125,7 @@ def as_absolute(base, url):
     return url
 
 
-serializers = Serializers()
-
-
-class MediaType:
-    """Parses "media-range [ accept-params ]" from RFC 2616:
-
-       Accept           = "Accept" ":"
-                          #( media-range [ accept-params ] )
-       media-range      = ( "*/*"
-                          | ( type "/" "*" )
-                          | ( type "/" subtype )
-                          ) *( ";" parameter )
-       accept-params    = ";" "q" "=" qvalue *( accept-extension )
-       accept-extension = ";" token [ "=" ( token | quoted-string ) ]
-       type             = token
-       subtype          = token
-       parameter        = attribute "=" value
-       attribute        = token
-       value            = token | quoted-string
-       token            = 1*<any CHAR except CTLs or separators>
-
-    """
-
-    def __init__(self, accept: str):
-        self.parse(accept)
-
-    def parse(self, accept):
-        self.type, _, accept = accept.partition("/")
-        self.subtype, _, accept = accept.partition(";")
-        parameters = []
-        while accept:
-            parameter, _, accept = accept.partition(";")
-            parameters.append(parameter)
+serializers = Serializers()  # pylint: disable=invalid-name
 
 
 @serializers(media_types={"application/coreapi+json"}, default=True)
@@ -257,7 +214,6 @@ def serialize(
         ),
         indent=4,
     ).encode("UTF-8")
-    request.headers.get("Accept")
     return web.Response(
         body=content, content_type="application/json", headers=headers, status=status,
     )
