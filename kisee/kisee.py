@@ -85,7 +85,7 @@ def parse_args(program_args=None) -> argparse.Namespace:
 def create_app(settings: Optional[Settings] = None) -> web.Application:
     """Identification provider entry point: builds and run a webserver.
     """
-    settings = load_conf()
+    settings = settings or load_conf()
     app = web.Application(
         middlewares=[enforce_json], debug=settings["server"].get("debug", False),
     )
