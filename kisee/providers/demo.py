@@ -2,6 +2,9 @@
 anything and accepts almost any login/password pair.
 """
 from typing import Optional
+from string import ascii_letters, digits
+from random import choices
+import curses
 
 from kisee.identity_provider import (
     IdentityProvider,
@@ -31,15 +34,31 @@ class DemoBackend(IdentityProvider):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        root_password = "".join(choices(ascii_letters + digits, k=8))
+        self._print_credentials(root_password)
         self.storage = {
             "root": DummyUser(
                 user_id="root",
                 username="root",
-                password="root",
+                password=root_password,
                 email="root@example.com",
                 is_superuser=True,
             )
         }
+
+    def _print_credentials(self, password):
+        try:
+            curses.setupterm()
+            fg_color = curses.tigetstr("setaf") or curses.tigetstr("setf") or ""
+            green = str(curses.tparm(fg_color, 2), "ascii")
+            no_color = str(curses.tigetstr("sgr0"), "ascii")
+        except curses.error:
+            green, no_color = ""
+        print(green)
+        print("Admin credentials for this session is:")
+        print(f"login: root")
+        print(f"password: {password}")
+        print(no_color)
 
     async def __aenter__(self):
         return self
@@ -82,6 +101,7 @@ class DemoBackend(IdentityProvider):
         for user in self.storage.values():
             if user.email == email:
                 return user
+        return None
 
     async def get_user_by_username(self, username) -> Optional[User]:
         """Get user with provided username.
