@@ -7,6 +7,7 @@ import jwt
 
 from kisee.providers.demo import DemoBackend
 from kisee.authentication import _jwt_authentication, _basic_authentication
+from kisee.identity_provider import ProviderError
 
 
 @pytest.fixture
@@ -54,6 +55,14 @@ async def test_basic_authentication_fails():
         await _basic_authentication(s, DemoBackend())
 
 
+async def test_malformed_basic_authentication_fails():
+    """Assert that a random string encoded in base64 is never a valid basic auth.
+    """
+    s = base64.b64encode(b"foobar")
+    with pytest.raises(aiohttp.web_exceptions.HTTPUnauthorized):
+        await _basic_authentication(s, DemoBackend())
+
+
 async def test_basic_authentication_succeed():
     async with DemoBackend() as backend:
         await backend.register_user("toto", "toto", "toto", "toto@example.com")
@@ -64,7 +73,20 @@ async def test_basic_authentication_succeed():
 
 
 async def test_basic_authentication_bad_password():
-    with pytest.raises(aiohttp.web_exceptions.HTTPUnauthorized):
-        user, claims = await _basic_authentication(
-            base64.b64encode(b"toto:t"), DemoBackend()
-        )
+    async with DemoBackend() as backend:
+        await backend.register_user("toto", "toto", "toto", "toto@example.com")
+        with pytest.raises(aiohttp.web_exceptions.HTTPUnauthorized):
+            user, claims = await _basic_authentication(
+                base64.b64encode(b"toto:t"), backend
+            )
+
+
+async def test_register_user_login_too_short():
+    async with DemoBackend() as backend:
+        with pytest.raises(ProviderError):
+            await backend.register_user("to", "toto", "toto@example.com")
+
+
+async def test_basic_authentication_no_user():
+    with pytest.raises(ValueError):
+        await DemoBackend().identify(None, None)

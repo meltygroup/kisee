@@ -24,6 +24,21 @@ class DummyUser(User):
         self.password = password
 
 
+def _print_credentials(password: str) -> None:
+    try:  # pragma: no cover  (no term in pytest)
+        curses.setupterm()
+        fg_color = curses.tigetstr("setaf") or curses.tigetstr("setf") or b""
+        green = str(curses.tparm(fg_color, 2), "ascii")
+        no_color = str(curses.tigetstr("sgr0"), "ascii")
+    except curses.error:
+        green, no_color = "", ""
+    print(green)
+    print("Admin credentials for this session is:")
+    print(f"login: root")
+    print(f"password: {password}")
+    print(no_color)
+
+
 class DemoBackend(IdentityProvider):
     """In-memory identity backend, for demo and tests purposes.
 
@@ -35,7 +50,7 @@ class DemoBackend(IdentityProvider):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         root_password = "".join(choices(ascii_letters + digits, k=8))
-        self._print_credentials(root_password)
+        _print_credentials(root_password)
         self.storage = {
             "root": DummyUser(
                 user_id="root",
@@ -46,20 +61,6 @@ class DemoBackend(IdentityProvider):
             )
         }
 
-    def _print_credentials(self, password):
-        try:
-            curses.setupterm()
-            fg_color = curses.tigetstr("setaf") or curses.tigetstr("setf") or ""
-            green = str(curses.tparm(fg_color, 2), "ascii")
-            no_color = str(curses.tigetstr("sgr0"), "ascii")
-        except curses.error:
-            green, no_color = ""
-        print(green)
-        print("Admin credentials for this session is:")
-        print(f"login: root")
-        print(f"password: {password}")
-        print(no_color)
-
     async def __aenter__(self):
         return self
 
@@ -69,7 +70,6 @@ class DemoBackend(IdentityProvider):
     async def identify(self, login: str, password: str) -> Optional[User]:
         """Identifies the given login/password pair, returns a User if found.
         """
-        # pylint: disable=unused-argument
         if login is None or password is None:
             raise ValueError("Missing user or password")
         user = self.storage.get(login)

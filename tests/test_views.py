@@ -100,6 +100,20 @@ async def test_post_users(client):
         json={"username": "user", "email": "lol@lol.com", "password": "passwod"},
     )
     assert response.status == 201
+    # Try again, should conflict
+    response = await client.post(
+        "/users/",
+        json={"username": "user", "email": "lol@lol.com", "password": "passwod"},
+    )
+    assert response.status == 409
+
+
+async def test_post_users_login_too_short(client):
+    response = await client.post(
+        "/users/",
+        json={"username": "u", "email": "lol@lol.com", "password": "passwod"},
+    )
+    assert response.status == 400
 
 
 async def test_post_bad_json_to_users(client):
@@ -224,14 +238,18 @@ async def test_patch_users_with_jwt(client, valid_jwt):
 
 async def test_patch_wrong_user_with_jwt(client, valid_jwt_to_change_pwd):
     await client.app["identity_backend"].register_user(
-        "admin", "bar", "foo@example.com"
+        "admin", "bar", "admin@example.com"
+    )
+    await client.app["identity_backend"].register_user(
+        "toto", "bar", "pouette@example.com"
     )
     response = await client.patch(
         "/users/admin/",
         headers={"Authorization": "Bearer " + valid_jwt_to_change_pwd},
         json={"password": "passwod"},
     )
-    assert response.status == 401
+    assert response.status == 403
+    assert "Token does not apply" in response.reason
 
 
 async def test_patch_users_missing_auth(client):
