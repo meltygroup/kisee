@@ -91,7 +91,7 @@ def create_app(settings: Optional[Settings] = None) -> web.Application:
     )
     app["settings"] = settings
     app["identity_backend"] = import_idp(settings["identity_backend"]["class"])(
-        settings["identity_backend"].get("options", {})
+        options=settings["identity_backend"].get("options", {})
     )
 
     async def on_startup_wrapper(app):

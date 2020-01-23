@@ -23,7 +23,7 @@ a Python class, a ``backend`` you can configure in ``settings.toml`` to
 handle this.
 
 ``Kisee`` provides some ``demo backends`` and ``test backends`` so you can
-play with it. You can provide your own backend to hit your own
+play with them. You can provide your own backend to hit your own
 database, your LDAP server, or another IdP as needed.
 
 

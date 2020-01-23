@@ -2,19 +2,64 @@
 anything and accepts almost any login/password pair.
 """
 from typing import Optional
+from string import ascii_letters, digits
+from random import choices
+import curses
 
-from kisee.identity_provider import IdentityProvider, User
+from kisee.identity_provider import (
+    IdentityProvider,
+    User,
+    ProviderError,
+    UserAlreadyExist,
+)
+
+
+class DummyUser(User):
+    """The demo has no storage, so we'll just store the password in the
+    user objects in memory.
+    """
+
+    def __init__(self, password, **kwargs):
+        super().__init__(**kwargs)
+        self.password = password
+
+
+def _print_credentials(password: str) -> None:
+    try:  # pragma: no cover  (no term in pytest)
+        curses.setupterm()
+        fg_color = curses.tigetstr("setaf") or curses.tigetstr("setf") or b""
+        green = str(curses.tparm(fg_color, 2), "ascii")
+        no_color = str(curses.tigetstr("sgr0"), "ascii")
+    except curses.error:
+        green, no_color = "", ""
+    print(green)
+    print("Admin credentials for this session is:")
+    print(f"login: root")
+    print(f"password: {password}")
+    print(no_color)
 
 
 class DemoBackend(IdentityProvider):
-    """Dumb identity backend, for demo purposes.
+    """In-memory identity backend, for demo and tests purposes.
+
     This backend follow the following rules:
-     - Any user exist and have virtually all passwords.
-     - Any password less or equal than 4 characters will fail.
-     - root is a superuser.
-    Yes, this mean than anybody logging as root with any password of
-    more than 4 chars will be superuser. This is for demo purposes only.
+     - Any user with a username of more than 3 characters can be created.
+     - root:root already exists, is supseruser.
     """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        root_password = "".join(choices(ascii_letters + digits, k=8))
+        _print_credentials(root_password)
+        self.storage = {
+            "root": DummyUser(
+                user_id="root",
+                username="root",
+                password=root_password,
+                email="root@example.com",
+                is_superuser=True,
+            )
+        }
 
     async def __aenter__(self):
         return self
@@ -23,35 +68,48 @@ class DemoBackend(IdentityProvider):
         pass
 
     async def identify(self, login: str, password: str) -> Optional[User]:
-        """Identifies the given login/password pair, returns a dict if found.
+        """Identifies the given login/password pair, returns a User if found.
         """
-        # pylint: disable=unused-argument
-        if len(password) < 4:
+        if login is None or password is None:
+            raise ValueError("Missing user or password")
+        user = self.storage.get(login)
+        if not user:
             return None
-        return User(
-            user_id=login,
-            username=login,
-            email=f"{login}@example.com",
-            is_superuser=login == "root",
-        )
+        if user.password != password:
+            return None
+        return user
 
     async def register_user(
         self, username: str, password: str, email: str, is_superuser: bool = False
-    ):
-        pass
+    ) -> None:
+        if len(username) < 3:
+            raise ProviderError("Username too short")
+        if username in self.storage:
+            raise UserAlreadyExist
+        user = DummyUser(
+            user_id=username,
+            username=username,
+            email=email,
+            is_superuser=is_superuser,
+            password=password,
+        )
+        self.storage[username] = user
 
-    async def get_user_by_email(self, email):
+    async def get_user_by_email(self, email) -> Optional[User]:
         """Get user with provided email address
         """
-        return User(user_id=email, username=email, email=email)
+        for user in self.storage.values():
+            if user.email == email:
+                return user
+        return None
 
-    async def get_user_by_username(self, username):
-        """Get user with provided username
+    async def get_user_by_username(self, username) -> Optional[User]:
+        """Get user with provided username.
         """
-        return User(user_id=username, username=username, email=f"{username}@gmail.com")
+        return self.storage.get(username)
 
     async def set_password_for_user(self, user: User, password: str):
-        pass
+        self.storage[user.username].password = password
 
     async def is_connection_alive(self) -> bool:
         """Verify that connection is alive, always return True

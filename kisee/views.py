@@ -16,7 +16,7 @@ from aiohttp import web
 
 from kisee.authentication import authenticate_user
 from kisee.emails import forge_forgotten_email, is_email, send_mail
-from kisee.identity_provider import UserAlreadyExist
+from kisee.identity_provider import UserAlreadyExist, ProviderError
 from kisee.serializers import serialize
 from kisee import serializers
 from kisee.utils import get_user_with_email_or_username
@@ -147,6 +147,8 @@ async def post_users(request: web.Request) -> web.Response:
         )
     except UserAlreadyExist:
         raise web.HTTPConflict(reason="User already exist")
+    except ProviderError as err:
+        raise web.HTTPBadRequest(reason=str(err))
 
     location = f"/users/{data['username']}/"
     return web.Response(status=201, headers={"Location": location})
@@ -296,6 +298,8 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
         raise web.HTTPBadRequest(reason="Missing required fields email or login")
 
     user = await get_user_with_email_or_username(data, request.app["identity_backend"])
+    if not user:
+        raise web.HTTPNotFound()
     jwt_token = jwt.encode(
         {
             "iss": request.app["settings"]["jwt"]["iss"],
