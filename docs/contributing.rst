@@ -7,7 +7,7 @@ Quickstart
 To install dev dependencies, create a venv and run::
 
   pip install -r requirements-dev.txt
-  flit install --symlink
+  pip install -e .
   cp example-settings.toml settings.toml
 
 And run kisee in development mode using::
@@ -34,6 +34,7 @@ Our version scheme is `calver <https://calver.org/>`__, specifically
 ``YY.MM.MICRO``, so please update it in ``kisee/__init__.py`` (single
 place), git tag, commit, and push.
 
-Then to release we're using `flit <https://flit.readthedocs.io>`__::
+Then to release::
 
-  flit publish
+  python setup.py sdist bdist_wheel
+  twine upload dist/*

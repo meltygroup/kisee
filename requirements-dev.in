@@ -2,7 +2,6 @@ aiohttp-devtools
 bandit
 black
 flake8
-flit
 hypothesis
 mypy
 pycalver
@@ -12,4 +11,3 @@ pytest-aiohttp
 pytest-cov
 setuptools
 tox
-wheel
