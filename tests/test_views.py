@@ -56,10 +56,10 @@ async def test_post_jwt(client):
         "test@example.com", "tamtam", "test@example.com",
     )
     response = await client.post(
-        "/jwt/", json={"login": "test@example.com", "password": "tamtam"}
+        "/jwt/", json={"username": "test@example.com", "password": "tamtam"}
     )
     assert response.status == 201
-    response = await client.post("/jwt/", json={"login": "test@localhost.com"})
+    response = await client.post("/jwt/", json={"username": "test@localhost.com"})
     assert response.status == 422
 
 
@@ -74,7 +74,7 @@ async def test_post_jwt_bad_password(client):
     """The test backend consider passwords of less than 4 chars to be wrong.
     """
     response = await client.post(
-        "/jwt/", json={"login": "test@localhost.com", "password": ""}
+        "/jwt/", json={"username": "test@localhost.com", "password": ""}
     )
     assert response.status == 403
 
@@ -167,6 +167,15 @@ async def test_post_forgotten_password_empty(client, monkeypatch):
 
 
 async def test_post_forgotten_password_by_username(client, monkeypatch):
+    monkeypatch.setattr("kisee.views.send_mail", mocks.send_mail)
+    await client.app["identity_backend"].register_user("foo", "bar", "foo@example.com")
+    response = await client.post("/forgotten_passwords/", json={"username": "foo"})
+    assert response.status == 201
+
+
+async def test_post_forgotten_password_by_login_for_backward_compatibility(
+    client, monkeypatch
+):
     monkeypatch.setattr("kisee.views.send_mail", mocks.send_mail)
     await client.app["identity_backend"].register_user("foo", "bar", "foo@example.com")
     response = await client.post("/forgotten_passwords/", json={"login": "foo"})

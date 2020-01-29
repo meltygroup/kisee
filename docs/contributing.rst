@@ -18,9 +18,9 @@ And run kisee in development mode using::
 Internals
 ---------
 
-The ``Kisee`` daemon does not store ``(login, password)`` tuples, but uses
-a Python class, a ``backend`` you can configure in ``settings.toml`` to
-handle this.
+The ``Kisee`` daemon does not store ``(username, password)`` tuples, but uses
+a Python class, a ``backend`` you can choose in ``settings.toml`` to
+handle the actual storage..
 
 ``Kisee`` provides some ``demo backends`` and ``test backends`` so you can
 play with them. You can provide your own backend to hit your own

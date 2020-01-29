@@ -24,8 +24,8 @@ The backend interface
 The backend class used by Kisee must implement the
 `kisee.identity_provider.IdentityProvider` ABC, meaning the following methods like::
 
-    async def identify(self, login: str, password: str) -> Optional[User]:
-        """Identifies the given login/password pair, returns a dict if found.
+    async def identify(self, username: str, password: str) -> Optional[User]:
+        """Identifies the given username/password pair, returns a dict if found.
         """
 
 

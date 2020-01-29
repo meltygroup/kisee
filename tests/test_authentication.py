@@ -81,7 +81,7 @@ async def test_basic_authentication_bad_password():
             )
 
 
-async def test_register_user_login_too_short():
+async def test_register_user_username_too_short():
     async with DemoBackend() as backend:
         with pytest.raises(ProviderError):
             await backend.register_user("to", "toto", "toto@example.com")

@@ -1,5 +1,5 @@
 """This is a really dumb identification backend: it does not store
-anything and accepts almost any login/password pair.
+anything and accepts almost any username/password pair.
 """
 from typing import Optional
 from string import ascii_letters, digits
@@ -34,7 +34,7 @@ def _print_credentials(password: str) -> None:
         green, no_color = "", ""
     print(green)
     print("Admin credentials for this session is:")
-    print(f"login: root")
+    print(f"username: root")
     print(f"password: {password}")
     print(no_color)
 
@@ -67,12 +67,12 @@ class DemoBackend(IdentityProvider):
     async def __aexit__(self, exc_type, exc_value, traceback):
         pass
 
-    async def identify(self, login: str, password: str) -> Optional[User]:
-        """Identifies the given login/password pair, returns a User if found.
+    async def identify(self, username: str, password: str) -> Optional[User]:
+        """Identifies the given username/password pair, returns a User if found.
         """
-        if login is None or password is None:
+        if username is None or password is None:
             raise ValueError("Missing user or password")
-        user = self.storage.get(login)
+        user = self.storage.get(username)
         if not user:
             return None
         if user.password != password:

@@ -7,7 +7,7 @@ from typing import AsyncContextManager, Optional, Type
 
 class ProviderError(Exception):
     """Any error raised by an IdentityProvider, like:
-    "Login too short", "Password too weak", ...
+    "Username too short", "Password too weak", ...
     """
 
 
@@ -41,15 +41,15 @@ class IdentityProvider(
         super().__init__()
 
     @abstractmethod
-    async def identify(self, login: str, password: str) -> Optional[User]:
-        """Identifies the given login/password pair, returns a dict if found.
+    async def identify(self, username: str, password: str) -> Optional[User]:
+        """Identifies the given username/password pair, returns a dict if found.
         """
 
     @abstractmethod
     async def register_user(
         self, username: str, password: str, email: str, is_superuser: bool = False
     ):
-        """Create user with login, password and email.
+        """Create user with username, password and email.
         Can raise UserAlreadyExist
         """
 

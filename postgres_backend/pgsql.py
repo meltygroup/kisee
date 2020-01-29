@@ -59,15 +59,17 @@ class DataStore(IdentityProvider):
         except AttributeError:
             pass
 
-    async def identify(self, login: str, password: str) -> Optional[User]:
-        """Identifies the given login/password pair, returns a dict if found.
+    async def identify(self, username: str, password: str) -> Optional[User]:
+        """Identifies the given username/password pair, returns a dict if found.
         """
         async with self.pool.acquire() as connection:
             result = await connection.fetchrow(
-                "SELECT * FROM users WHERE (username = $1 OR email = $1) ", login
+                "SELECT * FROM users WHERE (username = $1 OR email = $1) ", username
             )
             if verify(password.encode("utf-8"), result["password"].encode("utf-8")):
-                return User(result["user_id"], result["username"], result["is_superuser"])
+                return User(
+                    result["user_id"], result["username"], result["is_superuser"]
+                )
         return None
 
     async def register_user(
@@ -92,15 +94,14 @@ class DataStore(IdentityProvider):
                     is_superuser,
                 )
             except asyncpg.exceptions.UniqueViolationError:
-                    raise UserAlreadyExist
+                raise UserAlreadyExist
 
     async def get_user_by_email(self, email):
         """Get user with provided email address
         """
         async with self.pool.acquire() as connection:
             result = await connection.fetchrow(
-                """SELECT * FROM users WHERE email = $1""",
-                email
+                """SELECT * FROM users WHERE email = $1""", email
             )
         user_data = dict(result)
         del user_data["password"]
@@ -111,8 +112,7 @@ class DataStore(IdentityProvider):
         """
         async with self.pool.acquire() as connection:
             result = await connection.fetchrow(
-                """"SELECT * FROM users WHERE username = $1""",
-                username
+                """"SELECT * FROM users WHERE username = $1""", username
             )
         user_data = dict(result)
         del user_data["password"]
@@ -127,7 +127,7 @@ class DataStore(IdentityProvider):
                     WHERE username = $2
                 """,
                 password,
-                user.username
+                user.username,
             )
 
     async def is_connection_alive(self) -> bool:

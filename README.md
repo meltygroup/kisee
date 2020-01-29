@@ -29,22 +29,31 @@ file, a PostgreSQL database with a strange schema, whatever.
 
 ## Quick start
 
-```
+```bash
 $ pip install kisee
 $ kisee --settings example-settings.toml
 ```
 
-This starts Kisee with a very dumb backend, just so you can play.
+This starts Kisee with an in-memory demo backend, just so you can
+play. The demo backend will print the admin credentials at startup:
 
-The dumb backend works like this:
- - Any user exists.
- - Any password less or equal than 4 characters will be considered wrong.
- - Any other password will pass.
 
-So now we can query it:
+```bash
+$ kisee --settings example-settings.toml
 
+Admin credentials for this session is:
+username: root
+password: UGINenIU
+
+======== Running on http://0.0.0.0:8140 ========
+(Press CTRL+C to quit)
 ```
-$ curl http://0.0.0.0:8140/jwt/ -XPOST -d '{"login": "John", "password": "secure"}'
+
+So we can start by getting a JWT for the admin user (beware, your
+password is different):
+
+```bash
+$ curl 0:8140/jwt/ -XPOST -d '{"username": "root", "password": "UGINenIU"}'
 {
     "_type": "document",
     "_meta": {
@@ -61,7 +70,7 @@ $ curl http://0.0.0.0:8140/jwt/ -XPOST -d '{"login": "John", "password": "secure
         "description": "POSTing to this endpoint create JWT tokens.",
         "fields": [
             {
-                "name": "login",
+                "name": "username",
                 "required": true
             },
             {
@@ -71,6 +80,14 @@ $ curl http://0.0.0.0:8140/jwt/ -XPOST -d '{"login": "John", "password": "secure
         ]
     }
 }
+```
+
+It's possible for a new user to "self-register" by posting on `/users/`:
+
+```bash
+$ curl -i 0:8140/users/ -XPOST -d '{"username": "JohnDoe", "password": "sdfswlwl", "email": "john@example.com"}'
+HTTP/1.1 201 Created
+Location: /users/JohnDoe/
 ```
 
 Read the docs: https://kisee.readthedocs.io

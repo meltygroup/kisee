@@ -21,6 +21,8 @@ def test_json_serializer():
     assert json_serializer(Document(url="/", title="Test", content={})) == {}
     assert json_serializer(Link(url="/link/", action="POST", title="Foo")) == "/link/"
     assert (
-        json_serializer(Field(name="login", required=False, description="Just a login"))
-        == "login"
+        json_serializer(
+            Field(name="username", required=False, description="Just a login")
+        )
+        == "username"
     )

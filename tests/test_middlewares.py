@@ -14,7 +14,7 @@ async def test_bad_json(client):
     response = await client.request(
         "POST",
         "/users/",
-        data=b'{"login" "my_login"}',
+        data=b'{"username" "my_username"}',
         headers={"Content-Type": "application/json"},
     )
     assert response.status == 400

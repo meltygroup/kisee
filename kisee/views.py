@@ -75,7 +75,7 @@ async def get_root(
                 "href": f"{hostname}/jwt/",
                 "method": "POST",
                 "fields": [
-                    {"name": "login", "required": True},
+                    {"name": "username", "required": True},
                     {"name": "password", "required": True},
                 ],
             },
@@ -187,7 +187,7 @@ async def get_jwts(request: web.Request) -> web.Response:
                     description="POSTing to this endpoint create JWT tokens.",
                     fields=[
                         serializers.Field(
-                            name="login", required=True, schema={"type": "string"}
+                            name="username", required=True, schema={"type": "string"}
                         ),
                         serializers.Field(
                             name="password",
@@ -212,12 +212,11 @@ async def post_jwt(request: web.Request) -> web.Response:
     """A user is asking for a JWT.
     """
     data = await request.json()
-    if "login" not in data or "password" not in data:
-        raise web.HTTPUnprocessableEntity(reason="Missing login or password.")
-    logger.debug("Trying to identify user %s", data["login"])
-    user = await request.app["identity_backend"].identify(
-        data["login"], data["password"]
-    )
+    if ("login" not in data and "username" not in data) or "password" not in data:
+        raise web.HTTPUnprocessableEntity(reason="Missing username or password.")
+    username = data.get("username", data.get("login", ""))
+    logger.debug("Trying to identify user %s", username)
+    user = await request.app["identity_backend"].identify(username, data["password"])
     if user is None:
         raise web.HTTPForbidden(reason="Failed identification for kisee.")
     jti = shortuuid.uuid()
@@ -246,7 +245,7 @@ async def post_jwt(request: web.Request) -> web.Response:
                     description="POSTing to this endpoint create JWT tokens.",
                     fields=[
                         serializers.Field(
-                            name="login", required=True, schema={"type": "string"}
+                            name="username", required=True, schema={"type": "string"}
                         ),
                         serializers.Field(
                             name="password",
@@ -279,7 +278,7 @@ async def get_forgotten_passwords(request: web.Request) -> web.Response:
                         POSTing to this endpoint subscribe for a forgotten password
                     """,
                     fields=[
-                        serializers.Field(name="login", schema={"type": "string"}),
+                        serializers.Field(name="username", schema={"type": "string"}),
                         serializers.Field(
                             name="email", schema={"type": "string", "format": "email"}
                         ),
@@ -294,9 +293,8 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
     """Create process to register new password
     """
     data = await request.json()
-    if "login" not in data and "email" not in data:
-        raise web.HTTPBadRequest(reason="Missing required fields email or login")
-
+    if "username" not in data and "email" not in data and "login" not in data:
+        raise web.HTTPBadRequest(reason="Missing required fields email or username")
     user = await get_user_with_email_or_username(data, request.app["identity_backend"])
     if not user:
         raise web.HTTPNotFound()
