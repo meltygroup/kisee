@@ -13,9 +13,10 @@ import jwt
 import psutil
 import shortuuid
 from aiohttp import web
+from aiojobs.aiohttp import spawn
 
 from kisee.authentication import authenticate_user
-from kisee.emails import forge_forgotten_email, is_email, send_mail
+from kisee.emails import is_email
 from kisee.identity_provider import UserAlreadyExist, ProviderError
 from kisee.serializers import serialize
 from kisee import serializers
@@ -157,9 +158,7 @@ async def post_users(request: web.Request) -> web.Response:
 async def patch_user(request: web.Request) -> web.Response:
     """Patch user password
     """
-    user, claims = await authenticate_user(request)
-    if not claims.get("can_change_pwd"):
-        raise web.HTTPForbidden(reason="Password change forbidden")
+    user, _ = await authenticate_user(request, for_password_modification=True)
     data = await request.json()
     if "password" not in data:
         raise web.HTTPBadRequest(reason="Missing fields to patch")
@@ -274,9 +273,8 @@ async def get_forgotten_passwords(request: web.Request) -> web.Response:
                     url="/forgotten-password/",
                     action="post",
                     title="",
-                    description="""
-                        POSTing to this endpoint subscribe for a forgotten password
-                    """,
+                    description="POSTing to this endpoint subscribe "
+                    "for a forgotten password",
                     fields=[
                         serializers.Field(name="username", schema={"type": "string"}),
                         serializers.Field(
@@ -289,37 +287,36 @@ async def get_forgotten_passwords(request: web.Request) -> web.Response:
     )
 
 
-async def post_forgotten_passwords(request: web.Request) -> web.Response:
-    """Create process to register new password
+async def _post_forgotten_passwords(request: web.Request) -> None:
+    """Locate a user and send him a password reset token.
     """
     data = await request.json()
-    if "username" not in data and "email" not in data and "login" not in data:
-        raise web.HTTPBadRequest(reason="Missing required fields email or username")
     user = await get_user_with_email_or_username(data, request.app["identity_backend"])
     if not user:
-        raise web.HTTPNotFound()
+        return
     jwt_token = jwt.encode(
         {
             "iss": request.app["settings"]["jwt"]["iss"],
-            "sub": user.username,
             "exp": datetime.utcnow() + timedelta(hours=12),
             "jti": shortuuid.uuid(),
-            "can_change_pwd": True,
+            "password_reset_for": user.username,
         },
         request.app["settings"]["jwt"]["private_key"],
         algorithm="ES256",
     ).decode("utf-8")
-    content_text, content_html = forge_forgotten_email(
-        user.username, user.email, jwt_token
-    )
-    subject = "Forgotten password"
-    send_mail(
-        subject,
-        content_text,
-        content_html,
-        request.app["settings"]["email"],
-        user.email,
-    )
+    await request.app["identity_backend"].send_reset_password_challenge(user, jwt_token)
+
+
+async def post_forgotten_passwords(request: web.Request) -> web.Response:
+    """Start the password recovery process.
+
+    This works mostly on background, so no timing attack can be used
+    to probe for emails.
+    """
+    data = await request.json()
+    if "username" not in data and "email" not in data and "login" not in data:
+        raise web.HTTPBadRequest(reason="Missing required fields email or username")
+    await spawn(request, _post_forgotten_passwords(request))
     return web.Response(status=201)
 
 

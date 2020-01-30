@@ -69,6 +69,11 @@ class IdentityProvider(
         """
 
     @abstractmethod
+    async def send_reset_password_challenge(self, user: User, challenge: str) -> None:
+        """Send a password reset challenge to the given user, typically by email.
+        """
+
+    @abstractmethod
     async def is_connection_alive(self) -> bool:
         """Verify that connection with identity provider datastore is alive
         """

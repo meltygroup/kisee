@@ -9,6 +9,7 @@ from typing import Mapping, Any, Optional
 
 import toml
 from aiohttp import web
+from aiojobs.aiohttp import setup
 import aiohttp_cors
 
 import sentry_sdk
@@ -89,6 +90,7 @@ def create_app(settings: Optional[Settings] = None) -> web.Application:
     app = web.Application(
         middlewares=[enforce_json], debug=settings["server"].get("debug", False),
     )
+    setup(app)
     app["settings"] = settings
     app["identity_backend"] = import_idp(settings["identity_backend"]["class"])(
         options=settings["identity_backend"].get("options", {})

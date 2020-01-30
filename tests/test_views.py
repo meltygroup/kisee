@@ -2,7 +2,6 @@ import pytest
 import jwt
 import kisee.kisee as kisee
 from datetime import datetime, timedelta
-import mocks
 
 
 @pytest.fixture
@@ -29,8 +28,7 @@ def valid_jwt_to_change_pwd(settings):
     return jwt.encode(
         {
             "iss": "Pouete",
-            "can_change_pwd": True,
-            "sub": "toto",
+            "password_reset_for": "toto",
             "exp": datetime.utcnow() + timedelta(hours=1),
             "jti": "42",
         },
@@ -147,11 +145,10 @@ async def test_post_forgotten_password_wrong_username(client):
     response = await client.post(
         "/forgotten_passwords/", json={"email": "foo@example.com"}
     )
-    assert response.status == 404
+    assert response.status == 201  # Do not leak the info we don't have this email.
 
 
 async def test_post_forgotten_password_good_username(client, monkeypatch):
-    monkeypatch.setattr("kisee.views.send_mail", mocks.send_mail)
     await client.app["identity_backend"].register_user(
         "foo@example.com", "bar", "foo@example.com"
     )
@@ -167,7 +164,6 @@ async def test_post_forgotten_password_empty(client, monkeypatch):
 
 
 async def test_post_forgotten_password_by_username(client, monkeypatch):
-    monkeypatch.setattr("kisee.views.send_mail", mocks.send_mail)
     await client.app["identity_backend"].register_user("foo", "bar", "foo@example.com")
     response = await client.post("/forgotten_passwords/", json={"username": "foo"})
     assert response.status == 201
@@ -176,7 +172,6 @@ async def test_post_forgotten_password_by_username(client, monkeypatch):
 async def test_post_forgotten_password_by_login_for_backward_compatibility(
     client, monkeypatch
 ):
-    monkeypatch.setattr("kisee.views.send_mail", mocks.send_mail)
     await client.app["identity_backend"].register_user("foo", "bar", "foo@example.com")
     response = await client.post("/forgotten_passwords/", json={"login": "foo"})
     assert response.status == 201
@@ -224,7 +219,8 @@ async def test_patch_unexisting_user_with_existing_jwt(client, valid_jwt):
         headers={"Authorization": "Bearer " + valid_jwt},
         json={"password": "passwod"},
     )
-    assert response.status == 401
+    assert response.status == 403
+    assert response.reason == "Use a password lost token or basic auth."
 
 
 async def test_patch_users_with_jwt(client, valid_jwt):
@@ -232,7 +228,7 @@ async def test_patch_users_with_jwt(client, valid_jwt):
     the user knows its password.
 
     To change a password, one must either have:
-    - A JWT with a can_change_pwd claim (from "I forgot my password").
+    - A password reset token (from "I forgot my password").
     - Auth using basic auth to proove it knows its password.
     """
     await client.app["identity_backend"].register_user("toto", "bar", "foo@example.com")

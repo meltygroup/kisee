@@ -24,7 +24,7 @@ class DummyUser(User):
         self.password = password
 
 
-def _print_credentials(password: str) -> None:
+def _colored_print(*args, sep=" ", end="\n") -> None:
     try:  # pragma: no cover  (no term in pytest)
         curses.setupterm()
         fg_color = curses.tigetstr("setaf") or curses.tigetstr("setf") or b""
@@ -33,9 +33,7 @@ def _print_credentials(password: str) -> None:
     except curses.error:
         green, no_color = "", ""
     print(green)
-    print("Admin credentials for this session is:")
-    print(f"username: root")
-    print(f"password: {password}")
+    print(*args, sep=sep, end=end)
     print(no_color)
 
 
@@ -50,7 +48,13 @@ class DemoBackend(IdentityProvider):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         root_password = "".join(choices(ascii_letters + digits, k=8))
-        _print_credentials(root_password)
+        _colored_print(
+            "Admin credentials for this session is:",
+            f"username: root",
+            f"password: {root_password}",
+            sep="\n",
+        )
+
         self.storage = {
             "root": DummyUser(
                 user_id="root",
@@ -94,6 +98,11 @@ class DemoBackend(IdentityProvider):
             password=password,
         )
         self.storage[username] = user
+
+    async def send_reset_password_challenge(self, user: User, challenge: str):
+        _colored_print(
+            f"Password reset challenge for user {user.username} is {challenge}"
+        )
 
     async def get_user_by_email(self, email) -> Optional[User]:
         """Get user with provided email address

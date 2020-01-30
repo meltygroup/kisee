@@ -1,9 +1,11 @@
 from kisee import kisee
+from kisee import authentication
 import base64
 from datetime import datetime, timedelta
 import pytest
 import aiohttp
 import jwt
+from types import SimpleNamespace
 
 from kisee.providers.demo import DemoBackend
 from kisee.authentication import _jwt_authentication, _basic_authentication
@@ -90,3 +92,27 @@ async def test_register_user_username_too_short():
 async def test_basic_authentication_no_user():
     with pytest.raises(ValueError):
         await DemoBackend().identify(None, None)
+
+
+@pytest.fixture
+def fake_request(settings, valid_token):
+    fake_request = SimpleNamespace()
+    fake_request.headers = {"Authorization": "Bearer " + valid_token}
+    fake_request.app = {"settings": settings}
+    return fake_request
+
+
+async def test_authenticate_user_jwt(fake_request):
+    async with DemoBackend() as backend:
+        fake_request.app["identity_backend"] = backend
+        await backend.register_user("toto", "toto", "toto", "toto@example.com")
+        user, claims = await authentication.authenticate_user(fake_request)
+        assert user.username == "toto"
+
+
+async def test_authenticate_user_bad_jwt(fake_request):
+    async with DemoBackend() as backend:
+        fake_request.app["identity_backend"] = backend
+        await backend.register_user("tata", "tata", "tata", "tata@example.com")
+        with pytest.raises(aiohttp.web.HTTPUnauthorized):
+            user, claims = await authentication.authenticate_user(fake_request)

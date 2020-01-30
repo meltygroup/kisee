@@ -29,11 +29,11 @@ async def _basic_authentication(
     if user is None:
         raise web.HTTPUnauthorized(reason="Bad authorization")
     # Using basic auth means user knows its password so he's authorized to change it.
-    return user, {"can_change_pwd": True}
+    return user, {}
 
 
 async def _jwt_authentication(
-    token: str, idp: IdentityProvider, public_key: str
+    token: str, idp: IdentityProvider, public_key: str, for_password_modification=False,
 ) -> Tuple[User, Claims]:
     """Authentication using JWT.
     """
@@ -42,13 +42,22 @@ async def _jwt_authentication(
     except jwt.DecodeError as err:
         raise web.HTTPUnauthorized(reason="Bad authorization") from err
     else:
-        user = await idp.get_user_by_username(claims["sub"])
+        if for_password_modification:
+            if "password_reset_for" not in claims:
+                raise web.HTTPForbidden(
+                    reason="Use a password lost token or basic auth."
+                )
+            user = await idp.get_user_by_username(claims["password_reset_for"])
+        else:
+            user = await idp.get_user_by_username(claims["sub"])
         if not user:
             raise web.HTTPUnauthorized(reason="No such user")
         return user, claims
 
 
-async def authenticate_user(request: web.Request) -> Tuple[User, Claims]:
+async def authenticate_user(
+    request: web.Request, for_password_modification=False
+) -> Tuple[User, Claims]:
     """Multiple schemes authentication using request Authorization header.
     Raises HTTPUnauthorized on failure.
     """
@@ -62,5 +71,6 @@ async def authenticate_user(request: web.Request) -> Tuple[User, Claims]:
             value,
             request.app["identity_backend"],
             request.app["settings"]["jwt"]["public_key"],
+            for_password_modification=for_password_modification,
         )
     raise web.HTTPUnauthorized(reason="Bad authorization")
