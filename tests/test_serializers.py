@@ -9,7 +9,7 @@ def test_default_serializer():
 
 def test_corejson_serializer():
     assert (
-        serializers.serializers["application/coreapi+json"]
+        serializers.serializers["application/vnd.coreapi+json"]
         is serializers.coreapi_serializer
     )
 

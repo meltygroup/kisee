@@ -20,11 +20,30 @@ import kisee
 from kisee import serializers
 from kisee.authentication import authenticate_user
 from kisee.emails import is_email
-from kisee.identity_provider import ProviderError, User, UserAlreadyExist
-from kisee.serializers import serialize
+from kisee.identity_provider import UserAlreadyExist, ProviderError, User
+import httpserializers as serializers
 from kisee.utils import get_user_with_email_or_username
 
 logger = logging.getLogger(__name__)
+
+
+def serialize(
+    request: web.Request, document: serializers.Document, status=200, headers=None
+) -> web.Response:
+    """Serialize the given document according to the Accept header of the
+    given request.
+    """
+    content_type, body = serializers.serialize(
+        document,
+        accept_header=request.headers.get("Accept"),
+        hostname=request.app["settings"]["server"]["hostname"],
+    )
+    return web.Response(
+        body=body,
+        content_type=content_type,
+        headers=headers,
+        status=status,
+    )
 
 
 async def get_root(
@@ -45,21 +64,21 @@ async def get_root(
                 "href": f"{hostname}/jwt/",
                 "hints": {
                     "allow": ["GET", "POST"],
-                    "formats": {"application/coreapi+json": {}},
+                    "formats": {"application/vnd.coreapi+json": {}},
                 },
             },
             "users": {
                 "href": f"{hostname}/users/",
                 "hints": {
                     "allow": ["GET", "POST", "PATCH"],
-                    "formats": {"application/coreapi+json": {}},
+                    "formats": {"application/vnd.coreapi+json": {}},
                 },
             },
             "password_recoveries": {
                 "href": f"{hostname}/password_recoveries/",
                 "hints": {
                     "allow": ["GET", "POST"],
-                    "formats": {"application/coreapi+json": {}},
+                    "formats": {"application/vnd.coreapi+json": {}},
                 },
             },
         },
