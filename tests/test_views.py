@@ -37,13 +37,6 @@ def valid_jwt_to_change_pwd(settings):
     ).decode("utf8")
 
 
-@pytest.fixture
-def client(loop, aiohttp_client):
-    settings = kisee.load_conf("tests/test_settings.toml")
-    app = kisee.create_app(settings)
-    return loop.run_until_complete(aiohttp_client(app))
-
-
 async def test_create_app(client):
     response = await client.get("/")
     assert response.status == 200
@@ -283,8 +276,3 @@ async def test_patch_users__bad_request__missing_field(client):
         json={"some-useless-field": "foo"},
     )
     assert response.status == 400
-
-
-async def test_health(client):
-    response = await client.get("/health/")
-    assert response.status == 200

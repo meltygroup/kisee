@@ -8,13 +8,14 @@
 import json
 import logging
 from datetime import datetime, timedelta
+from typing import Dict, Any
 
 import jwt
-import psutil
 import shortuuid
 from aiohttp import web
 from aiojobs.aiohttp import spawn
 
+import kisee
 from kisee.authentication import authenticate_user
 from kisee.emails import is_email
 from kisee.identity_provider import UserAlreadyExist, ProviderError
@@ -323,19 +324,19 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
 async def get_health(request: web.Request) -> web.Response:
     """Get service health metrics
     """
-    is_database_ok = (
-        "OK" if await request.app["identity_backend"].is_connection_alive() else "KO"
-    )
-    disk_usage = psutil.disk_usage("/")
-    disk_free_percentage = disk_usage.free / disk_usage.total * 100
+    status = "green"
+    error = None
+    is_database_ok = await request.app["identity_backend"].is_connection_alive()
+    if not is_database_ok:
+        status = "red"
+        error = {"str": "Database looks down."}
+    health: Dict[str, Any] = {
+        "status": status,
+        "database": "OK" if is_database_ok else "KO",
+        "version": kisee.__version__,
+    }
+    if error:
+        health["error"] = error
     return web.Response(
-        body=json.dumps(
-            {
-                "overall": "OK",
-                "load_average": open("/proc/loadavg").readline().split(" ")[0],
-                "database": is_database_ok,
-                "disk_free": f"{disk_free_percentage:.2f}%",
-            }
-        ),
-        content_type="application/json",
+        body=json.dumps(health, indent=4), content_type="application/json"
     )
