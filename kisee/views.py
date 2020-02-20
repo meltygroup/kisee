@@ -55,7 +55,7 @@ async def get_root(
                 },
             },
             "forgotten_passwords": {
-                "href": f"{hostname}/forgotten-passwords/",
+                "href": f"{hostname}/forgotten_passwords/",
                 "hints": {
                     "allow": ["GET", "POST"],
                     "formats": {"application/coreapi+json": {}},
@@ -266,7 +266,7 @@ async def get_forgotten_passwords(request: web.Request) -> web.Response:
     return serialize(
         request,
         serializers.Document(
-            url=f"/forgotten-passwords/",
+            url=f"/forgotten_passwords/",
             title="Forgotten password management",
             content={
                 "reset_password": serializers.Link(
