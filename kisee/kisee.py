@@ -119,8 +119,8 @@ def create_app(settings: Optional[Settings] = None) -> web.Application:
             web.get("/jwt/{jid}", views.get_jwt),
             web.get("/users/", views.get_users),
             web.patch("/users/{username}/", views.patch_user),
-            web.get("/forgotten_passwords/", views.get_forgotten_passwords),
-            web.post("/forgotten_passwords/", views.post_forgotten_passwords),
+            web.get("/password_recoveries/", views.get_password_recoveries),
+            web.post("/password_recoveries/", views.post_password_recoveries),
             web.get("/health", views.get_health),
         ]
     )

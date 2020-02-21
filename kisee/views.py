@@ -8,17 +8,18 @@
 import json
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 import jwt
 import shortuuid
+import jsonpatch
 from aiohttp import web
 from aiojobs.aiohttp import spawn
 
 import kisee
 from kisee.authentication import authenticate_user
 from kisee.emails import is_email
-from kisee.identity_provider import UserAlreadyExist, ProviderError
+from kisee.identity_provider import UserAlreadyExist, ProviderError, User
 from kisee.serializers import serialize
 from kisee import serializers
 from kisee.utils import get_user_with_email_or_username
@@ -55,8 +56,8 @@ async def get_root(
                     "formats": {"application/coreapi+json": {}},
                 },
             },
-            "forgotten_passwords": {
-                "href": f"{hostname}/forgotten_passwords/",
+            "password_recoveries": {
+                "href": f"{hostname}/password_recoveries/",
                 "hints": {
                     "allow": ["GET", "POST"],
                     "formats": {"application/coreapi+json": {}},
@@ -88,6 +89,32 @@ async def get_root(
     )
 
 
+def json_patch_link(url, title, description):
+    """Generate a json patch Link object.
+    """
+    return serializers.Link(
+        url=url,
+        title=title,
+        description=description,
+        action="patch",
+        fields=[
+            serializers.Field(
+                name="op",
+                description="action to be operated",
+                required=True,
+                schema={"type": "string"},
+            ),
+            serializers.Field(
+                name="path",
+                description="Path in json",
+                required=True,
+                schema={"type": "string"},
+            ),
+            serializers.Field(name="value", description="value for op", required=True),
+        ],
+    )
+
+
 async def get_users(request: web.Request) -> web.Response:
     """View for GET /users/, just describes that a POST is possible.
     """
@@ -98,6 +125,11 @@ async def get_users(request: web.Request) -> web.Response:
             title="Users",
             content={
                 "users": [],
+                "patch": json_patch_link(
+                    url="/users/{user_id}",
+                    title="Patch a user",
+                    description="Typically to change password.",
+                ),
                 "register_user": serializers.Link(
                     url="/users/",
                     action="post",
@@ -157,16 +189,23 @@ async def post_users(request: web.Request) -> web.Response:
 
 
 async def patch_user(request: web.Request) -> web.Response:
-    """Patch user password
+    """Patch user password.
     """
     user, _ = await authenticate_user(request, for_password_modification=True)
-    data = await request.json()
-    if "password" not in data:
-        raise web.HTTPBadRequest(reason="Missing fields to patch")
+    patch = jsonpatch.JsonPatch(await request.json())
+    patchset = list(patch)
+    if not patchset or "path" not in patchset[0]:
+        raise web.HTTPBadRequest(reason="Invalid json patch.")
+    if len(patchset) > 1:
+        raise web.HTTPBadRequest(reason="Only password can be patched.")
+    if patchset[0]["path"] != "/password":
+        raise web.HTTPBadRequest(reason="Only password can be patched.")
     username = request.match_info["username"]
     if username != user.username:
-        raise web.HTTPForbidden(reason="Token does not apply to user resource")
-    await request.app["identity_backend"].set_password_for_user(user, data["password"])
+        raise web.HTTPForbidden(reason="Token does not apply to user resource.")
+    await request.app["identity_backend"].set_password_for_user(
+        user, patchset[0]["value"]
+    )
     return web.Response(status=204)
 
 
@@ -261,34 +300,53 @@ async def post_jwt(request: web.Request) -> web.Response:
     )
 
 
-async def get_forgotten_passwords(request: web.Request) -> web.Response:
-    """Get forgotten password view, just describes that a POST is possible.
+async def get_password_recoveries(request: web.Request) -> web.Response:
+    """Password recovery entry point.
     """
+    user: Optional[User] = None
+    try:
+        user, _ = await authenticate_user(request, for_password_modification=True)
+    except (web.HTTPForbidden, web.HTTPUnauthorized):
+        pass
+    content = {}
+    if user:
+        content["recover"] = serializers.Link(
+            url=f"/users/{user.user_id}/",
+            action="patch",
+            title="Change password",
+            description="Use a Json Patch document to change your password here.",
+            fields=[
+                serializers.Field(
+                    name="password",
+                    schema={"type": "string", "minLength": 5, "format": "password"},
+                )
+            ],
+        )
+    else:
+        content["reset_password"] = serializers.Link(
+            url="/password_recoveries/",
+            action="post",
+            title="",
+            description="POSTing to this endpoint starts a new Password Reset"
+            " procedure.",
+            fields=[
+                serializers.Field(name="username", schema={"type": "string"}),
+                serializers.Field(
+                    name="email", schema={"type": "string", "format": "email"}
+                ),
+            ],
+        )
     return serialize(
         request,
         serializers.Document(
-            url=f"/forgotten_passwords/",
+            url=f"/password_recoveries/",
             title="Forgotten password management",
-            content={
-                "reset_password": serializers.Link(
-                    url="/forgotten-password/",
-                    action="post",
-                    title="",
-                    description="POSTing to this endpoint subscribe "
-                    "for a forgotten password",
-                    fields=[
-                        serializers.Field(name="username", schema={"type": "string"}),
-                        serializers.Field(
-                            name="email", schema={"type": "string", "format": "email"}
-                        ),
-                    ],
-                )
-            },
+            content=content,
         ),
     )
 
 
-async def _post_forgotten_passwords(request: web.Request) -> None:
+async def _post_password_recoveries(request: web.Request) -> None:
     """Locate a user and send him a password reset token.
     """
     data = await request.json()
@@ -308,7 +366,7 @@ async def _post_forgotten_passwords(request: web.Request) -> None:
     await request.app["identity_backend"].send_reset_password_challenge(user, jwt_token)
 
 
-async def post_forgotten_passwords(request: web.Request) -> web.Response:
+async def post_password_recoveries(request: web.Request) -> web.Response:
     """Start the password recovery process.
 
     This works mostly on background, so no timing attack can be used
@@ -317,7 +375,7 @@ async def post_forgotten_passwords(request: web.Request) -> web.Response:
     data = await request.json()
     if "username" not in data and "email" not in data and "login" not in data:
         raise web.HTTPBadRequest(reason="Missing required fields email or username")
-    await spawn(request, _post_forgotten_passwords(request))
+    await spawn(request, _post_password_recoveries(request))
     return web.Response(status=201)
 
 

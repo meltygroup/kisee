@@ -22,8 +22,6 @@ A typical ``settings.toml`` file looks like this::
     [email]
       host = "localhost"
       sender = "sender@example.com"
-      forgotten_password_tpl_txt = "forgotten_password_tpl.txt"
-      forgotten_password_tpl_html = "forgotten_password_tpl.html"
 
     [jwt]
       iss = "example.com"

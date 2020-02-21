@@ -47,6 +47,7 @@ class DemoBackend(IdentityProvider):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.password_reset_tokens = []  # So we can fetch it back from the tests.
         root_password = "".join(choices(ascii_letters + digits, k=8))
         _colored_print(
             "Admin credentials for this session is:",
@@ -103,6 +104,7 @@ class DemoBackend(IdentityProvider):
         _colored_print(
             f"Password reset challenge for user {user.username} is {challenge}"
         )
+        self.password_reset_tokens.append(challenge)
 
     async def get_user_by_email(self, email) -> Optional[User]:
         """Get user with provided email address
