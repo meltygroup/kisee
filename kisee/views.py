@@ -200,8 +200,7 @@ async def patch_user(request: web.Request) -> web.Response:
         raise web.HTTPBadRequest(reason="Only password can be patched.")
     if patchset[0]["path"] != "/password":
         raise web.HTTPBadRequest(reason="Only password can be patched.")
-    username = request.match_info["username"]
-    if username != user.username:
+    if request.match_info["user_id"] != user.user_id:
         raise web.HTTPForbidden(reason="Token does not apply to user resource.")
     await request.app["identity_backend"].set_password_for_user(
         user, patchset[0]["value"]
