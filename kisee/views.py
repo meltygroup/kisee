@@ -15,14 +15,15 @@ import jwt
 import shortuuid
 from aiohttp import web
 from aiojobs.aiohttp import spawn
+import httpserializers as serializers
 
 import kisee
 from kisee import serializers
 from kisee.authentication import authenticate_user
 from kisee.emails import is_email
 from kisee.identity_provider import UserAlreadyExist, ProviderError, User
-import httpserializers as serializers
 from kisee.utils import get_user_with_email_or_username
+
 
 logger = logging.getLogger(__name__)
 

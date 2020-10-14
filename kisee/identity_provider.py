@@ -28,7 +28,7 @@ class User:
 
 
 class IdentityProvider(
-    AsyncContextManager, ABC
+    AsyncContextManager[None], ABC
 ):  # pragma: no cover, pylint: disable=inherit-non-class
     # See: https://github.com/PyCQA/pylint/issues/2472
     """Abtract class representing an identity provider"""
