@@ -1,6 +1,6 @@
-from kisee.serializers import as_absolute
-
 import pytest
+
+from kisee.serializers import as_absolute
 
 
 @pytest.mark.parametrize(

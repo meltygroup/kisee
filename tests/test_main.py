@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 import pytest
 
-from kisee import kisee, __main__  # noqa
+from kisee import __main__, kisee  # noqa
 
 
 def test_load_conf():

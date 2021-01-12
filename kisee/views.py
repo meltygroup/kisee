@@ -8,20 +8,20 @@
 import json
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
+import jsonpatch
 import jwt
 import shortuuid
-import jsonpatch
 from aiohttp import web
 from aiojobs.aiohttp import spawn
 
 import kisee
+from kisee import serializers
 from kisee.authentication import authenticate_user
 from kisee.emails import is_email
-from kisee.identity_provider import UserAlreadyExist, ProviderError, User
+from kisee.identity_provider import ProviderError, User, UserAlreadyExist
 from kisee.serializers import serialize
-from kisee import serializers
 from kisee.utils import get_user_with_email_or_username
 
 logger = logging.getLogger(__name__)
@@ -175,10 +175,10 @@ async def post_users(request: web.Request) -> web.Response:
         await request.app["identity_backend"].register_user(
             data["username"], data["password"], data["email"]
         )
-    except UserAlreadyExist:
-        raise web.HTTPConflict(reason="User already exist")
+    except UserAlreadyExist as err:
+        raise web.HTTPConflict(reason="User already exist") from err
     except ProviderError as err:
-        raise web.HTTPBadRequest(reason=str(err))
+        raise web.HTTPBadRequest(reason=str(err)) from err
 
     location = f"/users/{data['username']}/"
     return web.Response(status=201, headers={"Location": location})
@@ -187,10 +187,11 @@ async def post_users(request: web.Request) -> web.Response:
 async def patch_user(request: web.Request) -> web.Response:
     """Patch user password."""
     user, _ = await authenticate_user(request, for_password_modification=True)
-    patch = jsonpatch.JsonPatch(await request.json())
+    try:
+        patch = jsonpatch.JsonPatch(await request.json())
+    except jsonpatch.InvalidJsonPatch as err:
+        raise web.HTTPBadRequest(reason="Invalid json patch.") from err
     patchset = list(patch)
-    if not patchset or "path" not in patchset[0]:
-        raise web.HTTPBadRequest(reason="Invalid json patch.")
     if len(patchset) > 1:
         raise web.HTTPBadRequest(reason="Only password can be patched.")
     if patchset[0]["path"] != "/password":
@@ -208,7 +209,7 @@ async def get_jwts(request: web.Request) -> web.Response:
     return serialize(
         request,
         serializers.Document(
-            url=f"/jwt/",
+            url="/jwt/",
             title="JSON Web Tokens",
             content={
                 "tokens": [],
@@ -266,7 +267,7 @@ async def post_jwt(request: web.Request) -> web.Response:
                         },
                         request.app["settings"]["jwt"]["private_key"],
                         algorithm="ES256",
-                    ).decode("utf8")
+                    )
                 ],
                 "add_token": serializers.Link(
                     url="/jwt/",
@@ -329,7 +330,7 @@ async def get_password_recoveries(request: web.Request) -> web.Response:
     return serialize(
         request,
         serializers.Document(
-            url=f"/password_recoveries/",
+            url="/password_recoveries/",
             title="Forgotten password management",
             content=content,
         ),
@@ -351,7 +352,7 @@ async def _post_password_recoveries(request: web.Request) -> None:
         },
         request.app["settings"]["jwt"]["private_key"],
         algorithm="ES256",
-    ).decode("utf-8")
+    )
     await request.app["identity_backend"].send_reset_password_challenge(user, jwt_token)
 
 

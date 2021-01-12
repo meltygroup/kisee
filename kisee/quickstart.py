@@ -1,7 +1,7 @@
 """Kisee quickstart"""
 
-from subprocess import run, PIPE
-from typing import Callable, Any, Dict, Union, Optional
+from subprocess import PIPE, run
+from typing import Any, Callable, Dict, Optional, Union
 
 import toml
 
@@ -54,13 +54,13 @@ def questions() -> Dict[str, Any]:
         "identity_backend": {"class": "kisee.providers.demo.DemoBackend"},
         "jwt": {"iss": "example.com"},
     }
-    responses["server"]["host"] = input_or_default(f"Listen to []: ", "127.0.0.1")
-    responses["server"]["port"] = input_or_default(f"Listen on port []: ", "8140")
+    responses["server"]["host"] = input_or_default("Listen to []: ", "127.0.0.1")
+    responses["server"]["port"] = input_or_default("Listen on port []: ", "8140")
     responses["server"]["hostname"] = input_or_default(
-        f"Exposed URL []: ", "http://localhost:8140"
+        "Exposed URL []: ", "http://localhost:8140"
     )
     responses["server"]["debug"] = input_or_default(
-        f"Debug mode []: ", "No", validator=boolean
+        "Debug mode []: ", "No", validator=boolean
     )
     return responses
 

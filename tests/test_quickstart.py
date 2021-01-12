@@ -4,8 +4,8 @@
 import io
 from test.support import temp_cwd
 
-from _pytest.monkeypatch import MonkeyPatch
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 
 from kisee import quickstart
 

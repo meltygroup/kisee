@@ -55,7 +55,7 @@ async def test_post_password_recoveries_by_login_for_backward_compatibility(
     assert response.status == 201
 
 
-async def post_password_recoveries__bad_request(client):
+async def test_post_password_recoveries__bad_request(client):
     """Bad request because missing either 'email' or 'username' field
     """
     response = await client.post(

@@ -5,14 +5,13 @@ import argparse
 import logging
 import os
 import sys
-from typing import Mapping, Any, Optional
+from typing import Any, Mapping, Optional
 
+import aiohttp_cors
+import sentry_sdk
 import toml
 from aiohttp import web
 from aiojobs.aiohttp import setup
-import aiohttp_cors
-
-import sentry_sdk
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
 from kisee import views
@@ -86,7 +85,6 @@ def create_app(settings: Optional[Settings] = None) -> web.Application:
     settings = settings or load_conf()
     app = web.Application(
         middlewares=[enforce_json, vary_origin],
-        debug=settings["server"].get("debug", False),
     )
     setup(app)
     app["settings"] = settings

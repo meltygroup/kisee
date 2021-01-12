@@ -3,9 +3,9 @@ various representations of our resources like mason, json-ld, hal, ...
 
 """
 
-from collections import OrderedDict
 import json
-from typing import Optional, Union, List, Dict, Any, Set
+from collections import OrderedDict
+from typing import Any, Dict, List, Optional, Set, Union
 from urllib.parse import urljoin
 
 from aiohttp import web
@@ -31,7 +31,7 @@ class Serializers(dict):
 
         return _
 
-    def __getitem__(self, accept: str):
+    def __getitem__(self, accept: Optional[str]):
         """Find the best serializer for the given Accept header."""
         if not accept:
             return self.default

@@ -1,15 +1,15 @@
 """This is a really dumb identification backend: it does not store
 anything and accepts almost any username/password pair.
 """
-from typing import Optional
-from string import ascii_letters, digits
-from random import choices
 import curses
+from random import choices
+from string import ascii_letters, digits
+from typing import Optional
 
 from kisee.identity_provider import (
     IdentityProvider,
-    User,
     ProviderError,
+    User,
     UserAlreadyExist,
 )
 
@@ -51,7 +51,7 @@ class DemoBackend(IdentityProvider):
         root_password = "".join(choices(ascii_letters + digits, k=8))
         _colored_print(
             "Admin credentials for this session is:",
-            f"username: root",
+            "username: root",
             f"password: {root_password}",
             sep="\n",
         )

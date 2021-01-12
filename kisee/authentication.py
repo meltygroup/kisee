@@ -13,17 +13,17 @@ Claims = Mapping[str, Union[str, bool, int]]
 
 
 async def _basic_authentication(
-    encoded: bytes, idp: IdentityProvider
+    encoded: str, idp: IdentityProvider
 ) -> Tuple[User, Claims]:
     """Authentication using Basic scheme."""
     try:
         decoded = base64.b64decode(encoded)
-    except binascii.Error:
-        raise web.HTTPUnauthorized(reason="Bad authorization")
+    except binascii.Error as err:
+        raise web.HTTPUnauthorized(reason="Bad authorization") from err
     try:
         username, password = decoded.decode("utf-8").split(":", 1)
-    except ValueError:
-        raise web.HTTPUnauthorized(reason="Bad authorization")
+    except ValueError as err:
+        raise web.HTTPUnauthorized(reason="Bad authorization") from err
     user = await idp.identify(username, password)
     if user is None:
         raise web.HTTPUnauthorized(reason="Bad authorization")
@@ -64,7 +64,7 @@ async def authenticate_user(
     """
     if not request.headers.get("Authorization"):
         raise web.HTTPUnauthorized(reason="Missing authorization header")
-    scheme, value = request.headers.get("Authorization").strip().split(" ", 1)
+    scheme, value = request.headers["Authorization"].strip().split(" ", 1)
     if scheme == "Basic":
         return await _basic_authentication(value, request.app["identity_backend"])
     if scheme == "Bearer":

@@ -1,15 +1,15 @@
-from kisee import kisee
-from kisee import authentication
 import base64
 from datetime import datetime, timedelta
-import pytest
-import aiohttp
-import jwt
 from types import SimpleNamespace
 
-from kisee.providers.demo import DemoBackend
-from kisee.authentication import _jwt_authentication, _basic_authentication
+import aiohttp
+import jwt
+import pytest
+
+from kisee import authentication, kisee
+from kisee.authentication import _basic_authentication, _jwt_authentication
 from kisee.identity_provider import ProviderError
+from kisee.providers.demo import DemoBackend
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ def valid_token(settings):
         },
         settings["jwt"]["private_key"],
         algorithm="ES256",
-    ).decode("utf8")
+    )
 
 
 async def test_jwt_authentication_fails(settings):

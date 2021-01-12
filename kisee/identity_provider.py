@@ -35,7 +35,7 @@ class IdentityProvider(
 
     def __init__(self, options: dict = None) -> None:
         self.options = options
-        super().__init__()
+        super().__init__()  # pylint: disable=no-value-for-parameter
 
     @abstractmethod
     async def identify(self, username: str, password: str) -> Optional[User]:

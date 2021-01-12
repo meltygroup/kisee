@@ -1,5 +1,5 @@
 from kisee import serializers
-from kisee.serializers import Document, Link, Field
+from kisee.serializers import Document, Field, Link
 
 
 def test_default_serializer():

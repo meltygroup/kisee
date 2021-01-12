@@ -2,16 +2,15 @@
 """
 
 import json
-from typing import Callable, Awaitable
+from typing import Awaitable, Callable
 
 from aiohttp import web
-
 
 Handler = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
 
 @web.middleware
-async def vary_origin(request: web.Request, handler: Handler) -> web.Response:
+async def vary_origin(request: web.Request, handler: Handler) -> web.StreamResponse:
     """Add a Vary: Origin to the responses.
 
     See: https://github.com/aio-libs/aiohttp-cors/issues/351
@@ -22,7 +21,7 @@ async def vary_origin(request: web.Request, handler: Handler) -> web.Response:
 
 
 @web.middleware
-async def enforce_json(request: web.Request, handler: Handler) -> web.Response:
+async def enforce_json(request: web.Request, handler: Handler) -> web.StreamResponse:
     """Middleware enforcing a JSON response."""
     try:
         return await handler(request)

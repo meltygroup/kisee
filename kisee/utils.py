@@ -1,6 +1,6 @@
 """Some utils for kisee
 """
-from kisee.identity_provider import IdentityProvider, User, Optional
+from kisee.identity_provider import IdentityProvider, Optional, User
 
 
 async def get_user_with_email_or_username(

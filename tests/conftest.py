@@ -29,7 +29,7 @@ def valid_jwt(settings):
         },
         settings["jwt"]["private_key"],
         algorithm="ES256",
-    ).decode("utf8")
+    )
 
 
 @pytest.fixture
@@ -43,4 +43,4 @@ def valid_jwt_to_change_pwd(settings):
         },
         settings["jwt"]["private_key"],
         algorithm="ES256",
-    ).decode("utf8")
+    )
