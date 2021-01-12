@@ -17,7 +17,7 @@ from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
 from kisee import views
 from kisee.identity_provider import import_idp
-from kisee.middlewares import enforce_json
+from kisee.middlewares import enforce_json, vary_origin
 
 Settings = Mapping[str, Any]
 
@@ -88,7 +88,7 @@ def create_app(settings: Optional[Settings] = None) -> web.Application:
     """
     settings = settings or load_conf()
     app = web.Application(
-        middlewares=[enforce_json], debug=settings["server"].get("debug", False),
+        middlewares=[enforce_json, vary_origin], debug=settings["server"].get("debug", False),
     )
     setup(app)
     app["settings"] = settings

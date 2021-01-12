@@ -9,6 +9,15 @@ from aiohttp import web
 
 Handler = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
+@web.middleware
+async def vary_origin(request: web.Request, handler: Handler) -> web.Response:
+    """Add a Vary: Origin to the responses.
+
+    See: https://github.com/aio-libs/aiohttp-cors/issues/351
+    """
+    response = await handler(request)
+    response.headers["Vary"] = "Origin"
+    return response
 
 @web.middleware
 async def enforce_json(request: web.Request, handler: Handler) -> web.Response:
