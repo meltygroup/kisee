@@ -36,5 +36,6 @@ place), git tag, commit, and push.
 
 Then to release::
 
-  python setup.py sdist bdist_wheel
+  git clean -dfqx
+  build --sdist --wheel .
   twine upload dist/*
