@@ -9,6 +9,7 @@ from aiohttp import web
 
 Handler = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
+
 @web.middleware
 async def vary_origin(request: web.Request, handler: Handler) -> web.Response:
     """Add a Vary: Origin to the responses.
@@ -19,10 +20,10 @@ async def vary_origin(request: web.Request, handler: Handler) -> web.Response:
     response.headers["Vary"] = "Origin"
     return response
 
+
 @web.middleware
 async def enforce_json(request: web.Request, handler: Handler) -> web.Response:
-    """Middleware enforcing a JSON response.
-    """
+    """Middleware enforcing a JSON response."""
     try:
         return await handler(request)
     except json.JSONDecodeError as err:

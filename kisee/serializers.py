@@ -13,16 +13,14 @@ from werkzeug.http import parse_accept_header
 
 
 class Serializers(dict):
-    """This class only holds available serializers as an easy to use dict.
-    """
+    """This class only holds available serializers as an easy to use dict."""
 
     def __init__(self, **kwargs):
         self.default = None
         super().__init__(**kwargs)
 
     def __call__(self, media_types: Set[str], default: bool):
-        """Register a new serializer with a set of accepted media types.
-        """
+        """Register a new serializer with a set of accepted media types."""
 
         def _(serializer):
             for media_type in media_types:
@@ -34,8 +32,7 @@ class Serializers(dict):
         return _
 
     def __getitem__(self, accept: str):
-        """Find the best serializer for the given Accept header.
-        """
+        """Find the best serializer for the given Accept header."""
         if not accept:
             return self.default
         media_type = parse_accept_header(accept).best_match(self.keys())
@@ -74,7 +71,12 @@ class Field:
     """
 
     def __init__(
-        self, name=False, required="", location=None, schema=None, description=None,
+        self,
+        name=False,
+        required="",
+        location=None,
+        schema=None,
+        description=None,
     ):  # pylint: disable=too-many-arguments
         self.name = name
         self.schema = schema
@@ -84,8 +86,7 @@ class Field:
 
 
 class Link:
-    """Links represent the actions that a client may perform.
-    """
+    """Links represent the actions that a client may perform."""
 
     def __init__(
         self,
@@ -118,8 +119,7 @@ class Link:
 
 
 def as_absolute(base, url):
-    """Ensure an URL is absolute on the given base.
-    """
+    """Ensure an URL is absolute on the given base."""
     if not url.startswith("http://") and not url.startswith("https://"):
         return urljoin(base, url)
     return url
@@ -215,5 +215,8 @@ def serialize(
         indent=4,
     ).encode("UTF-8")
     return web.Response(
-        body=content, content_type="application/json", headers=headers, status=status,
+        body=content,
+        content_type="application/json",
+        headers=headers,
+        status=status,
     )

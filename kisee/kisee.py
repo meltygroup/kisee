@@ -46,8 +46,7 @@ def setup_logging(loglevel):  # pragma: no cover
 
 
 def load_conf(settings_path: str = "settings.toml") -> Settings:
-    """Search for a settings.toml file and load it.
-    """
+    """Search for a settings.toml file and load it."""
     candidates = (
         settings_path,
         os.path.join(os.getcwd(), settings_path),
@@ -66,8 +65,7 @@ def load_conf(settings_path: str = "settings.toml") -> Settings:
 
 
 def parse_args(program_args=None) -> argparse.Namespace:
-    """Parses command line arguments.
-    """
+    """Parses command line arguments."""
     if program_args is None:
         program_args = sys.argv[1:]
     parser = argparse.ArgumentParser(description="Shape Identity Provider")
@@ -84,11 +82,11 @@ def parse_args(program_args=None) -> argparse.Namespace:
 
 
 def create_app(settings: Optional[Settings] = None) -> web.Application:
-    """Identification provider entry point: builds and run a webserver.
-    """
+    """Identification provider entry point: builds and run a webserver."""
     settings = settings or load_conf()
     app = web.Application(
-        middlewares=[enforce_json, vary_origin], debug=settings["server"].get("debug", False),
+        middlewares=[enforce_json, vary_origin],
+        debug=settings["server"].get("debug", False),
     )
     setup(app)
     app["settings"] = settings
@@ -97,13 +95,11 @@ def create_app(settings: Optional[Settings] = None) -> web.Application:
     )
 
     async def on_startup_wrapper(app):
-        """Wrapper to call __aenter__.
-        """
+        """Wrapper to call __aenter__."""
         await app["identity_backend"].__aenter__()
 
     async def on_cleanup_wrapper(app):
-        """Wrapper to call __exit__.
-        """
+        """Wrapper to call __exit__."""
         await app["identity_backend"].__aexit__(None, None, None)
 
     app.on_startup.append(on_startup_wrapper)
@@ -144,8 +140,7 @@ def create_app(settings: Optional[Settings] = None) -> web.Application:
 
 
 def main() -> None:  # pragma: no cover
-    """Command line entry point.
-    """
+    """Command line entry point."""
     args = parse_args()
     setup_logging(args.loglevel)
     settings = load_conf(args.settings)

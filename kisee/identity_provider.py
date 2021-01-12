@@ -12,13 +12,11 @@ class ProviderError(Exception):
 
 
 class UserAlreadyExist(ProviderError):
-    """Exception raised by register_user on username/email conflict.
-    """
+    """Exception raised by register_user on username/email conflict."""
 
 
 class User:
-    """Represents a logged-in, correctly identified, person.
-    """
+    """Represents a logged-in, correctly identified, person."""
 
     def __init__(
         self, user_id: str, username: str, email: str, is_superuser: bool = False
@@ -33,8 +31,7 @@ class IdentityProvider(
     AsyncContextManager, ABC
 ):  # pragma: no cover, pylint: disable=inherit-non-class
     # See: https://github.com/PyCQA/pylint/issues/2472
-    """Abtract class representing an identity provider
-    """
+    """Abtract class representing an identity provider"""
 
     def __init__(self, options: dict = None) -> None:
         self.options = options
@@ -42,8 +39,7 @@ class IdentityProvider(
 
     @abstractmethod
     async def identify(self, username: str, password: str) -> Optional[User]:
-        """Identifies the given username/password pair, returns a dict if found.
-        """
+        """Identifies the given username/password pair, returns a dict if found."""
 
     @abstractmethod
     async def register_user(
@@ -55,28 +51,23 @@ class IdentityProvider(
 
     @abstractmethod
     async def get_user_by_email(self, email) -> Optional[User]:
-        """Get user with provided email address
-        """
+        """Get user with provided email address"""
 
     @abstractmethod
     async def get_user_by_username(self, username) -> Optional[User]:
-        """Get user with provided username
-        """
+        """Get user with provided username"""
 
     @abstractmethod
     async def set_password_for_user(self, user: User, password: str) -> None:
-        """Set password for user
-        """
+        """Set password for user"""
 
     @abstractmethod
     async def send_reset_password_challenge(self, user: User, challenge: str) -> None:
-        """Send a password reset challenge to the given user, typically by email.
-        """
+        """Send a password reset challenge to the given user, typically by email."""
 
     @abstractmethod
     async def is_connection_alive(self) -> bool:
-        """Verify that connection with identity provider datastore is alive
-        """
+        """Verify that connection with identity provider datastore is alive"""
 
 
 def import_idp(dotted_path: str) -> Type[IdentityProvider]:

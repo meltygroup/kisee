@@ -15,8 +15,7 @@ Claims = Mapping[str, Union[str, bool, int]]
 async def _basic_authentication(
     encoded: bytes, idp: IdentityProvider
 ) -> Tuple[User, Claims]:
-    """Authentication using Basic scheme.
-    """
+    """Authentication using Basic scheme."""
     try:
         decoded = base64.b64decode(encoded)
     except binascii.Error:
@@ -33,10 +32,12 @@ async def _basic_authentication(
 
 
 async def _jwt_authentication(
-    token: str, idp: IdentityProvider, public_key: str, for_password_modification=False,
+    token: str,
+    idp: IdentityProvider,
+    public_key: str,
+    for_password_modification=False,
 ) -> Tuple[User, Claims]:
-    """Authentication using JWT.
-    """
+    """Authentication using JWT."""
     try:
         claims = jwt.decode(token, public_key, algorithms="ES256")
     except jwt.DecodeError as err:

@@ -30,8 +30,7 @@ logger = logging.getLogger(__name__)
 async def get_root(
     request: web.Request,  # pylint: disable=unused-argument
 ) -> web.Response:
-    """https://tools.ietf.org/html/draft-nottingham-json-home-06
-    """
+    """https://tools.ietf.org/html/draft-nottingham-json-home-06"""
     hostname = request.app["settings"]["server"]["hostname"]
     home = {
         "api": {
@@ -90,8 +89,7 @@ async def get_root(
 
 
 def json_patch_link(url, title, description):
-    """Generate a json patch Link object.
-    """
+    """Generate a json patch Link object."""
     return serializers.Link(
         url=url,
         title=title,
@@ -116,8 +114,7 @@ def json_patch_link(url, title, description):
 
 
 async def get_users(request: web.Request) -> web.Response:
-    """View for GET /users/, just describes that a POST is possible.
-    """
+    """View for GET /users/, just describes that a POST is possible."""
     return serialize(
         request,
         serializers.Document(
@@ -163,8 +160,7 @@ async def get_users(request: web.Request) -> web.Response:
 
 
 async def post_users(request: web.Request) -> web.Response:
-    """A client is asking to create a new user.
-    """
+    """A client is asking to create a new user."""
     data = await request.json()
 
     if not all(key in data.keys() for key in {"username", "email", "password"}):
@@ -189,8 +185,7 @@ async def post_users(request: web.Request) -> web.Response:
 
 
 async def patch_user(request: web.Request) -> web.Response:
-    """Patch user password.
-    """
+    """Patch user password."""
     user, _ = await authenticate_user(request, for_password_modification=True)
     patch = jsonpatch.JsonPatch(await request.json())
     patchset = list(patch)
@@ -209,8 +204,7 @@ async def patch_user(request: web.Request) -> web.Response:
 
 
 async def get_jwts(request: web.Request) -> web.Response:
-    """Handlers for GET /jwt/, just describes that a POST is possible.
-    """
+    """Handlers for GET /jwt/, just describes that a POST is possible."""
     return serialize(
         request,
         serializers.Document(
@@ -240,15 +234,13 @@ async def get_jwts(request: web.Request) -> web.Response:
 
 
 async def get_jwt(request: web.Request) -> web.Response:
-    """Handler for GET /jwt{/jid}.
-    """
+    """Handler for GET /jwt{/jid}."""
     del request  # unused
     raise NotImplementedError()
 
 
 async def post_jwt(request: web.Request) -> web.Response:
-    """A user is asking for a JWT.
-    """
+    """A user is asking for a JWT."""
     data = await request.json()
     if ("login" not in data and "username" not in data) or "password" not in data:
         raise web.HTTPUnprocessableEntity(reason="Missing username or password.")
@@ -300,8 +292,7 @@ async def post_jwt(request: web.Request) -> web.Response:
 
 
 async def get_password_recoveries(request: web.Request) -> web.Response:
-    """Password recovery entry point.
-    """
+    """Password recovery entry point."""
     user: Optional[User] = None
     try:
         user, _ = await authenticate_user(request, for_password_modification=True)
@@ -346,8 +337,7 @@ async def get_password_recoveries(request: web.Request) -> web.Response:
 
 
 async def _post_password_recoveries(request: web.Request) -> None:
-    """Locate a user and send him a password reset token.
-    """
+    """Locate a user and send him a password reset token."""
     data = await request.json()
     user = await get_user_with_email_or_username(data, request.app["identity_backend"])
     if not user:
@@ -379,8 +369,7 @@ async def post_password_recoveries(request: web.Request) -> web.Response:
 
 
 async def get_health(request: web.Request) -> web.Response:
-    """Get service health metrics
-    """
+    """Get service health metrics"""
     status = "green"
     error = None
     is_database_ok = await request.app["identity_backend"].is_connection_alive()

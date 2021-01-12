@@ -43,8 +43,7 @@ def boolean(value: str) -> bool:
 
 
 def questions() -> Dict[str, Any]:
-    """Ask questions interactively to the user to build a settings file.
-    """
+    """Ask questions interactively to the user to build a settings file."""
     print(
         "Welcome to the Kisee quickstart configurator,",
         "Just press ENTER to accept a default value (if given, in brackets)",
@@ -67,8 +66,7 @@ def questions() -> Dict[str, Any]:
 
 
 def add_ec_keys(config: Config) -> None:
-    """Invokes openssl to create a new secp256k1 key pair.
-    """
+    """Invokes openssl to create a new secp256k1 key pair."""
     private_key_process = run(
         ["openssl", "ecparam", "-name", "secp256k1", "-genkey", "-noout", "-out", "-"],
         check=True,
@@ -87,8 +85,7 @@ def add_ec_keys(config: Config) -> None:
 
 
 def main() -> None:
-    """Kisee-quickstart entry point.
-    """
+    """Kisee-quickstart entry point."""
     config = questions()
     add_ec_keys(config)
     print("Writing configuration file to settings.toml...")

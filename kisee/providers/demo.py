@@ -73,8 +73,7 @@ class DemoBackend(IdentityProvider):
         pass
 
     async def identify(self, username: str, password: str) -> Optional[User]:
-        """Identifies the given username/password pair, returns a User if found.
-        """
+        """Identifies the given username/password pair, returns a User if found."""
         if username is None or password is None:
             raise ValueError("Missing user or password")
         user = self.storage.get(username)
@@ -107,22 +106,19 @@ class DemoBackend(IdentityProvider):
         self.password_reset_tokens.append(challenge)
 
     async def get_user_by_email(self, email) -> Optional[User]:
-        """Get user with provided email address
-        """
+        """Get user with provided email address"""
         for user in self.storage.values():
             if user.email == email:
                 return user
         return None
 
     async def get_user_by_username(self, username) -> Optional[User]:
-        """Get user with provided username.
-        """
+        """Get user with provided username."""
         return self.storage.get(username)
 
     async def set_password_for_user(self, user: User, password: str):
         self.storage[user.username].password = password
 
     async def is_connection_alive(self) -> bool:
-        """Verify that connection is alive, always return True
-        """
+        """Verify that connection is alive, always return True"""
         return True
