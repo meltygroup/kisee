@@ -39,7 +39,7 @@ async def _jwt_authentication(
 ) -> Tuple[User, Claims]:
     """Authentication using JWT."""
     try:
-        claims = jwt.decode(token, public_key, algorithms="ES256")
+        claims = jwt.decode(token, public_key, algorithms=["ES256"])
     except jwt.DecodeError as err:
         raise web.HTTPUnauthorized(reason="Bad authorization") from err
     else:
