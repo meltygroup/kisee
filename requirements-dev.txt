@@ -4,12 +4,22 @@
 #
 #    pip-compile requirements-dev.in
 #
+aiocontextvars==0.2.2
+    # via -r requirements.txt
+aiohttp-cors==0.7.0
+    # via -r requirements.txt
 aiohttp-devtools==0.13.1
     # via -r requirements-dev.in
 aiohttp==3.7.3
     # via
+    #   -r requirements.txt
+    #   aiohttp-cors
     #   aiohttp-devtools
     #   pytest-aiohttp
+aiojobs==0.3.0
+    # via -r requirements.txt
+aiomysql==0.0.21
+    # via -r requirements.txt
 alabaster==0.7.12
     # via sphinx
 appdirs==1.4.4
@@ -19,9 +29,14 @@ appdirs==1.4.4
 astroid==2.4.2
     # via pylint
 async-timeout==3.0.1
-    # via aiohttp
+    # via
+    #   -r requirements.txt
+    #   aiohttp
+asyncpg==0.21.0
+    # via -r requirements.txt
 attrs==20.3.0
     # via
+    #   -r requirements.txt
     #   aiohttp
     #   hypothesis
     #   pytest
@@ -29,14 +44,25 @@ babel==2.9.0
     # via sphinx
 bandit==1.7.0
     # via -r requirements-dev.in
+bcrypt==3.2.0
+    # via -r requirements.txt
 black==20.8b1
     # via -r requirements-dev.in
 build==0.1.0
     # via -r requirements-dev.in
 certifi==2020.12.5
-    # via requests
+    # via
+    #   -r requirements.txt
+    #   requests
+    #   sentry-sdk
+cffi==1.14.4
+    # via
+    #   -r requirements.txt
+    #   bcrypt
+    #   cryptography
 chardet==3.0.4
     # via
+    #   -r requirements.txt
     #   aiohttp
     #   requests
 click==7.1.2
@@ -46,6 +72,8 @@ click==7.1.2
     #   pycalver
 coverage==5.3.1
     # via -r requirements-dev.in
+cryptography==3.3.1
+    # via -r requirements.txt
 devtools==0.6.1
     # via aiohttp-devtools
 distlib==0.3.1
@@ -66,26 +94,25 @@ hypothesis==6.0.0
     # via -r requirements-dev.in
 idna==2.10
     # via
+    #   -r requirements.txt
     #   requests
     #   yarl
 imagesize==1.2.0
     # via sphinx
-importlib-metadata==3.4.0
-    # via
-    #   build
-    #   flake8
-    #   pep517
-    #   pluggy
-    #   pytest
-    #   stevedore
-    #   tox
-    #   virtualenv
 iniconfig==1.1.1
     # via pytest
 isort==5.7.0
-    # via pylint
+    # via
+    #   -r requirements-dev.in
+    #   pylint
 jinja2==2.11.2
     # via sphinx
+jsonpatch==1.28
+    # via -r requirements.txt
+jsonpointer==2.0
+    # via
+    #   -r requirements.txt
+    #   jsonpatch
 lazy-object-proxy==1.4.3
     # via astroid
 markupsafe==1.1.1
@@ -96,6 +123,7 @@ mccabe==0.6.1
     #   pylint
 multidict==5.1.0
     # via
+    #   -r requirements.txt
     #   aiohttp
     #   yarl
 mypy-extensions==0.4.3
@@ -130,14 +158,24 @@ pycalver==202010.1043
     # via -r requirements-dev.in
 pycodestyle==2.6.0
     # via flake8
+pycparser==2.20
+    # via
+    #   -r requirements.txt
+    #   cffi
 pyflakes==2.2.0
     # via flake8
 pygments==2.7.4
     # via
     #   aiohttp-devtools
     #   sphinx
+pyjwt==2.0.0
+    # via -r requirements.txt
 pylint==2.6.0
     # via -r requirements-dev.in
+pymysql==0.9.3
+    # via
+    #   -r requirements.txt
+    #   aiomysql
 pyparsing==2.4.7
     # via packaging
 pytest-aiohttp==0.3.0
@@ -153,11 +191,20 @@ pyyaml==5.3.1
 regex==2020.11.13
     # via black
 requests==2.25.1
-    # via sphinx
+    # via
+    #   -r requirements.txt
+    #   sphinx
+sentry-sdk==0.19.5
+    # via -r requirements.txt
+shortuuid==1.0.1
+    # via -r requirements.txt
 six==1.15.0
     # via
+    #   -r requirements.txt
     #   astroid
     #   bandit
+    #   bcrypt
+    #   cryptography
     #   pathlib2
     #   pycalver
     #   tox
@@ -190,6 +237,7 @@ stevedore==3.3.0
     # via bandit
 toml==0.10.2
     # via
+    #   -r requirements.txt
     #   black
     #   build
     #   pep517
@@ -201,30 +249,31 @@ tox==3.21.0
     # via -r requirements-dev.in
 typed-ast==1.4.2
     # via
-    #   astroid
     #   black
     #   mypy
 typing-extensions==3.7.4.3
     # via
+    #   -r requirements.txt
     #   aiohttp
     #   black
-    #   importlib-metadata
     #   mypy
-    #   yarl
 urllib3==1.26.2
-    # via requests
+    # via
+    #   -r requirements.txt
+    #   requests
+    #   sentry-sdk
 virtualenv==20.3.0
     # via tox
 watchgod==0.6
     # via aiohttp-devtools
+werkzeug==1.0.1
+    # via -r requirements.txt
 wrapt==1.12.1
     # via astroid
 yarl==1.6.3
-    # via aiohttp
-zipp==3.4.0
     # via
-    #   importlib-metadata
-    #   pep517
+    #   -r requirements.txt
+    #   aiohttp
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
