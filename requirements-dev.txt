@@ -70,10 +70,18 @@ click==7.1.2
     #   aiohttp-devtools
     #   black
     #   pycalver
+contextvars==2.4
+    # via
+    #   -r requirements.txt
+    #   aiocontextvars
 coverage==5.3.1
     # via -r requirements-dev.in
 cryptography==3.3.1
-    # via -r requirements.txt
+    # via
+    #   -r requirements.txt
+    #   pyjwt
+dataclasses==0.8
+    # via black
 devtools==0.6.1
     # via aiohttp-devtools
 distlib==0.3.1
@@ -92,13 +100,34 @@ gitpython==3.1.12
     # via bandit
 hypothesis==6.0.0
     # via -r requirements-dev.in
+idna-ssl==1.1.0
+    # via
+    #   -r requirements.txt
+    #   aiohttp
 idna==2.10
     # via
     #   -r requirements.txt
+    #   idna-ssl
     #   requests
     #   yarl
 imagesize==1.2.0
     # via sphinx
+immutables==0.14
+    # via
+    #   -r requirements.txt
+    #   contextvars
+importlib-metadata==3.4.0
+    # via
+    #   build
+    #   flake8
+    #   pep517
+    #   pluggy
+    #   pytest
+    #   stevedore
+    #   tox
+    #   virtualenv
+importlib-resources==5.0.0
+    # via virtualenv
 iniconfig==1.1.1
     # via pytest
 isort==5.7.0
@@ -168,7 +197,7 @@ pygments==2.7.4
     # via
     #   aiohttp-devtools
     #   sphinx
-pyjwt==2.0.0
+pyjwt[crypto]==2.0.0
     # via -r requirements.txt
 pylint==2.6.0
     # via -r requirements-dev.in
@@ -249,6 +278,7 @@ tox==3.21.0
     # via -r requirements-dev.in
 typed-ast==1.4.2
     # via
+    #   astroid
     #   black
     #   mypy
 typing-extensions==3.7.4.3
@@ -256,7 +286,9 @@ typing-extensions==3.7.4.3
     #   -r requirements.txt
     #   aiohttp
     #   black
+    #   importlib-metadata
     #   mypy
+    #   yarl
 urllib3==1.26.2
     # via
     #   -r requirements.txt
@@ -274,6 +306,11 @@ yarl==1.6.3
     # via
     #   -r requirements.txt
     #   aiohttp
+zipp==3.4.0
+    # via
+    #   importlib-metadata
+    #   importlib-resources
+    #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

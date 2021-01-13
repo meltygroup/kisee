@@ -36,12 +36,19 @@ chardet==3.0.4
     # via
     #   aiohttp
     #   requests
+contextvars==2.4
+    # via aiocontextvars
 cryptography==3.3.1
-    # via kisee (setup.py)
+    # via pyjwt
+idna-ssl==1.1.0
+    # via aiohttp
 idna==2.10
     # via
+    #   idna-ssl
     #   requests
     #   yarl
+immutables==0.14
+    # via contextvars
 jsonpatch==1.28
     # via kisee (setup.py)
 jsonpointer==2.0
@@ -52,7 +59,7 @@ multidict==5.1.0
     #   yarl
 pycparser==2.20
     # via cffi
-pyjwt==2.0.0
+pyjwt[crypto]==2.0.0
     # via kisee (setup.py)
 pymysql==0.9.3
     # via aiomysql
@@ -69,7 +76,9 @@ six==1.15.0
 toml==0.10.2
     # via kisee (setup.py)
 typing-extensions==3.7.4.3
-    # via aiohttp
+    # via
+    #   aiohttp
+    #   yarl
 urllib3==1.26.2
     # via
     #   requests
