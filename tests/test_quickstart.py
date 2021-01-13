@@ -27,6 +27,18 @@ def test_input(monkeypatch: MonkeyPatch) -> None:
     assert quickstart.input_or_default("Say youpi?") == "youpi"
 
 
+def test_2nd_time(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setattr("sys.stdin", io.StringIO("youpi\nyes"))
+    assert quickstart.input_or_default("Say yes?", validator=quickstart.boolean) is True
+
+
+def test_invalid_default_value() -> None:
+    with pytest.raises(ValueError):
+        quickstart.input_or_default(
+            "Give a bool", "not a bool", validator=quickstart.boolean
+        )
+
+
 def test_good_boolean_input_true(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setattr("sys.stdin", io.StringIO("y"))
     assert quickstart.input_or_default("Hello", "N", quickstart.boolean) is True

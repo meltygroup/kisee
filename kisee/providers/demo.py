@@ -30,7 +30,7 @@ def _colored_print(*args, sep=" ", end="\n") -> None:
         fg_color = curses.tigetstr("setaf") or curses.tigetstr("setf") or b""
         green = str(curses.tparm(fg_color, 2), "ascii")
         no_color = str(curses.tigetstr("sgr0"), "ascii")
-    except curses.error:
+    except curses.error:  # pragma: no cover  (no term in pytest)
         green, no_color = "", ""
     print(green)
     print(*args, sep=sep, end=end)
