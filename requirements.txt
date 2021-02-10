@@ -38,7 +38,7 @@ chardet==3.0.4
     #   requests
 contextvars==2.4
     # via aiocontextvars
-cryptography==3.3.1
+cryptography==3.3.2
     # via pyjwt
 idna-ssl==1.1.0
     # via aiohttp
