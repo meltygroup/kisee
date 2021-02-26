@@ -8,7 +8,7 @@ aiocontextvars==0.2.2
     # via kisee (setup.py)
 aiohttp-cors==0.7.0
     # via kisee (setup.py)
-aiohttp==3.7.3
+aiohttp==3.7.4
     # via
     #   aiohttp-cors
     #   kisee (setup.py)
