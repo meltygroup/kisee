@@ -108,12 +108,10 @@ class Link:
             ()
             if (fields is None)
             else tuple(
-                [
-                    item
-                    if isinstance(item, Field)
-                    else Field(item, required=False, location="")
-                    for item in fields
-                ]
+                item
+                if isinstance(item, Field)
+                else Field(item, required=False, location="")
+                for item in fields
             )
         )
 
