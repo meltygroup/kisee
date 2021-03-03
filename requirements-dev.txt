@@ -10,7 +10,7 @@ aiohttp-cors==0.7.0
     # via -r requirements.txt
 aiohttp-devtools==0.13.1
     # via -r requirements-dev.in
-aiohttp==3.7.3
+aiohttp==3.7.4
     # via
     #   -r requirements.txt
     #   aiohttp-cors
@@ -26,7 +26,7 @@ appdirs==1.4.4
     # via
     #   black
     #   virtualenv
-astroid==2.4.2
+astroid==2.5.1
     # via pylint
 async-timeout==3.0.1
     # via
@@ -48,14 +48,14 @@ bcrypt==3.2.0
     # via -r requirements.txt
 black==20.8b1
     # via -r requirements-dev.in
-build==0.2.1
+build==0.3.0
     # via -r requirements-dev.in
 certifi==2020.12.5
     # via
     #   -r requirements.txt
     #   requests
     #   sentry-sdk
-cffi==1.14.4
+cffi==1.14.5
     # via
     #   -r requirements.txt
     #   bcrypt
@@ -70,9 +70,9 @@ click==7.1.2
     #   aiohttp-devtools
     #   black
     #   pycalver
-coverage==5.4
+coverage==5.5
     # via -r requirements-dev.in
-cryptography==3.4.4
+cryptography==3.4.6
     # via
     #   -r requirements.txt
     #   pyjwt
@@ -90,9 +90,9 @@ flake8==3.8.4
     # via -r requirements-dev.in
 gitdb==4.0.5
     # via gitpython
-gitpython==3.1.13
+gitpython==3.1.14
     # via bandit
-hypothesis==6.1.1
+hypothesis==6.4.0
     # via -r requirements-dev.in
 idna==2.10
     # via
@@ -109,13 +109,13 @@ isort==5.7.0
     #   pylint
 jinja2==2.11.3
     # via sphinx
-jsonpatch==1.28
+jsonpatch==1.30
     # via -r requirements.txt
 jsonpointer==2.0
     # via
     #   -r requirements.txt
     #   jsonpatch
-lazy-object-proxy==1.4.3
+lazy-object-proxy==1.5.2
     # via astroid
 markupsafe==1.1.1
     # via jinja2
@@ -132,7 +132,7 @@ mypy-extensions==0.4.3
     # via
     #   black
     #   mypy
-mypy==0.800
+mypy==0.812
     # via -r requirements-dev.in
 packaging==20.9
     # via
@@ -166,13 +166,13 @@ pycparser==2.20
     #   cffi
 pyflakes==2.2.0
     # via flake8
-pygments==2.7.4
+pygments==2.8.0
     # via
     #   aiohttp-devtools
     #   sphinx
 pyjwt[crypto]==2.0.1
     # via -r requirements.txt
-pylint==2.6.0
+pylint==2.7.2
     # via -r requirements-dev.in
 pymysql==0.9.3
     # via
@@ -196,14 +196,13 @@ requests==2.25.1
     # via
     #   -r requirements.txt
     #   sphinx
-sentry-sdk==0.19.5
+sentry-sdk==0.20.3
     # via -r requirements.txt
 shortuuid==1.0.1
     # via -r requirements.txt
 six==1.15.0
     # via
     #   -r requirements.txt
-    #   astroid
     #   bandit
     #   bcrypt
     #   pathlib2
@@ -218,7 +217,7 @@ sortedcontainers==2.3.0
     # via hypothesis
 sphinx-rtd-theme==0.5.1
     # via -r requirements-dev.in
-sphinx==3.4.3
+sphinx==3.5.1
     # via
     #   -r requirements-dev.in
     #   sphinx-rtd-theme
@@ -246,7 +245,7 @@ toml==0.10.2
     #   pylint
     #   pytest
     #   tox
-tox==3.21.4
+tox==3.23.0
     # via -r requirements-dev.in
 typed-ast==1.4.2
     # via

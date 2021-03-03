@@ -8,7 +8,7 @@ aiocontextvars==0.2.2
     # via kisee (setup.py)
 aiohttp-cors==0.7.0
     # via kisee (setup.py)
-aiohttp==3.7.3
+aiohttp==3.7.4
     # via
     #   aiohttp-cors
     #   kisee (setup.py)
@@ -28,7 +28,7 @@ certifi==2020.12.5
     # via
     #   requests
     #   sentry-sdk
-cffi==1.14.4
+cffi==1.14.5
     # via
     #   bcrypt
     #   cryptography
@@ -36,13 +36,13 @@ chardet==3.0.4
     # via
     #   aiohttp
     #   requests
-cryptography==3.4.4
+cryptography==3.4.6
     # via pyjwt
 idna==2.10
     # via
     #   requests
     #   yarl
-jsonpatch==1.28
+jsonpatch==1.30
     # via kisee (setup.py)
 jsonpointer==2.0
     # via jsonpatch
@@ -58,7 +58,7 @@ pymysql==0.9.3
     # via aiomysql
 requests==2.25.1
     # via kisee (setup.py)
-sentry-sdk==0.19.5
+sentry-sdk==0.20.3
     # via kisee (setup.py)
 shortuuid==1.0.1
     # via kisee (setup.py)
