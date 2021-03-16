@@ -14,6 +14,7 @@ from aiohttp import web
 from aiojobs.aiohttp import setup
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
+import kisee
 from kisee import views
 from kisee.identity_provider import import_idp
 from kisee.middlewares import enforce_json, vary_origin
@@ -29,6 +30,8 @@ AIOHTTP_LOGGERS = (
     "aiohttp.websocket",
 )
 
+logger = logging.getLogger(__name__)
+
 
 def setup_logging(loglevel):  # pragma: no cover
     """Setup basic logging
@@ -42,6 +45,7 @@ def setup_logging(loglevel):  # pragma: no cover
         format=logformat,
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+    logger.info("Kisee %s starting!", kisee.__version__)
 
 
 def load_conf(settings_path: str = "settings.toml") -> Settings:

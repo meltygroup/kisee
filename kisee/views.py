@@ -342,6 +342,7 @@ async def _post_password_recoveries(request: web.Request) -> None:
     data = await request.json()
     user = await get_user_with_email_or_username(data, request.app["identity_backend"])
     if not user:
+        logger.info("Password recovery asked for a non-existing user: %s", data)
         return
     jwt_token = jwt.encode(
         {
@@ -362,6 +363,7 @@ async def post_password_recoveries(request: web.Request) -> web.Response:
     This works mostly on background, so no timing attack can be used
     to probe for emails.
     """
+    logger.debug("Handling a password recovery")
     data = await request.json()
     if "username" not in data and "email" not in data and "login" not in data:
         raise web.HTTPBadRequest(reason="Missing required fields email or username")
