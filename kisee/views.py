@@ -93,23 +93,8 @@ def json_patch_link(url, title, description):
     return serializers.Link(
         url=url,
         title=title,
-        description=description,
+        description=description + " (Using an RFC6902 JSON Patch)",
         action="patch",
-        fields=[
-            serializers.Field(
-                name="op",
-                description="action to be operated",
-                required=True,
-                schema={"type": "string"},
-            ),
-            serializers.Field(
-                name="path",
-                description="Path in json",
-                required=True,
-                schema={"type": "string"},
-            ),
-            serializers.Field(name="value", description="value for op", required=True),
-        ],
     )
 
 
@@ -189,7 +174,9 @@ async def patch_user(request: web.Request) -> web.Response:
     user, _ = await authenticate_user(request, for_password_modification=True)
     try:
         patch = jsonpatch.JsonPatch(await request.json())
-    except jsonpatch.InvalidJsonPatch as err:
+    except (jsonpatch.InvalidJsonPatch, TypeError) as err:
+        # See https://github.com/stefankoegl/python-json-patch/pull/132
+        # to remove TypeError here.
         raise web.HTTPBadRequest(reason="Invalid json patch.") from err
     patchset = list(patch)
     if len(patchset) > 1:

@@ -10,6 +10,19 @@ async def test_patch_users(client):
     assert response.status == 204
 
 
+async def test_patch_bad_format(client):
+    await client.app["identity_backend"].register_user(
+        "test", "test", "foo@example.com"
+    )
+    response = await client.patch(
+        "/users/test/",
+        headers={"Authorization": "Basic dGVzdDp0ZXN0"},
+        json={"op": "replace", "path": "/password", "value": "passwod"},
+    )
+    assert response.status == 400
+    assert response.reason == "Invalid json patch."
+
+
 async def test_patch_wrong_field(client):
     """We currently only support patching password, let be explicit when
     someone tries to patch something else.
@@ -110,8 +123,7 @@ async def test_patch_users_bad_auth(client):
 
 
 async def test_patch_users__bad_request__missing_field(client):
-    """Missing 'password' field in json input
-    """
+    """Missing 'password' field in json input"""
     await client.app["identity_backend"].register_user(
         "test", "test", "foo@example.com"
     )
