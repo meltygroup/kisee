@@ -33,8 +33,7 @@ def verify(user_input: bytes, database_encoded: bytes) -> bool:
 
 
 class DataStore(IdentityProvider):
-    """Postgresql backend for kisee
-    """
+    """Postgresql backend for kisee"""
 
     def __init__(self, options: dict, **kwargs) -> None:
         super().__init__(options, **kwargs)
@@ -43,6 +42,11 @@ class DataStore(IdentityProvider):
         self.database = options["database"]
         self.host = options["host"]
         self.port = options["port"]
+
+    @property
+    def username_min_length(self):
+        """Minimum length for usernames here."""
+        return 2
 
     async def __aenter__(self):
         self.pool = await asyncpg.create_pool(  # pylint: disable=W0201
@@ -60,8 +64,7 @@ class DataStore(IdentityProvider):
             pass
 
     async def identify(self, username: str, password: str) -> Optional[User]:
-        """Identifies the given username/password pair, returns a dict if found.
-        """
+        """Identifies the given username/password pair, returns a dict if found."""
         async with self.pool.acquire() as connection:
             result = await connection.fetchrow(
                 "SELECT * FROM users WHERE (username = $1 OR email = $1) ", username
@@ -97,8 +100,7 @@ class DataStore(IdentityProvider):
                 raise UserAlreadyExist
 
     async def get_user_by_email(self, email):
-        """Get user with provided email address
-        """
+        """Get user with provided email address"""
         async with self.pool.acquire() as connection:
             result = await connection.fetchrow(
                 """SELECT * FROM users WHERE email = $1""", email
@@ -108,8 +110,7 @@ class DataStore(IdentityProvider):
         return User(**user_data)
 
     async def get_user_by_username(self, username):
-        """Get user with provided username
-        """
+        """Get user with provided username"""
         async with self.pool.acquire() as connection:
             result = await connection.fetchrow(
                 """"SELECT * FROM users WHERE username = $1""", username
@@ -131,8 +132,7 @@ class DataStore(IdentityProvider):
             )
 
     async def is_connection_alive(self) -> bool:
-        """Verify that connection is alive, always return True
-        """
+        """Verify that connection is alive, always return True"""
         try:
             async with self.pool.acquire() as connection:
                 connection.execute("SELECT 1")

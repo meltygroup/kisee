@@ -4,6 +4,12 @@ import jwt
 import pytest
 
 import kisee.kisee as kisee
+from kisee.providers.demo import DemoBackend
+
+
+@pytest.fixture
+def backend():
+    return DemoBackend({"username_min_len": 3})
 
 
 @pytest.fixture

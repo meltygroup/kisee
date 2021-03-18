@@ -4,7 +4,7 @@ anything and accepts almost any username/password pair.
 import curses
 from random import choices
 from string import ascii_letters, digits
-from typing import Optional
+from typing import List, Optional
 
 from kisee.identity_provider import (
     IdentityProvider,
@@ -45,9 +45,11 @@ class DemoBackend(IdentityProvider):
      - root:root already exists, is supseruser.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, options: dict, **kwargs):
         super().__init__(**kwargs)
-        self.password_reset_tokens = []  # So we can fetch it back from the tests.
+        self.options = options
+        # So we can fetch tokens back from the tests:
+        self.password_reset_tokens: List[str] = []
         root_password = "".join(choices(ascii_letters + digits, k=8))
         _colored_print(
             "Admin credentials for this session is:",
@@ -65,6 +67,10 @@ class DemoBackend(IdentityProvider):
                 is_superuser=True,
             )
         }
+
+    @property
+    def username_min_length(self):
+        return self.options.get("username_min_length", 3)
 
     async def __aenter__(self):
         return self

@@ -7,7 +7,7 @@ debug = true
 [identity_backend]
   class = "kisee.providers.demo.DemoBackend"
   [identity_backend.options]
-    no = "option required"
+    username_min_length = 1
 
 #[identity_backend]
 #    class = "postgres_backend.pgsql.DataStore"
