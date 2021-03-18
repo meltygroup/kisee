@@ -63,25 +63,6 @@ async def get_root(
                 },
             },
         },
-        "actions": {
-            "register_user": {
-                "href": f"{hostname}/users/",
-                "method": "POST",
-                "fields": [
-                    {"name": "username", "required": True},
-                    {"name": "password", "required": True},
-                    {"name": "email", "required": True},
-                ],
-            },
-            "create_token": {
-                "href": f"{hostname}/jwt/",
-                "method": "POST",
-                "fields": [
-                    {"name": "username", "required": True},
-                    {"name": "password", "required": True},
-                ],
-            },
-        },
     }
     return web.Response(
         body=json.dumps(home, indent=4), content_type="application/json-home"
