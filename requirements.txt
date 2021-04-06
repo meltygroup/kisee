@@ -68,7 +68,7 @@ toml==0.10.2
     # via kisee (setup.py)
 typing-extensions==3.7.4.3
     # via aiohttp
-urllib3==1.26.3
+urllib3==1.26.4
     # via
     #   requests
     #   sentry-sdk
