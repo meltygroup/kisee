@@ -147,7 +147,8 @@ async def post_users(request: web.Request) -> web.Response:
             data["username"], data["password"], data["email"]
         )
     except UserAlreadyExist as err:
-        raise web.HTTPConflict(reason="User already exist") from err
+        msg = str(err) or "User already exist"
+        raise web.HTTPConflict(reason=msg) from err
     except ProviderError as err:
         raise web.HTTPBadRequest(reason=str(err)) from err
 
