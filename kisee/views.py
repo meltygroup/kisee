@@ -104,9 +104,6 @@ async def get_users(request: web.Request) -> web.Response:
                             required=True,
                             schema={
                                 "type": "string",
-                                "minLength": request.app[
-                                    "identity_backend"
-                                ].username_min_length,
                             },
                         ),
                         serializers.Field(

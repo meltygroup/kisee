@@ -49,11 +49,6 @@ class IdentityProvider(
         Can raise UserAlreadyExist
         """
 
-    @property
-    @abstractmethod
-    def username_min_length(self):
-        """Minimum accepted use length by this backend."""
-
     @abstractmethod
     async def get_user_by_email(self, email) -> Optional[User]:
         """Get user with provided email address"""
