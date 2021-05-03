@@ -9,7 +9,7 @@ from kisee.providers.demo import DemoBackend
 
 @pytest.fixture
 def backend():
-    return DemoBackend({"username_min_len": 3})
+    return DemoBackend({})
 
 
 @pytest.fixture

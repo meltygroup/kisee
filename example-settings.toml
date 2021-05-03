@@ -8,6 +8,8 @@ debug = true
   class = "kisee.providers.demo.DemoBackend"
   [identity_backend.options]
     username_min_length = 1
+    # Could be something else, it is to be implemented in your backend code, like:
+    # username_regex = r'^\p{IsAlphanumeric}(\p{IsAlphanumeric}|-(?!-))+\p{IsAlphanumeric}$'
 
 #[identity_backend]
 #    class = "postgres_backend.pgsql.DataStore"
