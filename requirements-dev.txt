@@ -10,7 +10,7 @@ aiohttp-cors==0.7.0
     # via -r requirements.txt
 aiohttp-devtools==0.13.1
     # via -r requirements-dev.in
-aiohttp==3.7.4
+aiohttp==3.7.4.post0
     # via
     #   -r requirements.txt
     #   aiohttp-cors
@@ -26,7 +26,7 @@ appdirs==1.4.4
     # via
     #   black
     #   virtualenv
-astroid==2.5.1
+astroid==2.5.6
     # via pylint
 async-timeout==3.0.1
     # via
@@ -34,33 +34,32 @@ async-timeout==3.0.1
     #   aiohttp
 asyncpg==0.22.0
     # via -r requirements.txt
-attrs==20.3.0
+attrs==21.2.0
     # via
     #   -r requirements.txt
     #   aiohttp
     #   hypothesis
     #   pytest
-babel==2.9.0
+babel==2.9.1
     # via sphinx
 bandit==1.7.0
     # via -r requirements-dev.in
 bcrypt==3.2.0
     # via -r requirements.txt
-black==20.8b1
+black==21.5b0
     # via -r requirements-dev.in
-build==0.3.0
+build==0.3.1.post1
     # via -r requirements-dev.in
 certifi==2020.12.5
     # via
     #   -r requirements.txt
     #   requests
-    #   sentry-sdk
 cffi==1.14.5
     # via
     #   -r requirements.txt
     #   bcrypt
     #   cryptography
-chardet==3.0.4
+chardet==4.0.0
     # via
     #   -r requirements.txt
     #   aiohttp
@@ -72,7 +71,7 @@ click==7.1.2
     #   pycalver
 coverage==5.5
     # via -r requirements-dev.in
-cryptography==3.4.6
+cryptography==3.4.7
     # via
     #   -r requirements.txt
     #   pyjwt
@@ -81,18 +80,20 @@ devtools==0.6.1
 distlib==0.3.1
     # via virtualenv
 docutils==0.16
-    # via sphinx
+    # via
+    #   sphinx
+    #   sphinx-rtd-theme
 filelock==3.0.12
     # via
     #   tox
     #   virtualenv
-flake8==3.8.4
+flake8==3.9.2
     # via -r requirements-dev.in
-gitdb==4.0.5
+gitdb==4.0.7
     # via gitpython
 gitpython==3.1.14
     # via bandit
-hypothesis==6.4.0
+hypothesis==6.12.0
     # via -r requirements-dev.in
 idna==2.10
     # via
@@ -103,22 +104,24 @@ imagesize==1.2.0
     # via sphinx
 iniconfig==1.1.1
     # via pytest
-isort==5.7.0
+isort==5.8.0
     # via
     #   -r requirements-dev.in
     #   pylint
 jinja2==2.11.3
     # via sphinx
-jsonpatch==1.30
+jsonpatch==1.32
     # via -r requirements.txt
-jsonpointer==2.0
+jsonpointer==2.1
     # via
     #   -r requirements.txt
     #   jsonpatch
-lazy-object-proxy==1.5.2
+lazy-object-proxy==1.6.0
     # via astroid
 markupsafe==1.1.1
-    # via jinja2
+    # via
+    #   jinja2
+    #   sphinx
 mccabe==0.6.1
     # via
     #   flake8
@@ -144,9 +147,9 @@ pathlib2==2.3.5
     # via pycalver
 pathspec==0.8.1
     # via black
-pbr==5.5.1
+pbr==5.6.0
     # via stevedore
-pep517==0.9.1
+pep517==0.10.0
     # via build
 pluggy==0.13.1
     # via
@@ -158,21 +161,21 @@ py==1.10.0
     #   tox
 pycalver==202010.1043
     # via -r requirements-dev.in
-pycodestyle==2.6.0
+pycodestyle==2.7.0
     # via flake8
 pycparser==2.20
     # via
     #   -r requirements.txt
     #   cffi
-pyflakes==2.2.0
+pyflakes==2.3.1
     # via flake8
-pygments==2.8.0
+pygments==2.9.0
     # via
     #   aiohttp-devtools
     #   sphinx
-pyjwt[crypto]==2.0.1
+pyjwt[crypto]==2.1.0
     # via -r requirements.txt
-pylint==2.7.2
+pylint==2.8.2
     # via -r requirements-dev.in
 pymysql==0.9.3
     # via
@@ -182,7 +185,7 @@ pyparsing==2.4.7
     # via packaging
 pytest-aiohttp==0.3.0
     # via -r requirements-dev.in
-pytest==6.2.2
+pytest==6.2.4
     # via
     #   -r requirements-dev.in
     #   pytest-aiohttp
@@ -190,17 +193,15 @@ pytz==2021.1
     # via babel
 pyyaml==5.4.1
     # via bandit
-regex==2020.11.13
+regex==2021.4.4
     # via black
 requests==2.25.1
     # via
     #   -r requirements.txt
     #   sphinx
-sentry-sdk==0.20.3
-    # via -r requirements.txt
 shortuuid==1.0.1
     # via -r requirements.txt
-six==1.15.0
+six==1.16.0
     # via
     #   -r requirements.txt
     #   bandit
@@ -209,15 +210,15 @@ six==1.15.0
     #   pycalver
     #   tox
     #   virtualenv
-smmap==3.0.5
+smmap==4.0.0
     # via gitdb
 snowballstemmer==2.1.0
     # via sphinx
 sortedcontainers==2.3.0
     # via hypothesis
-sphinx-rtd-theme==0.5.1
+sphinx-rtd-theme==0.5.2
     # via -r requirements-dev.in
-sphinx==3.5.1
+sphinx==4.0.0
     # via
     #   -r requirements-dev.in
     #   sphinx-rtd-theme
@@ -245,24 +246,20 @@ toml==0.10.2
     #   pylint
     #   pytest
     #   tox
-tox==3.23.0
+tox==3.23.1
     # via -r requirements-dev.in
-typed-ast==1.4.2
-    # via
-    #   black
-    #   mypy
-typing-extensions==3.7.4.3
+typed-ast==1.4.3
+    # via mypy
+typing-extensions==3.10.0.0
     # via
     #   -r requirements.txt
     #   aiohttp
-    #   black
     #   mypy
-urllib3==1.26.3
+urllib3==1.26.4
     # via
     #   -r requirements.txt
     #   requests
-    #   sentry-sdk
-virtualenv==20.4.2
+virtualenv==20.4.6
     # via tox
 watchgod==0.7
     # via aiohttp-devtools

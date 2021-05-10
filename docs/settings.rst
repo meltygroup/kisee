@@ -51,6 +51,7 @@ A typical ``settings.toml`` file looks like this::
 Sentry
 ------
 
-For sentry to work you'll need the `SENTRY_DSN` environment variable,
-nothing in the configuration file, see
-https://docs.sentry.io/error-reporting/quickstart/?platform=python.
+Sentry is optional.
+
+For Sentry to work you'll need the `SENTRY_DSN` environment variable,
+and `sentry-sdk` installed, that's it.

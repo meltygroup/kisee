@@ -8,11 +8,15 @@ import sys
 from typing import Any, Mapping, Optional
 
 import aiohttp_cors
-import sentry_sdk
+
+try:
+    import sentry_sdk
+    from sentry_sdk.integrations.aiohttp import AioHttpIntegration  # pragma: no cover
+except ImportError:
+    sentry_sdk = None  # type: ignore
 import toml
 from aiohttp import web
 from aiojobs.aiohttp import setup
-from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 
 import kisee
 from kisee import views
@@ -144,7 +148,12 @@ def main() -> None:  # pragma: no cover
     args = parse_args()
     setup_logging(args.loglevel)
     settings = load_conf(args.settings)
-    sentry_sdk.init(settings.get("SENTRY_DSN"), integrations=[AioHttpIntegration()])
+    if sentry_sdk:
+        sentry_sdk.init(  # pylint: disable=abstract-class-instantiated
+            # see https://github.com/getsentry/sentry-python/issues/1081
+            settings.get("SENTRY_DSN"),
+            integrations=[AioHttpIntegration()],
+        )
     app = create_app(settings)
     web.run_app(
         app, host=settings["server"]["host"], port=int(settings["server"]["port"])
