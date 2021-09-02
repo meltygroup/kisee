@@ -3,8 +3,7 @@
 
 
 async def test_dumb_idp(backend):
-    """Test instanciation and identification
-    """
+    """Test instanciation and identification"""
     identity = await backend.identify("dummy_login", "")
     assert identity is None
     identity = await backend.identify("dummy_login", "dummy_password")

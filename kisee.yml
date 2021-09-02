@@ -1,0 +1,161 @@
+---
+
+openapi: 3.0.0
+info:
+  title: Kisee Identity Manager
+  description: An elementary identity manager, which only expose any user/password storage as an API.
+  contact:
+    name: Author
+    url: https://github.com/meltygroup/kisee
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/mit-license.php
+  version: v1
+paths:
+  /users/:
+    get:
+      description: Just give some informations about the users endpoint.
+      responses:
+        '200':
+          description: "Endpoint informations, but no users."
+    post:
+      description: User registration
+      requestBody:
+        required: true
+        description: User informations
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_info'
+      responses:
+        '201':
+          description: Newly created user, see Location header.
+        '400':
+          description: An input field is missing, or email is invalid.
+        '409':
+          description: User already exists.
+    patch:
+      description: To change a user password.
+      requestBody:
+        required: true
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/patch'
+      responses:
+        '204':
+          description: "Empty body, patch successfull."
+        '400':
+          description: "Patch body may be an invalid json-patch, or try to change something else than the password."
+        '403':
+          description: "You're not allowed to change this user's password."
+  /jwt/:
+    post:
+      description: Create a new JWT
+      requestBody:
+        description: User username and password
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_password'
+      responses:
+        '200':
+          description: Newly created JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/new_jwt'
+        '400':
+          description: "A required field is missing."
+        '403':
+          description: "Invalid username or password."
+
+    get:
+      description: Only a hint POST is possible.
+      responses:
+        '200':
+          description: 'Currently only here to describe the API.'
+
+  /password_recoveries/:
+    get:
+      description: Only a hint POST is possible.
+      responses:
+        '200':
+          description: 'Currently only here to describe the API.'
+    post:
+      description: Start a password recovery process
+      requestBody:
+        description: User username or email.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/username_or_email'
+
+  /jwt{/jid}:
+    get:
+      description: Not implemented
+      responses:
+        '500':
+          description: "This is literally not implemented yet."
+
+
+components:
+  schemas:
+    user:
+      type: object
+    new_jwt:
+      type: object
+      properties:
+        tokens:
+          type: array
+          items:
+            type: string
+            example: eyJ0eXAiOiJKV1QiLCJhbGciOiJ...
+    user_password:
+      type: object
+      required: ["username", "password"]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+    jwt:
+      type: object
+      additionalProperties:
+        type: object
+    user_info:
+      allOf:
+        - $ref: '#/components/schemas/user_password'
+        - type: object
+          required: ["email"]
+          properties:
+            email:
+              type: string
+              format: email
+    username_or_email:
+      oneOf:
+        - type: object
+          required: ["username"]
+          properties:
+            username:
+              type: string
+        - type: object
+          required: ["email"]
+          properties:
+            email:
+              type: string
+              format: email
+    patch:
+      type: array
+      items:
+        type: object
+        properties:
+          op:
+            type: string
+          path:
+            type: string
+          value:
+            type: string

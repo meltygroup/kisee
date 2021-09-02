@@ -68,10 +68,6 @@ class DemoBackend(IdentityProvider):
             )
         }
 
-    @property
-    def username_min_length(self):
-        return self.options.get("username_min_length", 3)
-
     async def __aenter__(self):
         return self
 
@@ -92,7 +88,10 @@ class DemoBackend(IdentityProvider):
     async def register_user(
         self, username: str, password: str, email: str, is_superuser: bool = False
     ) -> None:
-        if len(username) < 3:
+        username_min_length = (
+            3 if not self.options else self.options.get("username_min_length", 3)
+        )
+        if len(username) < username_min_length:
             raise ProviderError("Username too short")
         if username in self.storage:
             raise UserAlreadyExist

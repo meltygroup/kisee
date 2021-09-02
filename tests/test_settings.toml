@@ -5,6 +5,8 @@ port = 8140
 
 [identity_backend]
 class = "kisee.providers.demo.DemoBackend"
+[identity_backend.options]
+username_min_length = 3
 
 [email]
 host = "localhost"

@@ -43,11 +43,6 @@ class DataStore(IdentityProvider):
         self.host = options["host"]
         self.port = options["port"]
 
-    @property
-    def username_min_length(self):
-        """Minimum length for usernames here."""
-        return 2
-
     async def __aenter__(self):
         self.pool = await asyncpg.create_pool(  # pylint: disable=W0201
             database=self.database,  # W0201 is attribute-defined-outside-init

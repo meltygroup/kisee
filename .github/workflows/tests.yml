@@ -1,12 +1,14 @@
+---
+
 name: Tests
 
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   build_ubuntu:
@@ -33,7 +35,7 @@ jobs:
           - env: py39,coverage
             python-version: '3.9'
           - env: flake8,mypy,black,pylint,bandit,docs,isort
-            python-version: '3.8'
+            python-version: '3.9'
 
     name: ${{ matrix.tox.env }}
     runs-on: ubuntu-latest
