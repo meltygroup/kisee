@@ -2,7 +2,7 @@
 """
 
 import argparse
-import logging
+import logging.config
 import os
 import sys
 from typing import Any, Mapping, Optional
@@ -36,19 +36,33 @@ AIOHTTP_LOGGERS = (
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_LOGGING_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "full": {
+            "format": "[%(asctime)s] %(levelname)s:%(name)s:%(message)s",
+        }
+    },
+    "handlers": {
+        "stderr": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stderr",
+            "level": "DEBUG",
+            "formatter": "full",
+        }
+    },
+    "loggers": {"kisee": {"level": "DEBUG", "handlers": ["stderr"]}},
+}
 
-def setup_logging(loglevel):  # pragma: no cover
+
+def setup_logging(settings: dict):  # pragma: no cover
     """Setup basic logging
     Args:
       loglevel (int): minimum loglevel for emitting messages
     """
-    logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
-    logging.basicConfig(
-        level=50 - (loglevel * 10),
-        stream=sys.stdout,
-        format=logformat,
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
+    conf = settings["logging"] if "logging" in settings else DEFAULT_LOGGING_CONFIG
+    logging.config.dictConfig(conf)
     logger.info("Kisee %s starting!", kisee.__version__)
 
 
@@ -77,14 +91,6 @@ def parse_args(program_args=None) -> argparse.Namespace:
         program_args = sys.argv[1:]
     parser = argparse.ArgumentParser(description="Shape Identity Provider")
     parser.add_argument("--settings", default="settings.toml")
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        dest="loglevel",
-        default=0,
-        help="Verbose mode (-vv for more, -vvv, …)",
-        action="count",
-    )
     return parser.parse_args(program_args)
 
 
@@ -146,8 +152,8 @@ def create_app(settings: Optional[Settings] = None) -> web.Application:
 def main() -> None:  # pragma: no cover
     """Command line entry point."""
     args = parse_args()
-    setup_logging(args.loglevel)
     settings = load_conf(args.settings)
+    setup_logging(settings)
     if sentry_sdk:
         sentry_sdk.init(  # pylint: disable=abstract-class-instantiated
             # see https://github.com/getsentry/sentry-python/issues/1081

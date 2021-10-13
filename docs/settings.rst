@@ -48,6 +48,32 @@ A typical ``settings.toml`` file looks like this::
     -----END PUBLIC KEY-----'''
 
 
+Logging
+-------
+
+Logging can be deeply customized via the configuration file as it uses
+`dictConfig
+<https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig>`_
+from the `logging` section, by default it is similar to::
+
+    [logging]
+    version = 1
+    disable_existing_loggers = false
+
+        [logging.formatters.full]
+        format = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
+
+        [logging.handlers.stderr]
+        class = "logging.StreamHandler"
+        stream = "ext://sys.stderr"
+        level = "DEBUG"
+        formatter = "full"
+
+        [logging.loggers.kisee]
+        level = "DEBUG"
+        handlers = ["stderr"]
+
+
 Sentry
 ------
 
