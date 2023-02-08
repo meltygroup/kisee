@@ -34,7 +34,7 @@ chardet==4.0.0
     # via
     #   aiohttp
     #   requests
-cryptography==3.4.7
+cryptography==39.0.1
     # via pyjwt
 idna==2.10
     # via
